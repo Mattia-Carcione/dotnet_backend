@@ -1,4 +1,7 @@
-﻿using Dtos.BookDtos;
+﻿using Azure.Core;
+using Dtos.Book;
+using Dtos.BookDtos;
+
 using Entities.Data;
 using Intefaces.crud.entities;
 using Mapper.Books;
@@ -27,7 +30,7 @@ namespace WebAPI.Controller
             return Ok(bookDto);
         }
 
-        [HttpGet("by-title/{title}")]
+        [HttpGet("by-title/{Title}")]
         public async Task<IActionResult> GetByTitle([FromRoute] string Title)
         {
             var book = await _bookRepo.GetByTitleAsync(Title);
@@ -38,7 +41,29 @@ namespace WebAPI.Controller
             return Ok(book.ToBookDto());
         }
 
-        [HttpGet("by-id/{id:int}")]
+
+        [HttpGet("by-Author/")]
+        public async Task<IActionResult> GetByAuthor([FromQuery] string name, [FromQuery] string surname)
+        {
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(surname))
+            {
+                return BadRequest("Name and surname are required parameters.");
+            }
+
+            var books = await _bookRepo.GetByAuthorAsync(name, surname);
+            if (books == null || !books.Any())
+            {
+                return NotFound("No books found for the provided author.");
+            }
+            return Ok(books.Select(book => book.ToBookDto()));
+        }
+
+
+
+
+
+
+        [HttpGet("by-id/{Id}")]
         public async Task<IActionResult> GetById([FromRoute] int Id)
         {
             var book = await _bookRepo.GetByIdAsync(Id);
@@ -49,6 +74,7 @@ namespace WebAPI.Controller
             return Ok(book.ToBookDto());
         }
 
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateBookRequestDto bookDto)
         {
@@ -56,8 +82,11 @@ namespace WebAPI.Controller
             await _bookRepo.CreateAsync(bookModel);
             return CreatedAtAction(nameof(GetById), new { id = bookModel.BookId }, bookModel.ToBookDto());
         }
+
+
+
         [HttpPut]
-        [Route("{id}")]
+        [Route("Update-{id}")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateBookRequestDto updateDto)
         {
             var bookModel = await _bookRepo.UpdateAsync(id, updateDto);
@@ -73,7 +102,7 @@ namespace WebAPI.Controller
         }
 
         [HttpDelete]
-        [Route("{id}")]
+        [Route("delete-{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var bookModel = await _bookRepo.DeleteAsync(id);

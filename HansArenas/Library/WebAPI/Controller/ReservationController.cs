@@ -40,7 +40,11 @@ namespace WebAPI.Controller
             }
             return Ok(reservation.ToReservationDto());
         }
+        [HttpPost]
+        public async Task<IActionResult> ReturnBook()
+        {
 
+        }
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateBookRequest request)
         {

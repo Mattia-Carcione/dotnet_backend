@@ -12,5 +12,6 @@ namespace Intefaces.crud.entities
         Task<Book?> UpdateAsync(int id, UpdateBookRequestDto updateBookRequestDto);
         Task<Book?> DeleteAsync(int id);
         Task<Book?> GetByTitleAsync(string Title);
+        Task<List<Book?>> GetByAuthorAsync(string authorName, string authorSurname);
     }
 }

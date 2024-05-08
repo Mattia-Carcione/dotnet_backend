@@ -14,7 +14,7 @@ namespace Services.Repository
         {
             _context = context; 
         }
-
+        
         public async Task<Book?> CreateAsync(Book bookModel)
         {
             await _context.Books.AddAsync(bookModel);
@@ -39,6 +39,13 @@ namespace Services.Repository
             return  await _context.Books.ToListAsync();
         }
 
+        public async Task<List<Book?>> GetByAuthorAsync(string authorName, string authorSurname)
+        {
+            var Author = _context.Authors.Where(p => p.Author_Name == authorName && p.Author_Surname == authorSurname).FirstOrDefault();
+            return await _context.Books.Where(p => p.Author_Id == Author.AuthorId)
+                                       .ToListAsync();
+        }
+
         public async Task<Book?> GetByIdAsync(int id)
         {
             return await _context.Books.FindAsync(id);
@@ -60,6 +67,7 @@ namespace Services.Repository
             existingBook.NumberOfPages = bookDto.NumberOfPages;
             existingBook.DateOfPublication = bookDto.DateOfPublication;
             existingBook.NumberOfCopiesLeft = bookDto.NumberOfCopiesLeft;
+            existingBook.Author_Id = bookDto.Author_Id;
             await _context.SaveChangesAsync();
             return existingBook;
         }
