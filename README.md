@@ -34,27 +34,10 @@ Il flusso sarà:
 1- fare una chiamata Api che ritorna il token ad IdentityApp
 2- poi tramite Postman fare le chiamate alla LibraryApp passando nell'header il token 
 
-3- Usare il token per distinguere gli utenti premium da quelli non premium
-PSEUDOCODICE di quello che intendo:
+Aggiungere un altra libreria (Serices.Premium) in cui metti un altra implementazione dell'interfaccia IBookingService la quale farà qualcosa di diverso da quella base. 
+Per esempio se prenoti ed il libro è già occupato, ne va a creare una copia in più
 
-services.AddTransient<BookingServiceStandard>();
-services.AddTransient<BookingServicePremium>();
-
-services.AddTransient<IBookingService>(sp =>
-{
-    var ctx = sp.GetRequiredService<IHttpContextAccessor>();
-
-    var email = ctx.HttpContext!.User.FindFirst(ClaimTypes.Email)!.Value;
-
-    var user = sp.GetRequiredService<IUserRepository>().GetByEmail(email);
-
-    if (user != null && user.IsPremium)
-    {
-        return sp.GetRequiredService<BookingServicePremium>();
-    }
-
-    return sp.GetRequiredService<BookingServiceStandard>();
-});
+Usare il token per distinguere gli utenti premium da quelli non premium
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Versione 0.0.3
