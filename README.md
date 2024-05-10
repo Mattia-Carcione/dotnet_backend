@@ -41,6 +41,14 @@ Usare il token per distinguere gli utenti premium da quelli non premium
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Versione 0.0.3
+
+Aggiunere un'api, tipo BuyBook, in cui un utente Premium può comprare un libro che ha attualmente in prestito. 
+L'api quindi riceverà come input l'identificatico del libro e sparerà una notifica. 
+Una nuova web App chiamata NotificationHub recepirà la notifica e lo rigirerà tramite notifica alla Library app, 
+dove ci sarà un HostedService in ascolto delle notifiche. 
+Questo in base al tipo di notifica chiamerà un opportuno servizio per gestirla (nel nostro caso per esempio 
+detrarrà 1 dal numero dei libri con quell'identificativo)
+
 https://learn.microsoft.com/en-us/aspnet/core/tutorials/signalr?view=aspnetcore-7.0&tabs=visual-studio
 HostedService https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-7.0&tabs=visual-studio
 
