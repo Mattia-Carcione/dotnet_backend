@@ -23,11 +23,6 @@ Preparare degli script .sql per popolare il database con un pò di dati
 Versione 0.0.1 
 usare AutoMapper per passare dai DTO alle entità e viceversa
 
-Aggiungere un altra libreria (Serices.Premium) in cui metti un altra implementazione dell'interfaccia IBookingService la quale farà qualcosa di diverso da quella base. Per esempio se prenoti ed il libro è già occupato, ne va a creare una copia in più
-
-Il sistema deciderà se istanziare con la depency injection un servizio piuttosto che un altro in base al nome del libro per il momento, che non ha senso ma è solo per partire. Tipo se il libro richiesto è la Bibbia usa il servizio premium
-
-
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Versione 0.0.2 
 Aggiungere una wep api che si occupa di fare l'autenticazione degli utenti, una sorta di login service.
