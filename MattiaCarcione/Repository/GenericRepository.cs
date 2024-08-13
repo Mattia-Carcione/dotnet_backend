@@ -14,7 +14,7 @@ public class GenericRepository<T> : IRepository<T>
         _context = context;
     }
 
-    public async void AddAsync(T entity)
+    public async Task AddAsync(T entity)
     {
         try
         {
@@ -66,7 +66,7 @@ public class GenericRepository<T> : IRepository<T>
         }
     }
 
-    public async Task<List<T>> GetAllAsync(int id)
+    public async Task<List<T>> GetAllAsync()
     {
         try
         {
@@ -78,11 +78,11 @@ public class GenericRepository<T> : IRepository<T>
         }
     }
 
-    public void SaveChangesAsync()
+    public async Task SaveChangesAsync()
     {
         try
         {
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
         catch (Exception ex)
         {
