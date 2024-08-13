@@ -5,16 +5,8 @@ using Model.Entities;
 
 namespace Repository;
 
-public class BookingRepository : GenericRepository<Booking>, IBookingRepository
+public class BookingRepository(LibraryContext context) : GenericRepository<Booking>(context), IBookingRepository
 {
-    private readonly LibraryContext _context;
-
-    public BookingRepository(LibraryContext context)
-        : base(context)
-    {
-        _context = context;
-    }
-
     public async Task<List<Booking>> SearchBookingsAsync(string user, Book book, DateTime deliveryDate = default)
     {
         try

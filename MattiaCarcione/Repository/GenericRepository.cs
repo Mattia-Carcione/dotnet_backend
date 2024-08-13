@@ -7,12 +7,9 @@ namespace Repository;
 public class GenericRepository<T> : IRepository<T>
     where T : class
 {
-    private readonly LibraryContext _context;
+    protected readonly LibraryContext _context;
 
-    public GenericRepository(LibraryContext context)
-    {
-        _context = context;
-    }
+    public GenericRepository(LibraryContext context) => _context = context;
 
     public async Task AddAsync(T entity)
     {

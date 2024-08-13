@@ -5,16 +5,8 @@ using Model.Entities;
 
 namespace Repository;
 
-public class BookRepository : GenericRepository<Book>, IBookRepository
+public class BookRepository(LibraryContext context) : GenericRepository<Book>(context), IBookRepository
 {
-    private readonly LibraryContext _context;
-
-    public BookRepository(LibraryContext context)
-        : base(context)
-    {
-        _context = context;
-    }
-
     public async Task<List<Book>> SearchBooksAsync(string partialTitle, string partialAuthorLastName, List<string> categories)
     {
         try
