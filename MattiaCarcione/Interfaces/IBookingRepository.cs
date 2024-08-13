@@ -1,4 +1,3 @@
-
 using Model.Entities;
 
 namespace Interfaces;
