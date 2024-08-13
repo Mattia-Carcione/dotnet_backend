@@ -16,36 +16,77 @@ public class GenericRepository<T> : IRepository<T>
 
     public async void AddAsync(T entity)
     {
-        await _context.AddAsync(entity);
+        try
+        {
+            await _context.AddAsync(entity);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"An error occurred: {ex.Message}");
+        }
     }
 
     public void Update(T entity)
     {
-        _context.Update(entity);
+        try
+        {
+            _context.Update(entity);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"An error occurred: {ex.Message}");
+        }
     }
 
     public void Delete(T entity)
     {
-        _context.Remove(entity);
+        try
+        {
+            _context.Remove(entity);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"An error occurred: {ex.Message}");
+        }
     }
 
     public async Task<T> GetAsync(int id)
     {
-        var entity = await _context.FindAsync<T>(id);
+        try
+        {
+            var entity = await _context.FindAsync<T>(id);
+            if (entity == null)
+                throw new Exception($"The entity with id: {id} not found");
 
-        if (entity == null)
-            throw new Exception($"An error occurred: The entity with id: {id} not found");
-
-        return entity;
+            return entity;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"An error occurred: {ex.Message}");
+        }
     }
 
     public async Task<List<T>> GetAllAsync(int id)
     {
-        return await _context.Set<T>().ToListAsync();
+        try
+        {
+            return await _context.Set<T>().ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"An error occurred: {ex.Message}");
+        }
     }
 
     public void SaveChangesAsync()
     {
-        _context.SaveChangesAsync();
+        try
+        {
+            _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"An error occurred: {ex.Message}");
+        }
     }
 }
