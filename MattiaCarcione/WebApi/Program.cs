@@ -1,5 +1,7 @@
 using Context;
 using Microsoft.EntityFrameworkCore;
+using Model.Entities;
+using Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

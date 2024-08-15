@@ -4,6 +4,7 @@ using Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    partial class LibraryContextModelSnapshot : ModelSnapshot
+    [Migration("20240815195303_UpdateModels")]
+    partial class UpdateModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,12 +30,12 @@ namespace WebApi.Migrations
                     b.Property<int>("BooksID")
                         .HasColumnType("int");
 
-                    b.Property<int>("CategoriesId")
+                    b.Property<int>("CategoriesID")
                         .HasColumnType("int");
 
-                    b.HasKey("BooksID", "CategoriesId");
+                    b.HasKey("BooksID", "CategoriesID");
 
-                    b.HasIndex("CategoriesId");
+                    b.HasIndex("CategoriesID");
 
                     b.ToTable("BookCategory");
                 });
@@ -75,7 +78,7 @@ namespace WebApi.Migrations
                     b.Property<int>("Copies")
                         .HasColumnType("int");
 
-                    b.Property<int?>("EditorId")
+                    b.Property<int?>("EditorID")
                         .HasColumnType("int");
 
                     b.Property<int>("Pages")
@@ -95,18 +98,18 @@ namespace WebApi.Migrations
 
                     b.HasIndex("AuthorID");
 
-                    b.HasIndex("EditorId");
+                    b.HasIndex("EditorID");
 
                     b.ToTable("Books");
                 });
 
             modelBuilder.Entity("Model.Entities.Booking", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<int?>("BookID")
                         .HasColumnType("int");
@@ -118,9 +121,10 @@ namespace WebApi.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("User")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("ID");
 
                     b.HasIndex("BookID");
 
@@ -129,35 +133,37 @@ namespace WebApi.Migrations
 
             modelBuilder.Entity("Model.Entities.Category", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Genre")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("ID");
 
                     b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Model.Entities.Editor", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("ID");
 
                     b.ToTable("Editors");
                 });
@@ -172,7 +178,7 @@ namespace WebApi.Migrations
 
                     b.HasOne("Model.Entities.Category", null)
                         .WithMany()
-                        .HasForeignKey("CategoriesId")
+                        .HasForeignKey("CategoriesID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -185,7 +191,7 @@ namespace WebApi.Migrations
 
                     b.HasOne("Model.Entities.Editor", "Editor")
                         .WithMany("Books")
-                        .HasForeignKey("EditorId");
+                        .HasForeignKey("EditorID");
 
                     b.Navigation("Author");
 
@@ -195,7 +201,7 @@ namespace WebApi.Migrations
             modelBuilder.Entity("Model.Entities.Booking", b =>
                 {
                     b.HasOne("Model.Entities.Book", "Book")
-                        .WithMany("Bookings")
+                        .WithMany("Booking")
                         .HasForeignKey("BookID");
 
                     b.Navigation("Book");
@@ -208,7 +214,7 @@ namespace WebApi.Migrations
 
             modelBuilder.Entity("Model.Entities.Book", b =>
                 {
-                    b.Navigation("Bookings");
+                    b.Navigation("Booking");
                 });
 
             modelBuilder.Entity("Model.Entities.Editor", b =>
