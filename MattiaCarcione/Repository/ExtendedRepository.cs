@@ -5,8 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Repository;
 
-public class SearchRepository<T>(LibraryContext context) : GenericRepository<T>(context), ISearchRepository<T> where T : class
+public class ExtendedRepository<T> : GenericRepository<T>, IExtendedRepository<T> where T : class
 {
+    public ExtendedRepository(LibraryContext context) : base(context) {}
+
     public async Task<List<T>> SearchByCriteria(Expression<Func<T, bool>> expression)
     {
         try
