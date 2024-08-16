@@ -14,5 +14,5 @@ public class Author
     public required string Name {get; set;}
     public required string LastName {get; set;}
     public DateTime BirthDate {get; set;}
-    public List<Book>? Books {get; set;}
+    public List<Book> Books {get; set;} = new();
 }

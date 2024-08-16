@@ -12,7 +12,6 @@
 // custom di tipo PrenotazioneException contenente un identificativo (enum) 
 // dell’errore riscontrato e il libro su cui si sta lavorando
 
-
 using Context;
 using Exceptions;
 using Interfaces;
@@ -40,7 +39,7 @@ public class BookService : ExtendedRepository<Book>, IBookService
 
             var userBookings = await _context.Bookings.Where(b => b.User == user).ToListAsync();
 
-            if (userBookings.Count >= 3)
+            if (userBookings.Count(b => b.DeliveryDate == default) >= 3)
                 throw new BookingException(BookingException.Exceptions.ToManyBookings, book);
 
             if (

@@ -6,7 +6,7 @@ using Model.Entities;
 
 namespace Context;
 
-public class LibraryContext(DbContextOptions<LibraryContext> options) : DbContext(options)
+public class LibraryContext : DbContext
 {
     public DbSet<Author> Authors { get; set; }
     public DbSet<Book> Books { get; set; }
@@ -14,13 +14,17 @@ public class LibraryContext(DbContextOptions<LibraryContext> options) : DbContex
     public DbSet<Booking> Bookings { get; set; }
     public DbSet<Editor> Editors { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    public LibraryContext(DbContextOptions<LibraryContext> options) : base(options)
     {
-        if (!optionsBuilder.IsConfigured)
-        {
-            throw new NullReferenceException();
-        }
     }
+
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // {
+    //     if (!optionsBuilder.IsConfigured)
+    //     {
+    //         throw new NullReferenceException();
+    //     }
+    // }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

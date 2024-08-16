@@ -32,7 +32,7 @@ public class Book
 
     public void RemoveCategory(Category category) 
     {
-        if(Categories != null && !Categories.Contains(category))
+        if(Categories != null && Categories.Contains(category))
         {
             Categories.Remove(category);
         }
@@ -40,8 +40,8 @@ public class Book
 
     public int AuthorId { get; set; }
     public Author? Author {get; set;}
-    public List<Category>? Categories {get; set;}
-    public List<Booking>? Bookings {get; set;}
+    public List<Category> Categories {get; set;} = new();
+    public List<Booking> Bookings {get; set;} = new();
     public int EditorId { get; set; }
     public Editor? Editor {get; set;}
 }

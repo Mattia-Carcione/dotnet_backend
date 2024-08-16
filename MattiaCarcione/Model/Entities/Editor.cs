@@ -14,5 +14,5 @@ public class Editor
     private string? name {get; set;}
     public string? Name {get {return name;} set {name = value;}}
 
-    public List<Book>? Books {get; set;}
+    public List<Book> Books {get; set;} = new();
 }

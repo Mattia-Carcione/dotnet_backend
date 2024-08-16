@@ -18,5 +18,5 @@ public class Category
     private string? description {get; set;}
     public string? Description {get {return description;} set {description = value;}}
     
-    public List<Book>? Books {get; set;}
+    public List<Book> Books {get; set;} = new();
 }
