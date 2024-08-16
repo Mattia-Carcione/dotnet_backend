@@ -21,7 +21,7 @@ using Repository;
 
 namespace Services;
 
-public class BookService : ExtendedRepository<Book>, IBookService
+public class BookService : GenericRepository<Book>, IBookService
 {
     public BookService(LibraryContext context)
         : base(context) { }
@@ -32,7 +32,7 @@ public class BookService : ExtendedRepository<Book>, IBookService
         {
             var book =
                 await _context.Books.FirstOrDefaultAsync(b => b.ID == bookId)
-                ?? throw new Exception($"Book not found");
+                ?? throw new Exception($"An error occurred: Book not found");
 
             if (book.Copies <= 0)
                 throw new BookingException(BookingException.Exceptions.BookNotAvailable, book);
@@ -49,7 +49,7 @@ public class BookService : ExtendedRepository<Book>, IBookService
             )
                 throw new BookingException(BookingException.Exceptions.ExistingBooking, book);
 
-            var newBooking = new Booking { User = user, Book = book };
+            var newBooking = new Booking { User = user, Book = book, BookingDate = DateTime.Now };
 
             book.Copies--;
 
@@ -61,19 +61,25 @@ public class BookService : ExtendedRepository<Book>, IBookService
         }
         catch (Exception ex)
         {
-            throw new Exception($"An error occurred: {ex.Message}");
+            throw new Exception($"{ex.Message}");
         }
     }
 
-    public async Task DeliveryAsync(int bookingId)
+    public async Task DeliveryAsync(string user, int bookingId, int bookId)
     {
         try
         {
             var booking =
                 await _context.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId)
-                ?? throw new Exception($"Booking not found");
+                ?? throw new Exception($"An error occurred: Booking not found");
+            
+            if(booking.User != user)
+                throw new Exception($"An error occurred: Booking and User doesn't match");
 
-            var book = booking.Book ?? throw new Exception($"Book not found");
+            if(booking.DeliveryDate != default)
+                throw new Exception($"An error occurred: '{booking.User}' has already returned '{booking.Book?.Title}'.");
+
+            var book = booking.Book ?? throw new Exception($"An error occurred: Book not found");
 
             book.Copies++;
 
@@ -87,7 +93,7 @@ public class BookService : ExtendedRepository<Book>, IBookService
         }
         catch (Exception ex)
         {
-            throw new Exception($"An error occurred: {ex.Message}");
+            throw new Exception($"{ex.Message}");
         }
     }
 }

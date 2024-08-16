@@ -44,7 +44,7 @@ public class LibraryContext : DbContext
             .Entity<Book>()
             .HasMany(b => b.Bookings)
             .WithOne(b => b.Book)
-            .HasForeignKey(b => b.BookingId);
+            .HasForeignKey(b => b.BookId);
 
         modelBuilder
             .Entity<Book>()

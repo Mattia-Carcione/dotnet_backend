@@ -4,7 +4,7 @@ using Model.Entities;
 
 namespace LibraryTests;
 
-public class TestDatabaseFixture
+public class TestDatabaseFixture : EntityFactoryHelper
 {
     private const string ConnectionString =
         @"Server=(localdb)\mssqllocaldb;Database=EFTestSample;Trusted_Connection=True;ConnectRetryCount=0";
@@ -23,79 +23,67 @@ public class TestDatabaseFixture
                     context.Database.EnsureDeleted();
                     context.Database.EnsureCreated();
 
-                    var author = new Author
-                    {
-                        Name = "Test",
-                        LastName = "Test",
-                        BirthDate = new DateTime(1970, 1, 1),
-                    };
+                    var author = CreateAuthor("Test", "Test");
+                    var editor = CreateEditor("Test Editor");
+                    var category = CreateCategory("Fiction", "Fictional Books");
 
-                    var editor = new Editor { Name = "Test Editor" };
-
-                    var category = new Category
-                    {
-                        Genre = "Fiction",
-                        Description = "Fictional Books"
-                    };
-
-                    var book1 = new Book
-                    {
-                        Title = "Test Book 1",
-                        Pages = 365,
-                        TotalCopies = 10,
-                        Copies = 10,
-                        PublicationDate = DateTime.Today,
-                        Author = author,
-                        Editor = editor
-                    };
+                    var book1 = CreateBook(
+                        "Test Book 1",
+                        author.ID,
+                        editor.Id,
+                        365,
+                        10,
+                        10,
+                        DateTime.Today
+                    );
                     book1.AddCategory(category);
+                    book1.Author = author;
+                    book1.Editor = editor;
 
-                    var book2 = new Book
-                    {
-                        Title = "Test Book 2",
-                        Pages = 250,
-                        TotalCopies = 5,
-                        Copies = 5,
-                        PublicationDate = DateTime.Today.AddYears(-1),
-                        Author = author,
-                        Editor = editor
-                    };
+                    var book2 = CreateBook(
+                        "Test Book 2",
+                        author.ID,
+                        editor.Id,
+                        250,
+                        5,
+                        5,
+                        DateTime.Today.AddYears(-1)
+                    );
                     book2.AddCategory(category);
+                    book2.Author = author;
+                    book2.Editor = editor;
 
-                    var book3 = new Book
-                    {
-                        Title = "Test Book 3",
-                        Pages = 255,
-                        TotalCopies = 5,
-                        Copies = 5,
-                        PublicationDate = DateTime.Today.AddYears(-1),
-                        Author = author,
-                        Editor = editor
-                    };
+                    var book3 = CreateBook(
+                        "Test Book 3",
+                        author.ID,
+                        editor.Id,
+                        255,
+                        5,
+                        5,
+                        DateTime.Today.AddYears(-1)
+                    );
                     book3.AddCategory(category);
+                    book3.Author = author;
+                    book3.Editor = editor;
 
-                    var booking1 = new Booking
-                    {
-                        User = "test_user",
-                        BookingDate = DateTime.Today.AddDays(-10),
-                        Book = book1
-                    };
+                    var booking1 = CreateBooking("test_user", book1.ID);
+                    booking1.Book = book1;
+                    var booking2 = CreateBooking("test_user", book2.ID);
+                    booking2.Book = book2;
+                    var booking3 = CreateBooking("test_user", book3.ID);
+                    booking3.Book = book3;
 
-                    var booking2 = new Booking
-                    {
-                        User = "test_user",
-                        BookingDate = DateTime.Today.AddDays(-5),
-                        Book = book2
-                    };
-
-                    var booking3 = new Booking
-                    {
-                        User = "test_user",
-                        BookingDate = DateTime.Today,
-                        Book = book3
-                    };
-
-                    context.AddRange(author, editor, category, book1, book2, book3, booking1, booking2, booking3);
+                    context.AddRange(
+                        author,
+                        editor,
+                        category,
+                        book1,
+                        book2,
+                        book3,
+                        booking1,
+                        booking2,
+                        booking3
+                    );
                     context.SaveChanges();
                 }
 

@@ -19,7 +19,7 @@ public class BookingException : Exception
     public Exceptions _error;
     public Book _book;
 
-    public BookingException(Exceptions error, Book book) : base($"An error occurred while booking {book.Title}: {error}")
+    public BookingException(Exceptions error, Book book) : base($"An error occurred while booking '{book.Title}': {error}")
     {
         _error = error;
         _book = book;

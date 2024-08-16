@@ -14,7 +14,7 @@ namespace LibraryTests;
 
 public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
 {
-    public GenericRepository<Book> _context { get; private set; }
+    public GenericRepository<Book> _repository { get; private set; }
     public TestDatabaseFixture Fixture { get; }
 
     public GenericRepositoryTest(TestDatabaseFixture fixture)
@@ -23,35 +23,20 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
 
         var context = Fixture.CreateContext();
 
-        _context = new(context);
-    }
-
-    private Book CreateBook()
-    {
-        return new Book
-        {
-            Title = "newBook",
-            AuthorId = 1,
-            EditorId = 1
-        };
-    }
-
-    private Category CreateCategory()
-    {
-        return new Category { Genre = "Test" };
+        _repository = new(context);
     }
 
     [Fact]
     public async Task AddBook_Book_BookIsAdded()
     {
         //Assign
-        var allBooks = await _context.GetAllAsync();
-        Book book = CreateBook();
+        var allBooks = await _repository.GetAllAsync();
+        Book book = Fixture.CreateBook("test", 1, 1);
 
         //Act
-        await _context.AddAsync(book);
-        await _context.SaveChangesAsync();
-        var newAllBooks = await _context.GetAllAsync();
+        await _repository.AddAsync(book);
+        await _repository.SaveChangesAsync();
+        var newAllBooks = await _repository.GetAllAsync();
 
         //Assert
         Assert.Equal(allBooks.Count + 1, newAllBooks.Count);
@@ -61,17 +46,17 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
     public async Task UpdateBook_Book_BookIsUpdated()
     {
         //Assign
-        Book book = CreateBook();
+        Book book = Fixture.CreateBook("test", 1, 1);
 
-        await _context.AddAsync(book);
-        await _context.SaveChangesAsync();
+        await _repository.AddAsync(book);
+        await _repository.SaveChangesAsync();
 
         book.TotalCopies++;
 
         //Act
-        _context.Update(book);
-        await _context.SaveChangesAsync();
-        var updatedBook = await _context.GetAsync(book.ID);
+        _repository.Update(book);
+        await _repository.SaveChangesAsync();
+        var updatedBook = await _repository.GetAsync(book.ID);
 
         //Assert
         Assert.Equal(book.TotalCopies, updatedBook.TotalCopies);
@@ -81,18 +66,18 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
     public async Task DeleteBook_Book_BookIsRemoved()
     {
         //Assign
-        Book book = CreateBook();
+        Book book = Fixture.CreateBook("test", 1, 1);
 
-        await _context.AddAsync(book);
-        await _context.SaveChangesAsync();
-        var allBooks = await _context.GetAllAsync();
+        await _repository.AddAsync(book);
+        await _repository.SaveChangesAsync();
+        var allBooks = await _repository.GetAllAsync();
         var existingBook = allBooks.FirstOrDefault(b => b.Title == book.Title);
 
         //Act
         if (existingBook is not null)
-            _context.Delete(existingBook);
-        await _context.SaveChangesAsync();
-        var newAllBooks = await _context.GetAllAsync();
+            _repository.Delete(existingBook);
+        await _repository.SaveChangesAsync();
+        var newAllBooks = await _repository.GetAllAsync();
 
         //Assert
         Assert.Equal(allBooks.Count - 1, newAllBooks.Count);
@@ -102,7 +87,7 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
     public async Task GetAllBook_Book_GetListOFBook()
     {
         //Assign
-        var allBooks = await _context.GetAllAsync();
+        var allBooks = await _repository.GetAllAsync();
 
         //Act
         var count = allBooks.Count;
@@ -115,7 +100,7 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
     public async Task GetBook_Book_GetBook()
     {
         //Assign
-        var existingBook = await _context.GetAsync(1);
+        var existingBook = await _repository.GetAsync(1);
 
         //Act
         var expression = existingBook != null;
@@ -128,8 +113,8 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
     public void AddCategory_Book_CategoryIsAdded()
     {
         //Act
-        Book book = CreateBook();
-        Category category = CreateCategory();
+        Book book = Fixture.CreateBook("test", 1, 1);
+        Category category = Fixture.CreateCategory("test");
         book.AddCategory(category);
 
         //Assert
@@ -140,8 +125,8 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
     public void RemoveCategory_Book_CategoryIsRemoved()
     {
         //Assign
-        Book book = CreateBook();
-        Category category = CreateCategory();
+        Book book = Fixture.CreateBook("test", 1, 1);
+        Category category = Fixture.CreateCategory("test");
         book.AddCategory(category);
 
         //Act
