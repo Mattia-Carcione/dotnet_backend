@@ -1,3 +1,11 @@
+/**
+*TODO:
+*Prenotazione
+*-Utente: string
+*-DataPrenotazione : Date
+*-DataRestituzione : Date
+*/
+
 namespace Model.Entities;
 
 public class Booking

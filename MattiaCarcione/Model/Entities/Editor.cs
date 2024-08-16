@@ -1,3 +1,9 @@
+/**
+*TODO:
+*Editore
+*-Nome: string
+*/
+
 namespace Model.Entities;
 
 public class Editor

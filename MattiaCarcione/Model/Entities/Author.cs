@@ -1,3 +1,11 @@
+/**
+*TODO:
+*Autore
+*+Nome: string
+*+Cognome : int 
+*+DataNascita : Date
+*/
+
 namespace Model.Entities;
 
 public class Author

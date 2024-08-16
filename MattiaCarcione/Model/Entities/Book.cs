@@ -1,3 +1,16 @@
+/**
+*TODO:
+*Libro
+*+Titolo: string
+*+NumeroPagine : int 
+*+DataPubblicazione : Date 
+*+NumeroCopieTotali : int 
+*+NumeroCopieRimaste : int
+*
+*+AddCategoria(in c : Categoria) 
+*+RemoveCategoria(in c : Categoria) 
+*/
+
 namespace Model.Entities;
 
 public class Book

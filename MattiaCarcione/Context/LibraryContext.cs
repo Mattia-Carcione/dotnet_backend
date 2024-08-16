@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿//TODO:
+// Creare la struttura di tabelle sul database
+
+using Microsoft.EntityFrameworkCore;
 using Model.Entities;
 
 namespace Context;

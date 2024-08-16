@@ -1,3 +1,10 @@
+/**
+*TODO:
+*Categoria
+*-Genere: string
+*-Descrizione: string
+*/
+
 namespace Model.Entities;
 
 public class Category

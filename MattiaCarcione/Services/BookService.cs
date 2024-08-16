@@ -1,3 +1,18 @@
+//TODO: 
+//La logica di business sulla prenotazione consiste nel soddisfare 
+// contemporaneamente i seguenti vincoli:
+// - Il libro deve essere disponilbe (il numero di copie disponibili deve essere 
+// maggiore di zero).
+// - Un utente non può prenotare lo stesso libro più di una volta a meno di non 
+// averlo restituito.
+// - Un utente non può prenotare un libro se ha già tre libri da consegnare.
+// Per consegnare un libro è necessario che esista una prenotazione a carico 
+// dell’utente su quel libro che sia ancora aperta (data di restituzione non valorizzata).
+// I servizi che non soddisfano le condizioni di cui sopra devono lanciare un’eccezione 
+// custom di tipo PrenotazioneException contenente un identificativo (enum) 
+// dell’errore riscontrato e il libro su cui si sta lavorando
+
+
 using Context;
 using Exceptions;
 using Interfaces;
