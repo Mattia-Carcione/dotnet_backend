@@ -22,5 +22,6 @@ public class Booking
     private DateTime deliveryDate;
     public DateTime DeliveryDate {get {return deliveryDate;} set {deliveryDate = value;}}
     
+    public int BookingId {get; set;}
     public Book? Book {get; set;}
 }

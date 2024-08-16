@@ -38,8 +38,10 @@ public class Book
         }
     }
 
+    public int AuthorId { get; set; }
     public Author? Author {get; set;}
     public List<Category>? Categories {get; set;}
     public List<Booking>? Bookings {get; set;}
+    public int EditorId { get; set; }
     public Editor? Editor {get; set;}
 }

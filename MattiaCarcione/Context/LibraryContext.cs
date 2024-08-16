@@ -8,17 +8,43 @@ namespace Context;
 
 public class LibraryContext(DbContextOptions<LibraryContext> options) : DbContext(options)
 {
-    public DbSet<Author> Authors {get; set;}
-    public DbSet<Book> Books {get; set;}
-    public DbSet<Category> Categories {get; set;}
-    public DbSet<Booking> Bookings {get; set;}
-    public DbSet<Editor> Editors {get; set;}
+    public DbSet<Author> Authors { get; set; }
+    public DbSet<Book> Books { get; set; }
+    public DbSet<Category> Categories { get; set; }
+    public DbSet<Booking> Bookings { get; set; }
+    public DbSet<Editor> Editors { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
-            {
-                throw new NullReferenceException();
-            }
+        {
+            throw new NullReferenceException();
+        }
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder
+            .Entity<Book>()
+            .HasOne(b => b.Author)
+            .WithMany(b => b.Books)
+            .HasForeignKey(b => b.AuthorId);
+
+        modelBuilder
+            .Entity<Book>()
+            .HasOne(b => b.Editor)
+            .WithMany(b => b.Books)
+            .HasForeignKey(b => b.EditorId);
+
+        modelBuilder
+            .Entity<Book>()
+            .HasMany(b => b.Bookings)
+            .WithOne(b => b.Book)
+            .HasForeignKey(b => b.BookingId);
+
+        modelBuilder
+            .Entity<Book>()
+            .HasMany(b => b.Categories)
+            .WithMany(b => b.Books);
     }
 }
