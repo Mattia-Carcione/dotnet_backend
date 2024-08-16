@@ -8,8 +8,25 @@ public class Book
     public int TotalCopies {get; set;}
     public int Copies {get; set;}
     public DateTime PublicationDate {get; set;}
+
+    public void AddCategory(Category category) 
+    {
+        if(Categories != null && !Categories.Contains(category))
+        {
+            Categories.Add(category);
+        }
+    }
+
+    public void RemoveCategory(Category category) 
+    {
+        if(Categories != null && !Categories.Contains(category))
+        {
+            Categories.Remove(category);
+        }
+    }
+
     public Author? Author {get; set;}
     public List<Category>? Categories {get; set;}
-    public Booking? Booking {get; set;}
+    public List<Booking>? Bookings {get; set;}
     public Editor? Editor {get; set;}
 }

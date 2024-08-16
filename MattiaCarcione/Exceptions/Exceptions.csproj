@@ -1,11 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\Interfaces\Interfaces.csproj" />
-    <ProjectReference Include="..\Repository\Repositories.csproj" />
     <ProjectReference Include="..\Model\Model.csproj" />
-    <ProjectReference Include="..\Repositories\Repositories.csproj" />
-    <ProjectReference Include="..\Exceptions\Exceptions.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

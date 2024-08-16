@@ -2,8 +2,14 @@ namespace Model.Entities;
 
 public class Category
 {
-    public int ID {get; set;}
-    public required string Genre {get; set;}
-    public string? Description {get; set;}
+    private int id {get; set;}
+    public int Id {get {return id;} set {id = value;}}
+
+    private string? genre {get; set;}
+    public string? Genre {get {return genre;} set {genre = value;}}
+
+    private string? description {get; set;}
+    public string? Description {get {return description;} set {description = value;}}
+    
     public List<Book>? Books {get; set;}
 }

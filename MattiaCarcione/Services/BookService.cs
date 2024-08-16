@@ -1,4 +1,5 @@
 using Context;
+using Exceptions;
 using Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Model.Entities;
@@ -6,15 +7,10 @@ using Repository;
 
 namespace Services;
 
-public class BookingService : ExtendedRepository<Booking>, IBookingService
+public class BookService : ExtendedRepository<Book>, IBookService
 {
-    public BookingService(LibraryContext context)
+    public BookService(LibraryContext context)
         : base(context) { }
-
-    public new void Delete(Booking booking)
-    {
-        throw new NotImplementedException("Delete is not supported");
-    }
 
     public async Task BookingAsync(string user, int bookId)
     {
@@ -22,30 +18,30 @@ public class BookingService : ExtendedRepository<Booking>, IBookingService
         {
             var book =
                 await _context.Books.FirstOrDefaultAsync(b => b.ID == bookId)
-                ?? throw new Exception($"An error occurred");
+                ?? throw new Exception($"Book not found");
 
             if (book.Copies <= 0)
-                throw new Exception($"An error occurred");
+                throw new BookingException(BookingException.Exceptions.BookNotAvailable, book);
 
-            var userBookings = await SearchByCriteria(b => b.User == user);
+            var userBookings = await _context.Bookings.Where(b => b.User == user).ToListAsync();
 
             if (userBookings.Count >= 3)
-                throw new Exception($"An error occurred");
+                throw new BookingException(BookingException.Exceptions.ToManyBookings, book);
 
             if (
                 userBookings
                     .Where(b => b.Book != null && b.Book.ID == bookId)
                     .Any(b => b.DeliveryDate == default)
             )
-                throw new Exception($"An error occurred");
+                throw new BookingException(BookingException.Exceptions.ExistingBooking, book);
 
             var newBooking = new Booking { User = user, Book = book };
 
-            book.Copies = book.Copies-- < 0 ? 0 : book.Copies--;
+            book.Copies--;
 
-            await AddAsync(newBooking);
+            await _context.Bookings.AddAsync(newBooking);
 
-            _context.Books.Update(book);
+            Update(book);
 
             await SaveChangesAsync();
         }
@@ -60,18 +56,18 @@ public class BookingService : ExtendedRepository<Booking>, IBookingService
         try
         {
             var booking =
-                await _context.Bookings.FirstOrDefaultAsync(b => b.ID == bookingId)
-                ?? throw new Exception($"An error occured");
+                await _context.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId)
+                ?? throw new Exception($"Booking not found");
 
-            var book = booking.Book ?? throw new Exception($"An error occurred");
+            var book = booking.Book ?? throw new Exception($"Book not found");
 
             book.Copies++;
 
             booking.DeliveryDate = DateTime.Now;
 
-            Update(booking);
+            _context.Bookings.Update(booking);
 
-            _context.Books.Update(book);
+            Update(book);
 
             await SaveChangesAsync();
         }

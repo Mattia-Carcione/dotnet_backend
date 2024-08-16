@@ -1,8 +1,6 @@
-using Model.Entities;
-
 namespace Interfaces;
 
-public interface IBookingService
+public interface IBookService
 {
     Task BookingAsync(string user, int bookId);
     Task DeliveryAsync(int bookingId);
