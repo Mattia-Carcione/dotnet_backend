@@ -21,7 +21,7 @@ using Repository;
 
 namespace Services;
 
-public class BookService : GenericRepository<Book>, IBookService
+public class BookService : ExtendedRepository<Book>, IBookService
 {
     public BookService(LibraryContext context)
         : base(context) { }
@@ -30,9 +30,7 @@ public class BookService : GenericRepository<Book>, IBookService
     {
         try
         {
-            var book =
-                await _context.Books.FirstOrDefaultAsync(b => b.Id == bookId)
-                ?? throw new Exception($"An error occurred: Book not found");
+            var book = await _context.Books.FirstOrDefaultAsync(b => b.Id == bookId) ?? throw new Exception($"An error occurred: Book not found");
 
             if (book.Copies <= 0)
                 throw new BookingException(BookingException.Exceptions.BookNotAvailable, book);
