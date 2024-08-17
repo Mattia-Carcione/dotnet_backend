@@ -1,15 +1,15 @@
-//TODO: 
-//La logica di business sulla prenotazione consiste nel soddisfare 
+//TODO:
+//La logica di business sulla prenotazione consiste nel soddisfare
 // contemporaneamente i seguenti vincoli:
-// - Il libro deve essere disponilbe (il numero di copie disponibili deve essere 
+// - Il libro deve essere disponilbe (il numero di copie disponibili deve essere
 // maggiore di zero).
-// - Un utente non può prenotare lo stesso libro più di una volta a meno di non 
+// - Un utente non può prenotare lo stesso libro più di una volta a meno di non
 // averlo restituito.
 // - Un utente non può prenotare un libro se ha già tre libri da consegnare.
-// Per consegnare un libro è necessario che esista una prenotazione a carico 
+// Per consegnare un libro è necessario che esista una prenotazione a carico
 // dell’utente su quel libro che sia ancora aperta (data di restituzione non valorizzata).
-// I servizi che non soddisfano le condizioni di cui sopra devono lanciare un’eccezione 
-// custom di tipo PrenotazioneException contenente un identificativo (enum) 
+// I servizi che non soddisfano le condizioni di cui sopra devono lanciare un’eccezione
+// custom di tipo PrenotazioneException contenente un identificativo (enum)
 // dell’errore riscontrato e il libro su cui si sta lavorando
 
 using Context;
@@ -49,7 +49,12 @@ public class BookService : GenericRepository<Book>, IBookService
             )
                 throw new BookingException(BookingException.Exceptions.ExistingBooking, book);
 
-            var newBooking = new Booking { User = user, Book = book, BookingDate = DateTime.Now };
+            var newBooking = new Booking
+            {
+                User = user,
+                Book = book,
+                BookingDate = DateTime.Now
+            };
 
             book.Copies--;
 
@@ -58,6 +63,10 @@ public class BookService : GenericRepository<Book>, IBookService
             Update(book);
 
             await SaveChangesAsync();
+        }
+        catch (BookingException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -70,16 +79,22 @@ public class BookService : GenericRepository<Book>, IBookService
         try
         {
             var booking =
-                await _context.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId)
-                ?? throw new Exception($"An error occurred: Booking not found");
-            
-            if(booking.User != user)
-                throw new Exception($"An error occurred: Booking and User doesn't match");
+                await _context.Bookings.Include(b => b.Book).FirstOrDefaultAsync(b => b.Id == bookingId)
+                ?? throw new Exception($"An error occurred: Reservation not found");
 
-            if(booking.DeliveryDate != default)
-                throw new Exception($"An error occurred: '{booking.User}' has already returned '{booking.Book?.Title}'.");
+            if (booking.Book == null)
+                throw new Exception($"An error occurred: Book not found");
 
-            var book = booking.Book ?? throw new Exception($"An error occurred: Book not found");
+            if (booking.User != user)
+                throw new Exception($"An error occurred: Reservation and User do not match");
+
+            if (booking.DeliveryDate != default)
+                throw new Exception($"An error occurred: Book has already returned");
+
+            var book = booking.Book;
+
+            if (book.ID != bookId)
+                throw new Exception($"An error occurred: Book hasn't reservation");
 
             book.Copies++;
 

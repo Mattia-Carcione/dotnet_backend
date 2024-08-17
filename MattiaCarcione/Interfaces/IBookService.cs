@@ -10,5 +10,5 @@ namespace Interfaces;
 public interface IBookService
 {
     Task BookingAsync(string user, int bookId);
-    Task DeliveryAsync(string user, int bookingId);
+    Task DeliveryAsync(string user, int bookingId, int bookId);
 }
