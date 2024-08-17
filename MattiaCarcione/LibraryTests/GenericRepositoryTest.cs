@@ -56,7 +56,7 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
         //Act
         _repository.Update(book);
         await _repository.SaveChangesAsync();
-        var updatedBook = await _repository.GetAsync(book.ID);
+        var updatedBook = await _repository.GetAsync(book.Id);
 
         //Assert
         Assert.Equal(book.TotalCopies, updatedBook.TotalCopies);

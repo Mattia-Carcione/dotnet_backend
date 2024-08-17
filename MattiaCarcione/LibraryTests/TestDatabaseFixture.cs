@@ -1,6 +1,5 @@
 using Context;
 using Microsoft.EntityFrameworkCore;
-using Model.Entities;
 
 namespace LibraryTests;
 
@@ -29,7 +28,7 @@ public class TestDatabaseFixture : EntityFactoryHelper
 
                     var book1 = CreateBook(
                         "Test Book 1",
-                        author.ID,
+                        author.Id,
                         editor.Id,
                         365,
                         10,
@@ -42,7 +41,7 @@ public class TestDatabaseFixture : EntityFactoryHelper
 
                     var book2 = CreateBook(
                         "Test Book 2",
-                        author.ID,
+                        author.Id,
                         editor.Id,
                         250,
                         5,
@@ -55,7 +54,7 @@ public class TestDatabaseFixture : EntityFactoryHelper
 
                     var book3 = CreateBook(
                         "Test Book 3",
-                        author.ID,
+                        author.Id,
                         editor.Id,
                         255,
                         5,
@@ -66,11 +65,11 @@ public class TestDatabaseFixture : EntityFactoryHelper
                     book3.Author = author;
                     book3.Editor = editor;
 
-                    var booking1 = CreateBooking("test_user", book1.ID);
+                    var booking1 = CreateBooking("test_user", book1.Id);
                     booking1.Book = book1;
-                    var booking2 = CreateBooking("test_user", book2.ID);
+                    var booking2 = CreateBooking("test_user", book2.Id);
                     booking2.Book = book2;
-                    var booking3 = CreateBooking("test_user", book3.ID);
+                    var booking3 = CreateBooking("test_user", book3.Id);
                     booking3.Book = book3;
 
                     context.AddRange(

@@ -31,7 +31,7 @@ public class BookService : GenericRepository<Book>, IBookService
         try
         {
             var book =
-                await _context.Books.FirstOrDefaultAsync(b => b.ID == bookId)
+                await _context.Books.FirstOrDefaultAsync(b => b.Id == bookId)
                 ?? throw new Exception($"An error occurred: Book not found");
 
             if (book.Copies <= 0)
@@ -44,7 +44,7 @@ public class BookService : GenericRepository<Book>, IBookService
 
             if (
                 userBookings
-                    .Where(b => b.Book != null && b.Book.ID == bookId)
+                    .Where(b => b.Book != null && b.Book.Id == bookId)
                     .Any(b => b.DeliveryDate == default)
             )
                 throw new BookingException(BookingException.Exceptions.ExistingBooking, book);
@@ -93,7 +93,7 @@ public class BookService : GenericRepository<Book>, IBookService
 
             var book = booking.Book;
 
-            if (book.ID != bookId)
+            if (book.Id != bookId)
                 throw new Exception($"An error occurred: Book hasn't reservation");
 
             book.Copies++;

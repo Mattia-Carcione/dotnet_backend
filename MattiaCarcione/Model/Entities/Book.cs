@@ -1,3 +1,7 @@
+
+
+using System.ComponentModel.DataAnnotations;
+
 /**
 *TODO:
 *Libro
@@ -10,12 +14,11 @@
 *+AddCategoria(in c : Categoria) 
 *+RemoveCategoria(in c : Categoria) 
 */
-
 namespace Model.Entities;
 
 public class Book
 {
-    public int ID {get; set;}
+    public int Id {get; set;}
     public required string Title {get; set;}
     public int Pages {get; set;}
     public int TotalCopies {get; set;}
