@@ -152,7 +152,7 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
         await _service.SaveChangesAsync();
 
         // //Act
-        var delivery = async () => await _service.DeliveryAsync("test_user", 1, book.Id);
+        var delivery = async () => await _service.DeliveryAsync("User1", 1, book.Id);
 
         //Assert
         await Assert.ThrowsAsync<Exception>(async () => await delivery());
@@ -162,10 +162,10 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
     public async Task DeliveryTest_Booking_BookHasReturned()
     {
         //Assign
-        await _service.DeliveryAsync("test_user", 1, 1);
+        await _service.DeliveryAsync("User1", 1, 1);
 
         // //Act
-        var delivery = async () => await _service.DeliveryAsync("test_user", 1, 1);
+        var delivery = async () => await _service.DeliveryAsync("User1", 1, 1);
 
         //Assert
         await Assert.ThrowsAsync<Exception>(async () => await delivery());
@@ -178,8 +178,8 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
         var book = Fixture.CreateBook("test", 1, 1, copies: 10);
         await _service.AddAsync(book);
         await _service.SaveChangesAsync();
-        await _service.BookingAsync("test", book.Id);
-        var booking = book.Bookings.First();
+        await _service.BookingAsync("testUser", book.Id);
+        var booking = book.Bookings.First(b => b.User == "testUser");
 
         // //Act
         var delivery = async () => await _service.DeliveryAsync("test_user", booking.Id, book.Id);

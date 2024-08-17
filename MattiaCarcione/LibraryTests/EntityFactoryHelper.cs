@@ -22,19 +22,4 @@ public class EntityFactoryHelper
     {
         return new Category { Genre = genre, Description = description };
     }
-
-    public Booking CreateBooking(string user, int bookId)
-    {
-        return new Booking { User = user, BookId = bookId, BookingDate = DateTime.Now };
-    }
-
-    public Author CreateAuthor(string name, string lastName)
-    {
-        return new Author { Name = name, LastName = lastName, BirthDate = DateTime.Now };
-    }
-
-    public Editor CreateEditor(string name)
-    {
-        return new Editor { Name = name };
-    }
 }

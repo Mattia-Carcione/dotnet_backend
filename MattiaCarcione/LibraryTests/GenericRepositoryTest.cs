@@ -30,28 +30,25 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
     public async Task AddBook_Book_BookIsAdded()
     {
         //Assign
-        var allBooks = await _repository.GetAllAsync();
+        var initialList = await _repository.GetAllAsync();
         Book book = Fixture.CreateBook("test", 1, 1);
 
         //Act
         await _repository.AddAsync(book);
         await _repository.SaveChangesAsync();
-        var newAllBooks = await _repository.GetAllAsync();
+        var finalList = await _repository.GetAllAsync();
 
         //Assert
-        Assert.Equal(allBooks.Count + 1, newAllBooks.Count);
+        Assert.Equal(initialList.Count + 1, finalList.Count);
     }
 
     [Fact]
     public async Task UpdateBook_Book_BookIsUpdated()
     {
         //Assign
-        Book book = Fixture.CreateBook("test", 1, 1);
-
-        await _repository.AddAsync(book);
-        await _repository.SaveChangesAsync();
-
+        Book book = await _repository.GetAsync(1);
         book.TotalCopies++;
+        var initialCopies = book.TotalCopies;
 
         //Act
         _repository.Update(book);
@@ -59,28 +56,24 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
         var updatedBook = await _repository.GetAsync(book.Id);
 
         //Assert
-        Assert.Equal(book.TotalCopies, updatedBook.TotalCopies);
+        Assert.Equal(initialCopies, updatedBook.TotalCopies);
     }
 
     [Fact]
     public async Task DeleteBook_Book_BookIsRemoved()
     {
         //Assign
-        Book book = Fixture.CreateBook("test", 1, 1);
-
-        await _repository.AddAsync(book);
-        await _repository.SaveChangesAsync();
-        var allBooks = await _repository.GetAllAsync();
-        var existingBook = allBooks.FirstOrDefault(b => b.Title == book.Title);
+        var initialList = await _repository.GetAllAsync();
+        var count = initialList.Count;
+        Book book = await _repository.GetAsync(1);
 
         //Act
-        if (existingBook is not null)
-            _repository.Delete(existingBook);
+        _repository.Delete(book);
         await _repository.SaveChangesAsync();
-        var newAllBooks = await _repository.GetAllAsync();
+        var finalList = await _repository.GetAllAsync();
 
         //Assert
-        Assert.Equal(allBooks.Count - 1, newAllBooks.Count);
+        Assert.Equal(count - 1, finalList.Count);
     }
 
     [Fact]
@@ -112,13 +105,16 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
     [Fact]
     public void AddCategory_Book_CategoryIsAdded()
     {
-        //Act
+        //Assert
         Book book = Fixture.CreateBook("test", 1, 1);
+        var categoriesCount = book.Categories.Count;
         Category category = Fixture.CreateCategory("test");
+
+        //Act
         book.AddCategory(category);
 
         //Assert
-        Assert.True(book.Categories?.Count == 1);
+        Assert.Equal(categoriesCount + 1, book.Categories.Count);
     }
 
     [Fact]
@@ -128,11 +124,13 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
         Book book = Fixture.CreateBook("test", 1, 1);
         Category category = Fixture.CreateCategory("test");
         book.AddCategory(category);
+        var categoriesCount = book.Categories.Count;
 
         //Act
         book.RemoveCategory(category);
 
         //Assert
-        Assert.True(book.Categories.Count == 0);
+        Assert.Equal(categoriesCount - 1, book.Categories.Count);
+
     }
 }
