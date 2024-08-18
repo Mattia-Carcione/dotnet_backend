@@ -18,7 +18,7 @@ using System.Linq.Expressions;
 
 namespace Interfaces;
 
-public interface IExtendedRepository<T>
+public interface IExtendedRepository<T> : IRepository<T> where T : class
 {
-    Task<List<T>> SearchByCriteria(Expression<Func<T, bool>> expression);
+    Task<List<T>> SearchByCriteriaAsync(Expression<Func<T, bool>> expression);
 }

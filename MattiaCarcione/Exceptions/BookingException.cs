@@ -3,8 +3,6 @@
 // custom di tipo PrenotazioneException contenente un identificativo (enum) 
 // dell’errore riscontrato e il libro su cui si sta lavorando
 
-using Model.Entities;
-
 namespace Exceptions;
 
 public class BookingException : Exception
@@ -13,15 +11,18 @@ public class BookingException : Exception
     {
         BookNotAvailable,
         ExistingBooking,
-        ToManyBookings
+        ToManyBookings,
+        UserFieldIsRequired,
+        UserMismatch,
+        BookAlreadyReturned,
+        BookMismatch,
+        BookNotFound
     }
 
     public Exceptions _error;
-    public Book _book;
 
-    public BookingException(Exceptions error, Book book) : base($"An error occurred while booking '{book.Title}': {error}")
+    public BookingException(Exceptions error) : base($"An error occurred while booking/delivering: {error}")
     {
         _error = error;
-        _book = book;
     }
 }

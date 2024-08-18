@@ -12,9 +12,12 @@
 // custom di tipo PrenotazioneException contenente un identificativo (enum)
 // dell’errore riscontrato e il libro su cui si sta lavorando
 
+using System.Runtime.ExceptionServices;
 using Context;
 using Exceptions;
+using Helpers;
 using Interfaces;
+using LibraryTests;
 using Microsoft.EntityFrameworkCore;
 using Model.Entities;
 using Repository;
@@ -26,87 +29,82 @@ public class BookService : ExtendedRepository<Book>, IBookService
     public BookService(LibraryContext context)
         : base(context) { }
 
+    private async Task UpdateBookState(Book book)
+    {
+        Update(book);
+        await SaveChangesAsync();
+    }
+
     public async Task BookingAsync(string user, int bookId)
     {
-        try
         {
-            var book = await _context.Books.FirstOrDefaultAsync(b => b.Id == bookId) ?? throw new Exception($"An error occurred: Book not found");
-
-            if (book.Copies <= 0)
-                throw new BookingException(BookingException.Exceptions.BookNotAvailable, book);
-
-            var userBookings = await _context.Bookings.Where(b => b.User == user).ToListAsync();
-
-            if (userBookings.Count(b => b.DeliveryDate == default) >= 3)
-                throw new BookingException(BookingException.Exceptions.ToManyBookings, book);
-
-            if (
-                userBookings
-                    .Where(b => b.Book != null && b.Book.Id == bookId)
-                    .Any(b => b.DeliveryDate == default)
-            )
-                throw new BookingException(BookingException.Exceptions.ExistingBooking, book);
-
-            var newBooking = new Booking
+            try
             {
-                User = user,
-                Book = book,
-                BookingDate = DateTime.Now
-            };
+                ValidatorHelper.CheckIsValid(user, u => !string.IsNullOrEmpty(u), BookingException.Exceptions.UserFieldIsRequired);
 
-            book.Copies--;
+                var book = await _context.Books.FirstOrDefaultAsync(b => b.Id == bookId) ?? throw new BookingException(BookingException.Exceptions.BookNotFound);;
 
-            await _context.Bookings.AddAsync(newBooking);
+                var userBookings = await _context.Bookings.Where(b => b.User == user && b.DeliveryDate == default).ToListAsync();
 
-            Update(book);
+                ValidatorHelper.CheckIsValid(userBookings, u => !u.Any(b => b.Book != null && b.Book.Id == bookId), BookingException.Exceptions.ExistingBooking);
 
-            await SaveChangesAsync();
-        }
-        catch (BookingException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"{ex.Message}");
+                ValidatorHelper.CheckIsValid(userBookings, e => userBookings.Count < 3, BookingException.Exceptions.ToManyBookings);
+
+                ValidatorHelper.CheckIsValid(book, e => book.Copies > 0, BookingException.Exceptions.BookNotAvailable);
+
+                var newBooking = EntityFactoryHelper.CreateBooking(user, book);
+
+                book.Copies--;
+
+                await _context.Bookings.AddAsync(newBooking);
+
+                await UpdateBookState(book);
+            }
+            catch (BookingException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                ExceptionDispatchInfo.Capture(ex).Throw();
+            }
+
         }
     }
 
     public async Task DeliveryAsync(string user, int bookingId, int bookId)
     {
-        try
         {
-            var booking =
-                await _context.Bookings.Include(b => b.Book).FirstOrDefaultAsync(b => b.Id == bookingId)
-                ?? throw new Exception($"An error occurred: Reservation not found");
+            try
+            {
+                ValidatorHelper.CheckIsValid(user, u => !string.IsNullOrEmpty(u), BookingException.Exceptions.UserFieldIsRequired);
 
-            if (booking.Book == null)
-                throw new Exception($"An error occurred: Book not found");
+                var booking =
+                    await _context.Bookings.Include(b => b.Book).FirstOrDefaultAsync(b => b.Id == bookingId && b.User == user)
+                    ?? throw new BookingException(BookingException.Exceptions.UserMismatch);
 
-            if (booking.User != user)
-                throw new Exception($"An error occurred: Reservation and User do not match");
+                ValidatorHelper.CheckIsValid(booking.DeliveryDate, d => d == default, BookingException.Exceptions.BookAlreadyReturned);
 
-            if (booking.DeliveryDate != default)
-                throw new Exception($"An error occurred: Book has already returned");
+                var book = booking.Book!;
 
-            var book = booking.Book;
+                ValidatorHelper.CheckIsValid(book.Id, b => b == bookId, BookingException.Exceptions.BookMismatch);
 
-            if (book.Id != bookId)
-                throw new Exception($"An error occurred: Book hasn't reservation");
+                book.Copies++;
 
-            book.Copies++;
+                booking.DeliveryDate = DateTime.Today;
 
-            booking.DeliveryDate = DateTime.Now;
+                _context.Bookings.Update(booking);
 
-            _context.Bookings.Update(booking);
-
-            Update(book);
-
-            await SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"{ex.Message}");
+                await UpdateBookState(book);
+            }
+            catch (BookingException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                ExceptionDispatchInfo.Capture(ex).Throw();
+            }
         }
     }
 }

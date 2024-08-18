@@ -1,3 +1,4 @@
+using DTOs.BookingDTOs;
 using DTOs.CategoryDTOs;
 
 namespace DTOs.BookDTOs;
@@ -13,4 +14,5 @@ public class BookDTO
     public required string Author { get; set; }
     public required string Editor { get; set; }
     public List<CategoryDTO> Categories{ get; set; } = new();
+    public List<BookingDTO> Bookings{ get; set; } = new();
 }

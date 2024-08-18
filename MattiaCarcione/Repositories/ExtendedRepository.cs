@@ -7,9 +7,9 @@ namespace Repository;
 
 public class ExtendedRepository<T> : GenericRepository<T>, IExtendedRepository<T> where T : class
 {
-    public ExtendedRepository(LibraryContext context) : base(context) {}
+    public ExtendedRepository(LibraryContext context) : base(context) { }
 
-    public async Task<List<T>> SearchByCriteria(Expression<Func<T, bool>> expression)
+    public async Task<List<T>> SearchByCriteriaAsync(Expression<Func<T, bool>> expression)
     {
         try
         {

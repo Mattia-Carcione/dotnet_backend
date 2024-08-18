@@ -1,3 +1,10 @@
+/*
+*TODO:
+*Aggiungere alla solution una web API che espone 
+- Crea prenotazione
+- Cancella prenotazione
+*/
+
 using DTOs.BookingDTOs;
 using Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +22,7 @@ public class BookingController : ControllerBase
     }
 
     [HttpPost("/booking")]
-    public async Task<IActionResult> Booking([FromBody] CreateBookingDTO booking)
+    public async Task<IActionResult> BookingAsync([FromBody] CreateBookingDTO booking)
     {
         if (!ModelState.IsValid || booking.User == null)
             return BadRequest(ModelState);
@@ -26,7 +33,7 @@ public class BookingController : ControllerBase
     }
 
     [HttpPost("/delivery")]
-    public async Task<IActionResult> Delivery([FromBody] CreateDeliveryDTO delivery)
+    public async Task<IActionResult> DeliveryAsync([FromBody] CreateDeliveryDTO delivery)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);

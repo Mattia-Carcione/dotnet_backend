@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibraryTests;
 
-public class TestDatabaseFixture : EntityFactoryHelper
+public class TestDatabaseFixture
 {
     private const string ConnectionString =
         @"Server=(localdb)\mssqllocaldb;Database=EFTestSample;Trusted_Connection=True;ConnectRetryCount=0";

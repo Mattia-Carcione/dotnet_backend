@@ -1,8 +1,12 @@
+using System;
+
 namespace DTOs.BookingDTOs;
 
-public class CreateBookingDTO
+public class CreateDeliveryDTO
 {
     public required string User {get; set;}
+
+    public required int BookingId {get; set;}
 
     public required int BookId {get; set;}
 }

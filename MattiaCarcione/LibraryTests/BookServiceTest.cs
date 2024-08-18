@@ -79,20 +79,20 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
     public async Task AddBooking_Booking_BookNotFound()
     {
         //Assign
-        var fakeBook = Fixture.CreateBook("test", 1, 1);
+        var fakeBook = EntityFactoryHelper.CreateBook("test", 1, 1);
 
         // //Act
         var booking = async () => await _service.BookingAsync("utenteTest", fakeBook.Id);
 
         //Assert
-        await Assert.ThrowsAsync<Exception>(async () => await booking());
+        await Assert.ThrowsAsync<BookingException>(async () => await booking());
     }
 
     [Fact]
     public async Task AddBooking_Booking_BookNotAvailable()
     {
         //Assign
-        var bookNotAvailable = Fixture.CreateBook("test", 1, 1, copies: 0);
+        var bookNotAvailable = EntityFactoryHelper.CreateBook("test", 1, 1, copies: 0);
         await _service.AddAsync(bookNotAvailable);
         await _service.SaveChangesAsync();
 
@@ -107,7 +107,7 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
     public async Task AddBooking_Booking_ExistingBooking()
     {
         //Assign
-        var book = Fixture.CreateBook("test", 1, 1, copies: 10);
+        var book = EntityFactoryHelper.CreateBook("test", 1, 1, copies: 10);
         await _service.AddAsync(book);
         await _service.SaveChangesAsync();
         await _service.BookingAsync("utenteTest", book.Id);
@@ -123,10 +123,10 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
     public async Task AddBooking_Booking_ToManyBookings()
     {
         //Assign
-        var book1 = Fixture.CreateBook("test", 1, 1, copies: 10);
-        var book2 = Fixture.CreateBook("test", 1, 1, copies: 10);
-        var book3 = Fixture.CreateBook("test", 1, 1, copies: 10);
-        var book4 = Fixture.CreateBook("test", 1, 1, copies: 10);
+        var book1 = EntityFactoryHelper.CreateBook("test", 1, 1, copies: 10);
+        var book2 = EntityFactoryHelper.CreateBook("test", 1, 1, copies: 10);
+        var book3 = EntityFactoryHelper.CreateBook("test", 1, 1, copies: 10);
+        var book4 = EntityFactoryHelper.CreateBook("test", 1, 1, copies: 10);
         await _service.AddAsync(book1);
         await _service.AddAsync(book2);
         await _service.AddAsync(book3);
@@ -147,7 +147,7 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
     public async Task DeliveryTest_Booking_BookHasntBooked()
     {
         //Assign
-        var book = Fixture.CreateBook("test", 1, 1, copies: 10);
+        var book = EntityFactoryHelper.CreateBook("test", 1, 1, copies: 10);
         await _service.AddAsync(book);
         await _service.SaveChangesAsync();
 
@@ -155,7 +155,7 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
         var delivery = async () => await _service.DeliveryAsync("User1", 1, book.Id);
 
         //Assert
-        await Assert.ThrowsAsync<Exception>(async () => await delivery());
+        await Assert.ThrowsAsync<BookingException>(async () => await delivery());
     }
 
     [Fact]
@@ -168,14 +168,14 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
         var delivery = async () => await _service.DeliveryAsync("User1", 1, 1);
 
         //Assert
-        await Assert.ThrowsAsync<Exception>(async () => await delivery());
+        await Assert.ThrowsAsync<BookingException>(async () => await delivery());
     }
 
     [Fact]
-    public async Task DeliveryTest_Booking_BookingAndUserDoNotMatch()
+    public async Task DeliveryTest_Booking_BookingAndUserMismatch()
     {
         //Assign
-        var book = Fixture.CreateBook("test", 1, 1, copies: 10);
+        var book = EntityFactoryHelper.CreateBook("test", 1, 1, copies: 10);
         await _service.AddAsync(book);
         await _service.SaveChangesAsync();
         await _service.BookingAsync("testUser", book.Id);
@@ -185,6 +185,6 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
         var delivery = async () => await _service.DeliveryAsync("test_user", booking.Id, book.Id);
 
         //Assert
-        await Assert.ThrowsAsync<Exception>(async () => await delivery());
+        await Assert.ThrowsAsync<BookingException>(async () => await delivery());
     }
 }

@@ -31,7 +31,7 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
     {
         //Assign
         var initialList = await _repository.GetAllAsync();
-        Book book = Fixture.CreateBook("test", 1, 1);
+        Book book = EntityFactoryHelper.CreateBook("test", 1, 1);
 
         //Act
         await _repository.AddAsync(book);
@@ -106,9 +106,9 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
     public void AddCategory_Book_CategoryIsAdded()
     {
         //Assert
-        Book book = Fixture.CreateBook("test", 1, 1);
+        Book book = EntityFactoryHelper.CreateBook("test", 1, 1);
         var categoriesCount = book.Categories.Count;
-        Category category = Fixture.CreateCategory("test");
+        Category category = EntityFactoryHelper.CreateCategory("test");
 
         //Act
         book.AddCategory(category);
@@ -121,8 +121,8 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
     public void RemoveCategory_Book_CategoryIsRemoved()
     {
         //Assign
-        Book book = Fixture.CreateBook("test", 1, 1);
-        Category category = Fixture.CreateCategory("test");
+        Book book = EntityFactoryHelper.CreateBook("test", 1, 1);
+        Category category = EntityFactoryHelper.CreateCategory("test");
         book.AddCategory(category);
         var categoriesCount = book.Categories.Count;
 
