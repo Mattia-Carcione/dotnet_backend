@@ -1,1 +1,0 @@
-Devo Aggiungere la classe di test per testare i repository
