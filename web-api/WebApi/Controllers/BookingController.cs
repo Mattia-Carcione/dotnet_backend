@@ -24,9 +24,6 @@ public class BookingController : ControllerBase
     [HttpPost("booking")]
     public async Task<IActionResult> BookingAsync([FromBody] CreateBookingDTO booking)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
         await _bookService.BookingAsync(booking.User, booking.BookId);
 
         return NoContent();
@@ -35,9 +32,6 @@ public class BookingController : ControllerBase
     [HttpPost("delivering")]
     public async Task<IActionResult> DeliveryAsync([FromBody] CreateDeliveryDTO delivery)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
         await _bookService.DeliveryAsync(delivery.User, delivery.BookingId, delivery.BookId);
 
         return NoContent();

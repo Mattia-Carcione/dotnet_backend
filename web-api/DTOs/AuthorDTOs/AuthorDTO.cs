@@ -1,9 +1,16 @@
+using System.ComponentModel.DataAnnotations;
+using DTOs.BookDTOs;
+
 namespace DTOs.AuthorDTOs;
 
 public class AuthorDTO
 {
-    public int Id {get; set;}
-    public required string Name {get; set;}
-    public required string LastName {get; set;}
-    public DateTime BirthDate {get; set;}
+    [Key]
+    public int Id { get; set; }
+    [Required]
+    public string Name { get; set; } = string.Empty;
+    [Required]
+    public string LastName { get; set; } = string.Empty;
+    public DateTime BirthDate { get; set; }
+    public ICollection<BookDTO> Books { get; set; } = new List<BookDTO>();
 }

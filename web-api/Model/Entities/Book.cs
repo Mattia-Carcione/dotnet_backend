@@ -1,6 +1,5 @@
-
-
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 /**
 *TODO:
@@ -16,10 +15,14 @@ using System.ComponentModel.DataAnnotations;
 */
 namespace Model.Entities;
 
+[Table("Books")]
 public class Book
 {
+    [Key]
     public int Id {get; set;}
-    public required string Title {get; set;}
+    [Required]
+    [MaxLength(50), MinLength(3)]
+    public string Title { get; set; } = string.Empty;
     public int Pages {get; set;}
     public int TotalCopies {get; set;}
     public int Copies {get; set;}
@@ -41,10 +44,16 @@ public class Book
         }
     }
 
+    [ForeignKey("Author")]
     public int AuthorId { get; set; }
-    public Author? Author {get; set;}
-    public List<Category> Categories {get; set;} = new();
-    public List<Booking> Bookings {get; set;} = new();
+    [Required]
+    public Author Author {get; set;} = null!;
+
+    public ICollection<Category> Categories {get; set;} = new List<Category>();
+    public ICollection<Booking> Bookings {get; set;} = new List<Booking>();
+    
+    [ForeignKey("Editor")]
     public int EditorId { get; set; }
-    public Editor? Editor {get; set;}
+    [Required]
+    public Editor Editor {get; set;} = null!;
 }

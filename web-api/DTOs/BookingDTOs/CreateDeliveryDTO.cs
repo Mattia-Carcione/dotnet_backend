@@ -1,12 +1,15 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace DTOs.BookingDTOs;
 
 public class CreateDeliveryDTO
 {
-    public required string User {get; set;}
+    [Required]
+    [MaxLength(50), MinLength(5)]
+    public string User { get; set; } = string.Empty;
 
-    public required int BookingId {get; set;}
+    public int BookingId { get; set; }
 
-    public required int BookId {get; set;}
+    public int BookId { get; set; }
 }

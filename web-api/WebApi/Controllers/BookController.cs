@@ -30,9 +30,6 @@ public class BookController : ControllerBase
     [HttpPost("create")]
     public async Task<IActionResult> CreateBookAsync([FromBody] CreateBookDTO book)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
         //automapper
         // await _repository.AddAsync(book);
         await _repository.SaveChangesAsync();
@@ -43,9 +40,6 @@ public class BookController : ControllerBase
     [HttpPut("update")]
     public async Task<IActionResult> UpdateBookAsync([FromBody] CreateBookDTO book)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
         //automapper
         // _repository.Update(book);
         await _repository.SaveChangesAsync();
