@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options =>
 {
     options.ReturnHttpNotAcceptable = true; //Accetto solo il formato json
-});
+}).AddNewtonsoftJson();//Aggiungo il supporto per il json .net
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

@@ -35,22 +35,47 @@ public class BookService : ExtendedRepository<Book>, IBookService
         await SaveChangesAsync();
     }
 
+    private static void ValidateBookingRules(List<Booking> userBookings, int bookId)
+    {
+        ValidatorHelper.CheckIsValid(
+            userBookings,
+            u => !u.Any(b => b.Book != null && b.Book.Id == bookId),
+            BookingException.Exceptions.ExistingBooking
+        );
+
+        ValidatorHelper.CheckIsValid(
+            userBookings.Count,
+            count => count < 3,
+            BookingException.Exceptions.ToManyBookings
+        );
+    }
+
     public async Task BookingAsync(string user, int bookId)
     {
         {
             try
             {
-                ValidatorHelper.CheckIsValid(user, u => !string.IsNullOrEmpty(u), BookingException.Exceptions.UserFieldIsRequired);
+                ValidatorHelper.CheckIsValid(
+                    user,
+                    u => !string.IsNullOrEmpty(u),
+                    BookingException.Exceptions.UserFieldIsRequired
+                );
 
-                var book = await GetAsync(bookId) ?? throw new BookingException(BookingException.Exceptions.BookNotFound); ;
+                var book =
+                    await GetAsync(bookId)
+                    ?? throw new BookingException(BookingException.Exceptions.BookNotFound);
 
-                var userBookings = await _context.Bookings.Where(b => b.User == user && b.DeliveryDate == default).ToListAsync();
+                ValidatorHelper.CheckIsValid(
+                    book.Copies,
+                    copies => copies > 0,
+                    BookingException.Exceptions.BookNotAvailable
+                );
 
-                ValidatorHelper.CheckIsValid(userBookings, u => !u.Any(b => b.Book != null && b.Book.Id == bookId), BookingException.Exceptions.ExistingBooking);
+                var userBookings = await _context
+                    .Bookings.Where(b => b.User == user && b.DeliveryDate == default)
+                    .ToListAsync();
 
-                ValidatorHelper.CheckIsValid(userBookings.Count, count => count < 3, BookingException.Exceptions.ToManyBookings);
-
-                ValidatorHelper.CheckIsValid(book.Copies, copies => copies > 0, BookingException.Exceptions.BookNotAvailable);
+                ValidateBookingRules(userBookings, bookId);
 
                 var newBooking = EntityFactoryHelper.CreateBooking(user, book);
 
@@ -68,7 +93,6 @@ public class BookService : ExtendedRepository<Book>, IBookService
             {
                 ExceptionDispatchInfo.Capture(ex).Throw();
             }
-
         }
     }
 
@@ -77,17 +101,31 @@ public class BookService : ExtendedRepository<Book>, IBookService
         {
             try
             {
-                ValidatorHelper.CheckIsValid(user, u => !string.IsNullOrEmpty(u), BookingException.Exceptions.UserFieldIsRequired);
+                ValidatorHelper.CheckIsValid(
+                    user,
+                    u => !string.IsNullOrEmpty(u),
+                    BookingException.Exceptions.UserFieldIsRequired
+                );
 
                 var booking =
-                    await _context.Bookings.Include(b => b.Book).FirstOrDefaultAsync(b => b.Id == bookingId && b.User == user)
+                    await _context
+                        .Bookings.Include(b => b.Book)
+                        .FirstOrDefaultAsync(b => b.Id == bookingId && b.User == user)
                     ?? throw new BookingException(BookingException.Exceptions.UserMismatch);
 
-                ValidatorHelper.CheckIsValid(booking.DeliveryDate, d => d == default, BookingException.Exceptions.BookAlreadyReturned);
+                ValidatorHelper.CheckIsValid(
+                    booking.DeliveryDate,
+                    d => d == default,
+                    BookingException.Exceptions.BookAlreadyReturned
+                );
 
                 var book = booking.Book!;
 
-                ValidatorHelper.CheckIsValid(book.Id, b => b == bookId, BookingException.Exceptions.BookMismatch);
+                ValidatorHelper.CheckIsValid(
+                    book.Id,
+                    b => b == bookId,
+                    BookingException.Exceptions.BookMismatch
+                );
 
                 book.Copies++;
 
