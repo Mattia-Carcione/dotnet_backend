@@ -1,3 +1,4 @@
+using AutoMapper;
 using Context;
 using Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -5,6 +6,7 @@ using Model.Entities;
 using Repository;
 using Serilog;
 using Services;
+using WebApi.Mappers;
 
 
 //TODO:
@@ -38,6 +40,9 @@ builder.Services.AddDbContext<LibraryContext>(options =>
 
 builder.Services.AddScoped<IExtendedRepository<Book>, ExtendedRepository<Book>>();
 builder.Services.AddScoped<IBookService, BookService>();
+
+//Aggiunta di automapper al servizio
+builder.Services.AddAutoMapper(typeof(MapperProfile));
 
 var app = builder.Build();
 

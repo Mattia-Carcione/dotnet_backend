@@ -1,6 +1,6 @@
 /*
 *TODO:
-*Aggiungere alla solution una web API che espone 
+*Aggiungere alla solution una web API che espone
 - Ricerca per titolo
 - Ricerca per libro
 - ricerca tutti i libri
@@ -9,9 +9,11 @@
 - Aggiorna Libro
 */
 
+using AutoMapper;
 using DTOs.BookDTOs;
 using Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Model.Entities;
 
 namespace WebApi.Controllers;
@@ -21,30 +23,34 @@ namespace WebApi.Controllers;
 public class BookController : ControllerBase
 {
     private readonly IExtendedRepository<Book> _repository;
+    private readonly IMapper _mapper;
 
-    public BookController(IExtendedRepository<Book> repository)
+    public BookController(IExtendedRepository<Book> repository, IMapper mapper)
     {
         _repository = repository;
+        _mapper = mapper;
     }
 
     [HttpPost("create")]
     public async Task<IActionResult> CreateBookAsync([FromBody] CreateBookDTO book)
     {
-        //automapper
-        // await _repository.AddAsync(book);
+        var mappedBook = _mapper.Map<Book>(book);
+
+        await _repository.AddAsync(mappedBook);
         await _repository.SaveChangesAsync();
 
-        return CreatedAtRoute("GetAsync", book);
+        return CreatedAtRoute("GetAsync", mappedBook);
     }
 
     [HttpPut("update")]
     public async Task<IActionResult> UpdateBookAsync([FromBody] CreateBookDTO book)
     {
-        //automapper
-        // _repository.Update(book);
+        var mappedBook = _mapper.Map<Book>(book);
+
+        _repository.Update(mappedBook);
         await _repository.SaveChangesAsync();
 
-        return CreatedAtRoute("GetAsync", book);
+        return CreatedAtRoute("GetAsync", mappedBook);
     }
 
     [HttpGet(Name = "GetAll")]
@@ -52,9 +58,9 @@ public class BookController : ControllerBase
     {
         var books = await _repository.GetAllAsync();
 
-        //automapper
+        var mappedBooks = _mapper.Map<IEnumerable<BookDTO>>(books);
 
-        return Ok(books);
+        return Ok(mappedBooks);
     }
 
     [HttpGet("{id}", Name = "GetAsync")]
@@ -65,18 +71,20 @@ public class BookController : ControllerBase
         if (book == null)
             return NotFound();
 
-        //automapper
+        var mappedBook = _mapper.Map<BookDTO>(book);
 
-        return Ok(book);
+        return Ok(mappedBook);
     }
 
     [HttpGet("search")]
     public async Task<IActionResult> SearchByCriteriaAsync([FromQuery] string value)
     {
-        var books = await _repository.SearchByCriteriaAsync(b => b.Title.Contains(value) || (b.Author != null && b.Author.LastName.Contains(value)));
+        var books = await _repository.SearchByCriteriaAsync(b =>
+            b.Title.Contains(value) || (b.Author != null && b.Author.LastName.Contains(value))
+        );
 
-        //automapper
+        var mappedBooks = _mapper.Map<IEnumerable<BookDTO>>(books);
 
-        return Ok(books);
+        return Ok(mappedBooks);
     }
 }
