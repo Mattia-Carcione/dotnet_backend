@@ -6,14 +6,13 @@ using Repository;
 using Serilog;
 using Services;
 
-var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
 //TODO:
 //Aggiungere un logger Serilog
 //Per il monitoraggio 
 Log.Logger = new LoggerConfiguration().WriteTo.Console().WriteTo.File("Logs/log.txt").CreateLogger();
-Log.Information("Starting up!");
 var builder = WebApplication.CreateBuilder(args);
+Log.Information("Starting up!");
 builder.Services.AddSerilog();//Aggiunta del serilog nel servizio
 
 // Add services to the container.
@@ -29,9 +28,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddProblemDetails(); //Logging exceptions
 
 // Add DBContext
+var _connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<LibraryContext>(options =>
     options.UseSqlServer(
-        config.GetConnectionString("DefaultConnection"),
+        _connectionString,
         b => b.MigrationsAssembly("WebApi") //Specifico l'assembly per le migrazioni
     )
 );
