@@ -3,26 +3,36 @@ using Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Model.Entities;
 using Repository;
+using Serilog;
 using Services;
 
+var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+
+//TODO:
+//Aggiungere un logger Serilog
+//Per il monitoraggio 
+Log.Logger = new LoggerConfiguration().WriteTo.Console().WriteTo.File("Logs/log.txt").CreateLogger();
+Log.Information("Starting up!");
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSerilog();//Aggiunta del serilog nel servizio
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddControllers(options =>
-{
-    options.ReturnHttpNotAcceptable = true; //Accetto solo il formato json
-}).AddNewtonsoftJson();//Aggiungo il supporto per il json .net
+builder
+    .Services.AddControllers(options =>
+    {
+        options.ReturnHttpNotAcceptable = true; //Accetto solo il formato json
+    })
+    .AddNewtonsoftJson(); //Aggiungo il supporto per il json .net
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddProblemDetails();//Logging exceptions
+builder.Services.AddProblemDetails(); //Logging exceptions
 
 // Add DBContext
-var _connectionString = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 builder.Services.AddDbContext<LibraryContext>(options =>
     options.UseSqlServer(
-        _connectionString.GetConnectionString("DefaultConnection"),
-        b => b.MigrationsAssembly("WebApi")//Specifico l'assembly per le migrazioni
+        config.GetConnectionString("DefaultConnection"),
+        b => b.MigrationsAssembly("WebApi") //Specifico l'assembly per le migrazioni
     )
 );
 
@@ -34,7 +44,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler();//Add exceptions handler
+    app.UseExceptionHandler(); //Add exceptions handler
 }
 
 if (app.Environment.IsDevelopment())
