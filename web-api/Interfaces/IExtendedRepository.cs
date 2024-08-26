@@ -20,5 +20,5 @@ namespace Interfaces;
 
 public interface IExtendedRepository<T> : IRepository<T> where T : class
 {
-    Task<List<T>> SearchByCriteriaAsync(Expression<Func<T, bool>> expression);
+    Task<IEnumerable<T>> SearchByCriteriaAsync(Expression<Func<T, bool>> expression);
 }

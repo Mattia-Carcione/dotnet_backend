@@ -14,6 +14,6 @@ public interface IRepository<T>
     void Update(T entity);
     void Delete(T entity);
     Task<T> GetAsync(int id);
-    Task<List<T>> GetAllAsync();
+    Task<IEnumerable<T>> GetAllAsync();
     Task SaveChangesAsync();
 }

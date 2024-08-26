@@ -10,7 +10,7 @@ public class ExtendedRepository<T> : GenericRepository<T>, IExtendedRepository<T
 {
     public ExtendedRepository(LibraryContext context) : base(context) { }
 
-    public async Task<List<T>> SearchByCriteriaAsync(Expression<Func<T, bool>> expression)
+    public async Task<IEnumerable<T>> SearchByCriteriaAsync(Expression<Func<T, bool>> expression)
     {
         try
         {

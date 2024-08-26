@@ -66,7 +66,7 @@ public class GenericRepository<T> : IRepository<T>
         }
     }
 
-    public async Task<List<T>> GetAllAsync()
+    public async Task<IEnumerable<T>> GetAllAsync()
     {
         try
         {
