@@ -15,6 +15,7 @@ builder.Services.AddControllers(options =>
 }).AddNewtonsoftJson();//Aggiungo il supporto per il json .net
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddProblemDetails();//Logging exceptions
 
 // Add DBContext
 var _connectionString = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
@@ -25,12 +26,17 @@ builder.Services.AddDbContext<LibraryContext>(options =>
     )
 );
 
-builder.Services.AddTransient<IExtendedRepository<Book>, ExtendedRepository<Book>>();
+builder.Services.AddScoped<IExtendedRepository<Book>, ExtendedRepository<Book>>();
 builder.Services.AddScoped<IBookService, BookService>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler();//Add exceptions handler
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

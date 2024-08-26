@@ -45,15 +45,15 @@ public class Book
     }
 
     [ForeignKey("Author")]
-    public int AuthorId { get; set; }
     [Required]
+    public int AuthorId { get; set; }
     public Author Author {get; set;} = null!;
 
     public ICollection<Category> Categories {get; set;} = new List<Category>();
     public ICollection<Booking> Bookings {get; set;} = new List<Booking>();
     
     [ForeignKey("Editor")]
-    public int EditorId { get; set; }
     [Required]
+    public int EditorId { get; set; }
     public Editor Editor {get; set;} = null!;
 }
