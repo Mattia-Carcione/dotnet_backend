@@ -3,7 +3,7 @@ using DTOs.BookDTOs;
 
 namespace DTOs.CategoryDTOs;
 
-public class CategoryDTO
+public class CategoryDetailDTO
 {
     [Key]
     public int Id {get; set;}
@@ -14,4 +14,5 @@ public class CategoryDTO
 
     [MaxLength(400)]
     public string Description {get; set;} = string.Empty;
+    public ICollection<BookDTO> Books {get; set;} = new List<BookDTO>();
 }

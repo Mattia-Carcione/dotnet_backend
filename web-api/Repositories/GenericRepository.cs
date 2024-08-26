@@ -51,13 +51,16 @@ public class GenericRepository<T> : IRepository<T>
         }
     }
 
-    public async Task<T?> GetAsync(int id)
+    public async Task<T?> GetAsync(int id, Func<IQueryable<T>, IQueryable<T>>? include = null)
     {
         try
         {
-            var entity = await _context.FindAsync<T>(id);
+            IQueryable<T> query = _context.Set<T>();
 
-            return entity;
+            if(include != null)
+                query = include(query);
+
+            return await query.FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
         }
         catch (Exception ex)
         {

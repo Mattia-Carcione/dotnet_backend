@@ -13,7 +13,7 @@ public interface IRepository<T>
     Task AddAsync(T entity);
     void Update(T entity);
     void Delete(T entity);
-    Task<T?> GetAsync(int id);
+    Task<T?> GetAsync(int id, Func<IQueryable<T>, IQueryable<T>>? include = null);
     Task<IEnumerable<T>> GetAllAsync();
     Task SaveChangesAsync();
 }

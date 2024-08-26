@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using AutoMapper;
 using Context;
 using Interfaces;
@@ -19,12 +20,13 @@ builder.Services.AddSerilog();//Aggiunta del serilog nel servizio
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder
-    .Services.AddControllers(options =>
+builder.Services.AddControllers(options =>
     {
         options.ReturnHttpNotAcceptable = true; //Accetto solo il formato json
     })
-    .AddNewtonsoftJson(); //Aggiungo il supporto per il json .net
+    .AddNewtonsoftJson(options => 
+        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore //Ignoro i reference loops
+        ); //Aggiungo il supporto per il json .net
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddProblemDetails(); //Logging exceptions

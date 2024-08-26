@@ -39,18 +39,22 @@ public class BookController : ControllerBase
         await _repository.AddAsync(mappedBook);
         await _repository.SaveChangesAsync();
 
-        return CreatedAtRoute("GetAsync", mappedBook);
+        return CreatedAtRoute("GetAsync", new { id = mappedBook.Id }, mappedBook);
     }
 
-    [HttpPut("update")]
-    public async Task<IActionResult> UpdateBookAsync([FromBody] CreateBookDTO book)
+    [HttpPut("update/{id}")]
+    public async Task<IActionResult> UpdateBookAsync([FromRoute] int id, [FromBody] UpdateBookDTO book)
     {
-        var mappedBook = _mapper.Map<Book>(book);
+        var existingBook = await _repository.GetAsync(id);
+        if(existingBook == null)
+            return NotFound();
+            
+        _mapper.Map(book, existingBook);
 
-        _repository.Update(mappedBook);
+        _repository.Update(existingBook);
         await _repository.SaveChangesAsync();
 
-        return CreatedAtRoute("GetAsync", mappedBook);
+        return NoContent();
     }
 
     [HttpGet(Name = "GetAll")]
@@ -66,12 +70,17 @@ public class BookController : ControllerBase
     [HttpGet("{id}", Name = "GetAsync")]
     public async Task<IActionResult> GetAsync([FromRoute] int id)
     {
-        var book = await _repository.GetAsync(id);
+        var book = await _repository.GetAsync(id, include: query =>
+                query.Include(b => b.Author)
+                    .Include(b => b.Editor)
+                    .Include(b => b.Categories)
+                    .Include(b => b.Bookings)
+        );
 
         if (book == null)
             return NotFound();
 
-        var mappedBook = _mapper.Map<BookDTO>(book);
+        var mappedBook = _mapper.Map<BookDetailDTO>(book);
 
         return Ok(mappedBook);
     }

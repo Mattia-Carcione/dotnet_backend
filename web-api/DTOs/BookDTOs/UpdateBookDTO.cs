@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DTOs.BookDTOs;
 
-public class CreateBookDTO
+public class UpdateBookDTO
 {
     [Required]
     [MaxLength(50), MinLength(3)]
@@ -11,8 +11,4 @@ public class CreateBookDTO
     public int TotalCopies { get; set; }
     public int Copies { get; set; }
     public DateTime PublicationDate { get; set; }
-    [Required]
-    public int AuthorId { get; set; }
-    [Required]
-    public int EditorId { get; set; }
 }

@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using DTOs.BookDTOs;
 
 namespace DTOs.BookingDTOs;
 
-public class BookingDTO
+public class BookingDetailDTO
 {
     [Key]
     public int Id {get; set;}
@@ -14,4 +15,7 @@ public class BookingDTO
     public DateTime BookingDate {get; set;}
 
     public DateTime DeliveryDate {get; set;}
+
+    [Required]
+    public BookDTO Book {get; set;} = null!;
 }
