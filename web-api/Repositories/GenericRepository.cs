@@ -51,13 +51,13 @@ public class GenericRepository<T> : IRepository<T>
         }
     }
 
-    public async Task<T> GetAsync(int id)
+    public async Task<T?> GetAsync(int id)
     {
         try
         {
             var entity = await _context.FindAsync<T>(id);
 
-            return entity!;
+            return entity;
         }
         catch (Exception ex)
         {
