@@ -46,17 +46,17 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
     public async Task UpdateBook_Book_BookIsUpdated()
     {
         //Assign
-        Book book = await _repository.GetAsync(1);
-        book.TotalCopies++;
+        Book book = await _repository.GetAsync(1) ?? throw new ArgumentNullException();
         var initialCopies = book.TotalCopies;
+        book.TotalCopies++;
 
         //Act
         _repository.Update(book);
         await _repository.SaveChangesAsync();
-        var updatedBook = await _repository.GetAsync(book.Id);
+        var updatedBook = await _repository.GetAsync(book.Id) ?? throw new ArgumentNullException();
 
         //Assert
-        Assert.Equal(initialCopies, updatedBook.TotalCopies);
+        Assert.Equal(initialCopies + 1, updatedBook.TotalCopies);
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
         //Assign
         var initialList = await _repository.GetAllAsync();
         var count = initialList.Count();
-        Book book = await _repository.GetAsync(1);
+        Book book = await _repository.GetAsync(1) ?? throw new ArgumentNullException();
 
         //Act
         _repository.Delete(book);

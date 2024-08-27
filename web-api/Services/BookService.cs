@@ -119,7 +119,7 @@ public class BookService : ExtendedRepository<Book>, IBookService
                     BookingException.Exceptions.BookAlreadyReturned
                 );
 
-                var book = booking.Book!;
+                var book = booking.Book ?? throw new ArgumentNullException();
 
                 ValidatorHelper.CheckIsValid(
                     book.Id,

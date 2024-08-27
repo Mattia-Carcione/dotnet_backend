@@ -42,13 +42,13 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
     public async Task AddBooking_Booking_BookingIsAdded()
     {
         //Assign
-        var initialBook = await _service.GetAsync(1, include: query => query.Include(b => b.Bookings));
+        var initialBook = await _service.GetAsync(1, include: query => query.Include(b => b.Bookings)) ?? throw new ArgumentNullException();
         var initialBookingsCount = initialBook.Bookings.Count;
         var initialCopies = initialBook.Copies;
 
         // //Act
         await _service.BookingAsync("utenteTest", initialBook.Id);
-        var finalBook = await _service.GetAsync(1);
+        var finalBook = await _service.GetAsync(1) ?? throw new ArgumentNullException();
         var finalBookingsCount = finalBook.Bookings.Count;
         var finalCopies = finalBook.Copies;
 
@@ -61,7 +61,7 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
     public async Task DeliveryTest_Booking_BookingIsUpdated()
     {
         //Assign
-        var book = await _service.GetAsync(1);
+        var book = await _service.GetAsync(1) ?? throw new ArgumentNullException();
         await _service.BookingAsync("utenteTest", book.Id);
         var initialCopies = book.Copies;
         var booking = book.Bookings.First(b => b.User == "utenteTest");
