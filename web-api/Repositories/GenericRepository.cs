@@ -69,7 +69,7 @@ public class GenericRepository<T> : IRepository<T>
         }
     }
 
-    public async Task<IEnumerable<T>> GetAllAsync(Func<IQueryable<T>, IQueryable<T>>? include = null)
+    public async Task<IEnumerable<T>> GetAllAsync(int pageNumber, int pageSize, Func<IQueryable<T>, IQueryable<T>>? include = null)
     {
         try
         {
@@ -78,7 +78,10 @@ public class GenericRepository<T> : IRepository<T>
             if(include != null)
                 query = include(query);
 
-            return await query.ToListAsync();
+            return await query
+            .Skip(pageSize * (pageNumber - 1))
+            .Take(pageSize)
+            .ToListAsync();
         }
         catch (Exception ex)
         {

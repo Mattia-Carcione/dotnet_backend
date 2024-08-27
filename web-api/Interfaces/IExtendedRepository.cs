@@ -20,5 +20,6 @@ namespace Interfaces;
 
 public interface IExtendedRepository<T> : IRepository<T> where T : class
 {
-    Task<IEnumerable<T>> SearchByCriteriaAsync(Expression<Func<T, bool>> expression, Func<IQueryable<T>, IQueryable<T>>? include = null);
+    //Gestisco anche la paginazione per gli IEnumerable<T> 
+    Task<IEnumerable<T>> SearchByCriteriaAsync(int pageNumber, int pageSize, Expression<Func<T, bool>> expression, Func<IQueryable<T>, IQueryable<T>>? include = null);
 }

@@ -14,6 +14,7 @@ public interface IRepository<T>
     void Update(T entity);
     void Delete(T entity);
     Task<T?> GetAsync(int id, Func<IQueryable<T>, IQueryable<T>>? include = null);
-    Task<IEnumerable<T>> GetAllAsync(Func<IQueryable<T>, IQueryable<T>>? include = null);
+    //Gestisco la paginazione per gli IEnumerable<T> 
+    Task<IEnumerable<T>> GetAllAsync(int pageNumber, int pageSize, Func<IQueryable<T>, IQueryable<T>>? include = null);
     Task SaveChangesAsync();
 }

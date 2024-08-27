@@ -1,6 +1,6 @@
 /*
 *TODO:
-*Aggiungere alla solution una web API che espone 
+*Aggiungere alla solution una web API che espone
 - Crea prenotazione
 - Consegna
 - cerca prenotazioni
@@ -9,7 +9,6 @@
 */
 
 using AutoMapper;
-using DTOs.BookDTOs;
 using DTOs.BookingDTOs;
 using Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -25,11 +24,25 @@ public class BookingController : ControllerBase
     private readonly IBookService _bookService;
     private readonly IExtendedRepository<Booking> _repository;
     private readonly IMapper _mapper;
-    public BookingController(IBookService bookService, IExtendedRepository<Booking> repository, IMapper mapper)
+    private const int MaxPageSize = 25;
+
+    public BookingController(IBookService bookService,
+        IExtendedRepository<Booking> repository,
+        IMapper mapper)
     {
         _bookService = bookService;
         _repository = repository;
         _mapper = mapper;
+    }
+
+    private async Task<IEnumerable<BookingDetailDTO>> GetAllBookingsAsync(int pageNumber, int pageSize)
+    {
+        var bookings = await _repository.GetAllAsync(pageNumber, pageSize, q => 
+            q.Include(b => b.Book).OrderByDescending(b => b.BookingDate));
+
+        var mappedBookings = _mapper.Map<IEnumerable<BookingDetailDTO>>(bookings);
+
+        return mappedBookings;
     }
 
     [HttpPost("create")]
@@ -41,42 +54,38 @@ public class BookingController : ControllerBase
         return CreatedAtRoute("GetBookingAsync", new { id = mappedBooking.Id }, mappedBooking);
     }
 
-    [HttpGet()]
-    public async Task<IActionResult> GetAllBookingsAsync()
-    {
-        var bookings = await _repository.GetAllAsync(q => q.Include(b => b.Book));
-
-        var mappedBookings = _mapper.Map<IEnumerable<BookingDetailDTO>>(bookings.OrderByDescending(b => b.BookingDate));
-
-        return Ok(mappedBookings);
-    }
-
     [HttpGet("{id}", Name = "GetBookingAsync")]
     public async Task<IActionResult> GetAsync([FromRoute] int id)
     {
-        var booking = await _repository.GetAsync(id, include: q => q.Include(b => b.Book));
+        var booking = await _repository.GetAsync(id, include: q => 
+            q.Include(b => b.Book));
 
         var mappedBooking = _mapper.Map<BookingDetailDTO>(booking);
 
         return Ok(mappedBooking);
     }
 
-    [HttpGet("search")]
-    public async Task<IActionResult> SearchByCriteriaAsync([FromQuery(Name = "user")] string? user = null,
+    [HttpGet()]
+    public async Task<IActionResult> SearchByCriteriaAsync([FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery(Name = "user")] string? user = null,
         [FromQuery(Name = "title")] string? title = null)
     {
+        if(pageSize > MaxPageSize)
+            pageSize = MaxPageSize;
+            
         if (string.IsNullOrEmpty(title) && string.IsNullOrEmpty(user))
-            return await GetAllBookingsAsync();
+            return Ok(await GetAllBookingsAsync(pageNumber, pageSize));
 
         title = title?.Trim();
         user = user?.Trim();
 
-        var bookings = await _repository.SearchByCriteriaAsync(b =>
-            (string.IsNullOrEmpty(title) || b.Book.Title.Contains(title)) && 
-            (string.IsNullOrEmpty(user) || (b.User != null && b.User.Contains(user))),
+        var bookings = await _repository.SearchByCriteriaAsync(pageNumber, pageSize, b =>
+                (string.IsNullOrEmpty(title) || b.Book.Title.Contains(title)) &&
+                (string.IsNullOrEmpty(user) || (b.User != null && b.User.Contains(user))),
             include: q => q.Include(b => b.Book)
+                .OrderByDescending(b => b.BookingDate)
         );
-        bookings = bookings.OrderByDescending(b => b.BookingDate);
 
         var mappedBookings = _mapper.Map<IEnumerable<BookingDetailDTO>>(bookings);
 
