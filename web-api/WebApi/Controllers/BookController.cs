@@ -74,7 +74,6 @@ public class BookController : ControllerBase
                 query.Include(b => b.Author)
                     .Include(b => b.Editor)
                     .Include(b => b.Categories)
-                    .Include(b => b.Bookings)
         );
 
         if (book == null)

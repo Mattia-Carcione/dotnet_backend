@@ -1,6 +1,4 @@
-using System;
 using System.ComponentModel.DataAnnotations;
-using DTOs.BookingDTOs;
 using DTOs.CategoryDTOs;
 
 namespace DTOs.BookDTOs;
@@ -19,5 +17,4 @@ public class BookDetailDTO
     public string Author { get; set; } = string.Empty;
     public string Editor { get; set; } = string.Empty;
     public ICollection<CategoryDTO> Categories{ get; set; } = new List<CategoryDTO>();
-    public ICollection<BookingDTO> Bookings{ get; set; } = new List<BookingDTO>();
 }

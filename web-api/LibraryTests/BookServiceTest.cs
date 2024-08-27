@@ -19,6 +19,7 @@
 */
 
 using Exceptions;
+using Microsoft.EntityFrameworkCore;
 using Services;
 
 namespace LibraryTests;
@@ -41,7 +42,7 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
     public async Task AddBooking_Booking_BookingIsAdded()
     {
         //Assign
-        var initialBook = await _service.GetAsync(1);
+        var initialBook = await _service.GetAsync(1, include: query => query.Include(b => b.Bookings));
         var initialBookingsCount = initialBook.Bookings.Count;
         var initialCopies = initialBook.Copies;
 

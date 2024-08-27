@@ -39,7 +39,7 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
         var finalList = await _repository.GetAllAsync();
 
         //Assert
-        Assert.Equal(initialList.Count + 1, finalList.Count);
+        Assert.Equal(initialList.Count() + 1, finalList.Count());
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
     {
         //Assign
         var initialList = await _repository.GetAllAsync();
-        var count = initialList.Count;
+        var count = initialList.Count();
         Book book = await _repository.GetAsync(1);
 
         //Act
@@ -73,7 +73,7 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
         var finalList = await _repository.GetAllAsync();
 
         //Assert
-        Assert.Equal(count - 1, finalList.Count);
+        Assert.Equal(count - 1, finalList.Count());
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
         var allBooks = await _repository.GetAllAsync();
 
         //Act
-        var count = allBooks.Count;
+        var count = allBooks.Count();
 
         //Assert
         Assert.True(count > 0);

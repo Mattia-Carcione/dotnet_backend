@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using DTOs.BookDTOs;
 
 namespace DTOs.CategoryDTOs;
 
