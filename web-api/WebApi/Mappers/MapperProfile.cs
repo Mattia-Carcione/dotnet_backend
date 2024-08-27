@@ -24,7 +24,8 @@ public class MapperProfile : Profile
         CreateMap<CreateBookDTO, Book>().ReverseMap();
         CreateMap<BookDTO, Book>().ReverseMap();
         CreateMap<UpdateBookDTO, Book>().ReverseMap();
-        // CreateMap<BookingDTO, Booking>().ReverseMap();
+        CreateMap<BookingDTO, Booking>().ReverseMap();
+        CreateMap<BookingDetailDTO, Booking>().ReverseMap();
         CreateMap<CategoryDTO, Category>().ReverseMap();
     }
 }

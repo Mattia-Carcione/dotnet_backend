@@ -69,11 +69,16 @@ public class GenericRepository<T> : IRepository<T>
         }
     }
 
-    public async Task<IEnumerable<T>> GetAllAsync()
+    public async Task<IEnumerable<T>> GetAllAsync(Func<IQueryable<T>, IQueryable<T>>? include = null)
     {
         try
         {
-            return await _context.Set<T>().ToListAsync();
+            IQueryable<T> query = _context.Set<T>();
+
+            if(include != null)
+                query = include(query);
+
+            return await query.ToListAsync();
         }
         catch (Exception ex)
         {

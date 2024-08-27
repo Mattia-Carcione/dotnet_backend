@@ -14,6 +14,6 @@ public interface IRepository<T>
     void Update(T entity);
     void Delete(T entity);
     Task<T?> GetAsync(int id, Func<IQueryable<T>, IQueryable<T>>? include = null);
-    Task<IEnumerable<T>> GetAllAsync();
+    Task<IEnumerable<T>> GetAllAsync(Func<IQueryable<T>, IQueryable<T>>? include = null);
     Task SaveChangesAsync();
 }

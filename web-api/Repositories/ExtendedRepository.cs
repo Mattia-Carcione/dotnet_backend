@@ -10,11 +10,17 @@ public class ExtendedRepository<T> : GenericRepository<T>, IExtendedRepository<T
 {
     public ExtendedRepository(LibraryContext context) : base(context) { }
 
-    public async Task<IEnumerable<T>> SearchByCriteriaAsync(Expression<Func<T, bool>> expression)
+    public async Task<IEnumerable<T>> SearchByCriteriaAsync(Expression<Func<T, bool>> expression, Func<IQueryable<T>, IQueryable<T>>? include = null)
     {
         try
         {
-            return await _context.Set<T>().Where(expression).ToListAsync();
+            IQueryable<T> query = _context.Set<T>().Where(expression);
+
+            if(include != null)
+                query = include(query);
+
+            return await query.ToListAsync();
+            // return await _context.Set<T>().Where(expression).ToListAsync();
         }
         catch (Exception ex)
         {

@@ -41,6 +41,7 @@ builder.Services.AddDbContext<LibraryContext>(options =>
 );
 
 builder.Services.AddScoped<IExtendedRepository<Book>, ExtendedRepository<Book>>();
+builder.Services.AddScoped<IExtendedRepository<Booking>, ExtendedRepository<Booking>>();
 builder.Services.AddScoped<IBookService, BookService>();
 
 //Aggiunta di automapper al servizio

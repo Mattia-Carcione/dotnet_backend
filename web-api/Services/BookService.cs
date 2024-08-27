@@ -50,7 +50,7 @@ public class BookService : ExtendedRepository<Book>, IBookService
         );
     }
 
-    public async Task BookingAsync(string user, int bookId)
+    public async Task<Booking> BookingAsync(string user, int bookId)
     {
         {
             try
@@ -84,6 +84,8 @@ public class BookService : ExtendedRepository<Book>, IBookService
                 await _context.Bookings.AddAsync(newBooking);
 
                 await UpdateBookState(book);
+
+                return newBooking;
             }
             catch (BookingException)
             {
@@ -92,6 +94,7 @@ public class BookService : ExtendedRepository<Book>, IBookService
             catch (Exception ex)
             {
                 ExceptionDispatchInfo.Capture(ex).Throw();
+                throw;
             }
         }
     }
