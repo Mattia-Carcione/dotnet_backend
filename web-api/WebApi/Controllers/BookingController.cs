@@ -71,8 +71,8 @@ public class BookingController : ControllerBase
         [FromQuery(Name = "user")] string? user = null,
         [FromQuery(Name = "title")] string? title = null)
     {
-        if(pageSize > MaxPageSize)
-            pageSize = MaxPageSize;
+        pageSize = pageSize > MaxPageSize ? MaxPageSize : pageSize;
+        pageNumber = pageNumber <= 0 ? 1 : pageNumber;
             
         if (string.IsNullOrEmpty(title) && string.IsNullOrEmpty(user))
             return Ok(await GetAllBookingsAsync(pageNumber, pageSize));
@@ -83,7 +83,7 @@ public class BookingController : ControllerBase
         var bookings = await _repository.SearchByCriteriaAsync(pageNumber, pageSize, b =>
                 (string.IsNullOrEmpty(title) || b.Book.Title.Contains(title)) &&
                 (string.IsNullOrEmpty(user) || (b.User != null && b.User.Contains(user))),
-            include: q => q.Include(b => b.Book)
+            q => q.Include(b => b.Book)
                 .OrderByDescending(b => b.BookingDate)
         );
 

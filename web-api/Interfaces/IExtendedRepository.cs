@@ -15,11 +15,12 @@
 */
 
 using System.Linq.Expressions;
+using Model.Metadatas;
 
 namespace Interfaces;
 
 public interface IExtendedRepository<T> : IRepository<T> where T : class
 {
     //Gestisco anche la paginazione per gli IEnumerable<T> 
-    Task<IEnumerable<T>> SearchByCriteriaAsync(int pageNumber, int pageSize, Expression<Func<T, bool>> expression, Func<IQueryable<T>, IQueryable<T>>? include = null);
+    Task<(IEnumerable<T>, PaginationMetadata)> SearchByCriteriaAsync(int pageNumber, int pageSize, Expression<Func<T, bool>> expression, Func<IQueryable<T>, IQueryable<T>> include);
 }
