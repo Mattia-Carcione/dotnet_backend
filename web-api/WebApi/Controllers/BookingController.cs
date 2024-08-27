@@ -8,12 +8,14 @@
 - cerca prenotazioni per libro
 */
 
+using System.Text.Json;
 using AutoMapper;
 using DTOs.BookingDTOs;
 using Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Model.Entities;
+using Model.Metadatas;
 
 namespace WebApi.Controllers;
 
@@ -35,14 +37,14 @@ public class BookingController : ControllerBase
         _mapper = mapper;
     }
 
-    private async Task<IEnumerable<BookingDetailDTO>> GetAllBookingsAsync(int pageNumber, int pageSize)
+    private async Task<(IEnumerable<BookingDetailDTO>, PaginationMetadata)> GetAllBookingsAsync(int pageNumber, int pageSize)
     {
-        var bookings = await _repository.GetAllAsync(pageNumber, pageSize, q => 
+        var (bookings, paginationMetadata) = await _repository.GetAllAsync(pageNumber, pageSize, q => 
             q.Include(b => b.Book).OrderByDescending(b => b.BookingDate));
 
         var mappedBookings = _mapper.Map<IEnumerable<BookingDetailDTO>>(bookings);
 
-        return mappedBookings;
+        return (mappedBookings, paginationMetadata);
     }
 
     [HttpPost("create")]
@@ -75,12 +77,16 @@ public class BookingController : ControllerBase
         pageNumber = pageNumber <= 0 ? 1 : pageNumber;
             
         if (string.IsNullOrEmpty(title) && string.IsNullOrEmpty(user))
-            return Ok(await GetAllBookingsAsync(pageNumber, pageSize));
+        {
+            var (collection, paginationMetadata) = await GetAllBookingsAsync(pageNumber, pageSize);
+            Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+            return Ok(collection);
+        }
 
         title = title?.Trim();
         user = user?.Trim();
 
-        var bookings = await _repository.SearchByCriteriaAsync(pageNumber, pageSize, b =>
+        var (bookings, pagination_metadata) = await _repository.SearchByCriteriaAsync(pageNumber, pageSize, b =>
                 (string.IsNullOrEmpty(title) || b.Book.Title.Contains(title)) &&
                 (string.IsNullOrEmpty(user) || (b.User != null && b.User.Contains(user))),
             q => q.Include(b => b.Book)
@@ -88,7 +94,8 @@ public class BookingController : ControllerBase
         );
 
         var mappedBookings = _mapper.Map<IEnumerable<BookingDetailDTO>>(bookings);
-
+        Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(pagination_metadata));
+        
         return Ok(mappedBookings);
     }
 
