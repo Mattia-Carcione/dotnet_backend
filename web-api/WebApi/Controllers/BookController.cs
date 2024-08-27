@@ -64,6 +64,7 @@ public class BookController : ControllerBase
     public async Task<IActionResult> GetAllAsync()
     {
         var books = await _repository.GetAllAsync();
+        books = books.OrderBy(b => b.Title);
 
         var mappedBooks = _mapper.Map<IEnumerable<BookDTO>>(books);
 
@@ -73,7 +74,9 @@ public class BookController : ControllerBase
     [HttpGet("{id}", Name = "GetAsync")]
     public async Task<IActionResult> GetAsync([FromRoute] int id)
     {
-        var book = await _repository.GetAsync(id, include: query =>
+        var book = await _repository.GetAsync(
+            id,
+            include: query =>
                 query.Include(b => b.Author).Include(b => b.Editor).Include(b => b.Categories)
         );
 
@@ -89,13 +92,17 @@ public class BookController : ControllerBase
     public async Task<IActionResult> SearchByCriteriaAsync([FromQuery(Name = "author")] string? author = null,
         [FromQuery(Name = "title")] string? title = null)
     {
-        if(string.IsNullOrEmpty(title) && string.IsNullOrEmpty(author))
+        if (string.IsNullOrEmpty(title) && string.IsNullOrEmpty(author))
             return await GetAllAsync();
 
+        title = title?.Trim();
+        author = author?.Trim();
+
         var books = await _repository.SearchByCriteriaAsync(b =>
-            (string.IsNullOrEmpty(title) || b.Title.Contains(title)) &&
-             (string.IsNullOrEmpty(author) || (b.Author != null && b.Author.LastName.Contains(author)))
+            (string.IsNullOrEmpty(title) || b.Title.Contains(title)) && 
+            (string.IsNullOrEmpty(author) || (b.Author != null && b.Author.LastName.Contains(author)))
         );
+        books = books.OrderBy(b => b.Title);
 
         var mappedBooks = _mapper.Map<IEnumerable<BookDTO>>(books);
 
