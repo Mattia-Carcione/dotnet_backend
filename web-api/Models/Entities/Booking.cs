@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 *-DataPrenotazione : Date
 *-DataRestituzione : Date
 */
-namespace Model.Entities;
+namespace Models.Entities;
 
 [Table("Bookings")]
 public class Booking

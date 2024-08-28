@@ -13,7 +13,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 *+AddCategoria(in c : Categoria) 
 *+RemoveCategoria(in c : Categoria) 
 */
-namespace Model.Entities;
+namespace Models.Entities;
 
 [Table("Books")]
 public class Book

@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 *+Cognome : int 
 *+DataNascita : Date
 */
-namespace Model.Entities;
+namespace Models.Entities;
 
 [Table("Authors")]
 public class Author

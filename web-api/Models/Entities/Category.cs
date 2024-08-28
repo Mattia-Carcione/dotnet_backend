@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 *-Descrizione: string
 */
 
-namespace Model.Entities;
+namespace Models.Entities;
 
 [Table("Categories")]
 public class Category

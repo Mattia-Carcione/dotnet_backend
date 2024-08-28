@@ -2,7 +2,7 @@ using System.Runtime.ExceptionServices;
 using Context;
 using Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Model.Metadatas;
+using Models.Metadatas;
 
 namespace Repository;
 

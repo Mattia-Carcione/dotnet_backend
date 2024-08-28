@@ -7,7 +7,8 @@
 *correttamente.
 **/
 
-using Model.Entities;
+using Microsoft.EntityFrameworkCore;
+using Models.Entities;
 using Repository;
 
 namespace LibraryTests;
@@ -30,13 +31,13 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
     public async Task AddBook_Book_BookIsAdded()
     {
         //Assign
-        var initialList = await _repository.GetAllAsync();
+        var (initialList, metadata) = await _repository.GetAllAsync(10, 1, c => c.OrderBy(b => b.Id));
         Book book = EntityFactoryHelper.CreateBook("test", 1, 1);
 
         //Act
         await _repository.AddAsync(book);
         await _repository.SaveChangesAsync();
-        var finalList = await _repository.GetAllAsync();
+        var (finalList, metadata2) = await _repository.GetAllAsync(10, 1, c => c.OrderBy(b => b.Id));
 
         //Assert
         Assert.Equal(initialList.Count() + 1, finalList.Count());
@@ -63,14 +64,14 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
     public async Task DeleteBook_Book_BookIsRemoved()
     {
         //Assign
-        var initialList = await _repository.GetAllAsync();
+        var (initialList, metadata) = await _repository.GetAllAsync(10, 1, c => c.OrderBy(b => b.Id));
         var count = initialList.Count();
         Book book = await _repository.GetAsync(1) ?? throw new ArgumentNullException();
 
         //Act
         _repository.Delete(book);
         await _repository.SaveChangesAsync();
-        var finalList = await _repository.GetAllAsync();
+        var (finalList, metadata2) = await _repository.GetAllAsync(10, 1, c => c.OrderBy(b => b.Id));
 
         //Assert
         Assert.Equal(count - 1, finalList.Count());
@@ -80,10 +81,10 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
     public async Task GetAllBook_Book_GetListOFBook()
     {
         //Assign
-        var allBooks = await _repository.GetAllAsync();
+        var (initialList, metadata) = await _repository.GetAllAsync(10, 1, c => c.OrderBy(b => b.Id));
 
         //Act
-        var count = allBooks.Count();
+        var count = initialList.Count();
 
         //Assert
         Assert.True(count > 0);

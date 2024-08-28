@@ -2,7 +2,7 @@
 // Creare la struttura di tabelle sul database
 
 using Microsoft.EntityFrameworkCore;
-using Model.Entities;
+using Models.Entities;
 
 namespace Context;
 

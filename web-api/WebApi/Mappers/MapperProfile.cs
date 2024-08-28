@@ -5,7 +5,7 @@ using AutoMapper;
 using DTOs.BookDTOs;
 using DTOs.BookingDTOs;
 using DTOs.CategoryDTOs;
-using Model.Entities;
+using Models.Entities;
 
 namespace WebApi.Mappers;
 

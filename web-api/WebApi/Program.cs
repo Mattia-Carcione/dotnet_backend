@@ -1,9 +1,7 @@
-using System.Text.Json.Serialization;
-using AutoMapper;
 using Context;
 using Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Model.Entities;
+using Models.Entities;
 using Repository;
 using Serilog;
 using Services;

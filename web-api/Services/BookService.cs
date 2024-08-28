@@ -19,7 +19,7 @@ using Helpers;
 using Interfaces;
 using LibraryTests;
 using Microsoft.EntityFrameworkCore;
-using Model.Entities;
+using Models.Entities;
 using Repository;
 
 namespace Services;

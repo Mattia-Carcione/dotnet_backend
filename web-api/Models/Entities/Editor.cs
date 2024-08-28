@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 *-Nome: string
 */
 
-namespace Model.Entities;
+namespace Models.Entities;
 
 [Table("Editors")]
 public class Editor

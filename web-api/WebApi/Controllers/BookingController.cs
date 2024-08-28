@@ -14,8 +14,8 @@ using DTOs.BookingDTOs;
 using Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Model.Entities;
-using Model.Metadatas;
+using Models.Entities;
+using Models.Metadatas;
 
 namespace WebApi.Controllers;
 

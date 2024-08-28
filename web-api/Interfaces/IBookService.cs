@@ -1,6 +1,6 @@
 
 
-using Model.Entities;
+using Models.Entities;
 
 /**
 *TODO:

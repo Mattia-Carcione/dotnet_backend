@@ -2,17 +2,17 @@
 //Creo un model Metadata da passare nell'header della risposta
 //In riferimento alle paginazioni
 
-namespace Model.Metadatas;
+namespace Models.Metadatas;
 
 public class PaginationMetadata
 {
     //Imposto i campi come proprietà per JsonSerialazer
-    public int PageSize {get; set;}
-    public int CurrentPage {get; set;}
-    public int PreviousPage {get; set;}
-    public int NextPage {get; set;}
-    public int TotalPageCount {get; set;}
-    public int TotalItemCount {get; set;}
+    public int PageSize {get;}
+    public int CurrentPage {get;}
+    public int PreviousPage {get;}
+    public int NextPage {get;}
+    public int TotalPageCount {get;}
+    public int TotalItemCount {get;}
 
     public PaginationMetadata(int pageSize, int currentPage, int totalItemCount)
     {

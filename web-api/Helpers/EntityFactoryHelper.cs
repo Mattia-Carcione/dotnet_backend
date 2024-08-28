@@ -3,7 +3,7 @@
 *Creare un helper che crea le entità
 */
 
-using Model.Entities;
+using Models.Entities;
 
 namespace LibraryTests;
 
