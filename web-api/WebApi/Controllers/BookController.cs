@@ -10,6 +10,7 @@
 */
 
 using System.Text.Json;
+using Asp.Versioning;
 using AutoMapper;
 using DTOs.BookDTOs;
 using Interfaces;
@@ -21,7 +22,8 @@ using Models.Metadatas;
 namespace WebApi.Controllers;
 
 [ApiController]
-[Route("api/v1/books")]
+[Route("api/v{version:apiVersion}/books")]
+[ApiVersion(1)]
 public class BookController : ControllerBase
 {
     private readonly IExtendedRepository<Book> _repository;

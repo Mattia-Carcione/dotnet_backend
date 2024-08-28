@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Context;
 using Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +45,14 @@ builder.Services.AddScoped<IBookService, BookService>();
 
 //Aggiunta di automapper al servizio
 builder.Services.AddAutoMapper(typeof(MapperProfile));
+
+builder.Services.AddApiVersioning(setupAction =>
+    {
+        setupAction.ReportApiVersions = true;
+        setupAction.AssumeDefaultVersionWhenUnspecified = true;
+        setupAction.DefaultApiVersion = new ApiVersion(1, 0);
+    }
+).AddMvc();
 
 var app = builder.Build();
 

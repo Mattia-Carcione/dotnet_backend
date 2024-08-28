@@ -9,6 +9,7 @@
 */
 
 using System.Text.Json;
+using Asp.Versioning;
 using AutoMapper;
 using DTOs.BookingDTOs;
 using Interfaces;
@@ -19,8 +20,13 @@ using Models.Metadatas;
 
 namespace WebApi.Controllers;
 
+//TODO:
+//Aggiungo il versioning delle api
+
 [ApiController]
-[Route("api/v1/bookings")]
+[Route("api/v{version:apiVersion}/bookings")]
+[ApiVersion(1)]
+
 public class BookingController : ControllerBase
 {
     private readonly IBookService _bookService;
