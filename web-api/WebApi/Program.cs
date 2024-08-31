@@ -6,46 +6,69 @@ using Models.Entities;
 using Repository;
 using Serilog;
 using Services;
-using WebApi.Mappers;
+using WebApi.Mappers; 
 
-
-//TODO:
-//Aggiungere un logger Serilog
-//Per il monitoraggio 
+/// <summary>
+/// Configures the logger configuration.
+/// </summary>
 Log.Logger = new LoggerConfiguration().WriteTo.Console().WriteTo.File("Logs/log.txt").CreateLogger();
-var builder = WebApplication.CreateBuilder(args);
-Log.Information("Starting up!");
-builder.Services.AddSerilog();//Aggiunta del serilog nel servizio
 
-// Add services to the container.
+var builder = WebApplication.CreateBuilder(args);
+
+/// <summary>
+/// Starts the logger
+/// </summary>
+Log.Information("Starting up!");
+
+/// <summary>
+/// Adds serilog to the services
+/// </summary>
+builder.Services.AddSerilog();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+/// <summary>
+/// Adds controllers and NewtonsoftJson to the container.
+/// </summary>
 builder.Services.AddControllers(options =>
     {
         options.ReturnHttpNotAcceptable = true; //Accetto solo il formato json
     })
     .AddNewtonsoftJson(options => 
-        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore //Ignoro i reference loops
-        ); //Aggiungo il supporto per il json .net
+        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+        );
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddProblemDetails(); //Logging exceptions
 
-// Add DBContext
+/// <summary>
+/// Adds DBContext to the services.
+/// </summary>
 var _connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<LibraryContext>(options =>
     options.UseSqlServer(
         _connectionString,
-        b => b.MigrationsAssembly("WebApi") //Specifico l'assembly per le migrazioni
+        b => b.MigrationsAssembly("WebApi") //Specifies the assembly where migrations are saved
     )
 );
 
-builder.Services.AddScoped<IExtendedRepository<Book>, ExtendedRepository<Book>>();
-builder.Services.AddScoped<IExtendedRepository<Booking>, ExtendedRepository<Booking>>();
+/// <summary>
+/// Adds the repositories and booking services to the services.
+/// </summary>
+builder.Services.AddScoped<IExtendedRepository<Book>, ExtendedRepository<Book, LibraryContext>>();
+builder.Services.AddScoped<IExtendedRepository<Booking>, ExtendedRepository<Booking, LibraryContext>>();
 builder.Services.AddScoped<IBookService, BookService>();
 
-//Aggiunta di automapper al servizio
+/// <summary>
+/// Adds the AutoMapper to the services.
+/// </summary>
 builder.Services.AddAutoMapper(typeof(MapperProfile));
 
+/// <summary>
+/// Adds the ApiVersioning to the services.
+/// </summary>
 builder.Services.AddApiVersioning(setupAction =>
     {
         setupAction.ReportApiVersions = true;

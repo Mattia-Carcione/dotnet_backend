@@ -45,7 +45,7 @@ public class BookingController : ControllerBase
 
     private async Task<(IEnumerable<BookingDetailDTO>, PaginationMetadata)> GetAllBookingsAsync(int pageNumber, int pageSize)
     {
-        var (bookings, paginationMetadata) = await _repository.GetAllAsync(pageNumber, pageSize, q => 
+        var (bookings, paginationMetadata) = await _repository.GetAllAsync(pageNumber, pageSize, q =>
             q.Include(b => b.Book).OrderByDescending(b => b.BookingDate));
 
         var mappedBookings = _mapper.Map<IEnumerable<BookingDetailDTO>>(bookings);
@@ -53,7 +53,7 @@ public class BookingController : ControllerBase
         return (mappedBookings, paginationMetadata);
     }
 
-    [HttpPost("create")]
+    [HttpPost()]
     public async Task<IActionResult> BookingAsync([FromBody] CreateBookingDTO booking)
     {
         var newBooking = await _bookService.BookingAsync(booking.User, booking.BookId);
@@ -65,7 +65,7 @@ public class BookingController : ControllerBase
     [HttpGet("{id}", Name = "GetBookingAsync")]
     public async Task<IActionResult> GetAsync([FromRoute] int id)
     {
-        var booking = await _repository.GetAsync(id, include: q => 
+        var booking = await _repository.GetAsync(id, q =>
             q.Include(b => b.Book));
 
         var mappedBooking = _mapper.Map<BookingDetailDTO>(booking);
@@ -74,14 +74,14 @@ public class BookingController : ControllerBase
     }
 
     [HttpGet()]
-    public async Task<IActionResult> SearchByCriteriaAsync([FromQuery] int pageNumber = 1,
+    public async Task<IActionResult> GetAllAsync([FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10,
         [FromQuery(Name = "user")] string? user = null,
         [FromQuery(Name = "title")] string? title = null)
     {
         pageSize = pageSize > MaxPageSize ? MaxPageSize : pageSize;
         pageNumber = pageNumber <= 0 ? 1 : pageNumber;
-            
+
         if (string.IsNullOrEmpty(title) && string.IsNullOrEmpty(user))
         {
             var (collection, paginationMetadata) = await GetAllBookingsAsync(pageNumber, pageSize);
@@ -93,7 +93,7 @@ public class BookingController : ControllerBase
         user = user?.Trim();
 
         var (bookings, pagination_metadata) = await _repository.SearchByCriteriaAsync(pageNumber, pageSize, b =>
-                (string.IsNullOrEmpty(title) || b.Book.Title.Contains(title)) &&
+                (string.IsNullOrEmpty(title) || (b.Book != null && b.Book.Title.Contains(title))) &&
                 (string.IsNullOrEmpty(user) || (b.User != null && b.User.Contains(user))),
             q => q.Include(b => b.Book)
                 .OrderByDescending(b => b.BookingDate)
@@ -101,14 +101,17 @@ public class BookingController : ControllerBase
 
         var mappedBookings = _mapper.Map<IEnumerable<BookingDetailDTO>>(bookings);
         Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(pagination_metadata));
-        
+
         return Ok(mappedBookings);
     }
 
-    [HttpPost("delivering")]
-    public async Task<IActionResult> DeliveryAsync([FromBody] CreateDeliveryDTO delivery)
+    [HttpPut("{bookingId}")]
+    public async Task<IActionResult> UpdateBookingAsync([FromRoute] int bookingId, [FromBody] UpdateBookingDTO returnDTO)
     {
-        await _bookService.DeliveryAsync(delivery.User, delivery.BookingId, delivery.BookId);
+        if (await _repository.GetAsync(bookingId) == null)
+            return NotFound("Booking not found");
+
+        await _bookService.UpdateBookingAsync(returnDTO.User, bookingId, returnDTO.BookId);
 
         return NoContent();
     }

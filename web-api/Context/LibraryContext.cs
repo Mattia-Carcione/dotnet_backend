@@ -6,26 +6,66 @@ using Models.Entities;
 
 namespace Context;
 
+/// <summary>
+/// A <see cref="LibraryContext"/> instance representing a session with the database and can be used to query and save instances of the entities.
+/// 
+/// <remarks>
+/// <para>
+/// Defines enitity relationship and seed data.
+/// </para>
+/// </remarks>
+/// </summary>
 public class LibraryContext : DbContext
 {
+    /// <summary>
+    /// Gets or sets of the <see cref="DbSet{TEntity}"/> of the <see cref="Author"/> entity.
+    /// </summary>
     public DbSet<Author> Authors { get; set; }
+
+    /// <summary>
+    /// Gets or sets of the <see cref="DbSet{TEntity}"/> of the <see cref="Book"/> entity.
+    /// </summary>
     public DbSet<Book> Books { get; set; }
+
+    /// <summary>
+    /// Gets or sets of the <see cref="DbSet{TEntity}"/> of the <see cref="Category"/> entity.
+    /// </summary>
     public DbSet<Category> Categories { get; set; }
+
+    /// <summary>
+    /// Gets or sets of the <see cref="DbSet{TEntity}"/> of the <see cref="Booking"/> entity.
+    /// </summary>
     public DbSet<Booking> Bookings { get; set; }
+
+    /// <summary>
+    /// Gets or sets of the <see cref="DbSet{TEntity}"/> of the <see cref="Editor"/> entity.
+    /// </summary>
     public DbSet<Editor> Editors { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LibraryContext"/> using the specified <paramref name="options"/> of <see cref="DbContextOptions{TContext}"/>.
+    /// </summary>
+    /// <param name="options">The options to be used by a db context.</param>
     public LibraryContext(DbContextOptions<LibraryContext> options) : base(options)
     {
     }
 
+    /// <summary>
+    /// Configures a context by overriding <see cref="DbContext.OnConfiguring(DbContextOptionsBuilder)"/>.
+    /// </summary>
+    /// <param name="modelBuilder">The builder used to construct the model for this context.</param>
     // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     // {
     //     if (!optionsBuilder.IsConfigured)
     //     {
-    //         throw new NullReferenceException();
+    //        //your code here
     //     }
     // }
 
+    /// <summary>
+    /// Configures the model and relationships between entities, and seeds initial data into the database using <see cref="ModelBuilder"/>.
+    /// </summary>
+    /// <param name="modelBuilder">The builder used to construct the model for this context.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Seeding Authors
@@ -66,13 +106,14 @@ public class LibraryContext : DbContext
 
         // Seeding Bookings
         modelBuilder.Entity<Booking>().HasData(
-            new Booking { Id = 1, User = "User1", BookingDate = DateTime.Now.AddDays(-5), BookId = 1 }, // No DeliveryDate
-            new Booking { Id = 2, User = "User1", BookingDate = DateTime.Now.AddDays(-10), BookId = 2 }, // No DeliveryDate
-            new Booking { Id = 3, User = "User1", BookingDate = DateTime.Now.AddDays(-15), BookId = 3 }, // No DeliveryDate
-            new Booking { Id = 4, User = "User2", BookingDate = DateTime.Now.AddDays(-7), BookId = 4 }, // No DeliveryDate
-            new Booking { Id = 5, User = "User3", BookingDate = DateTime.Now.AddDays(-20), DeliveryDate = DateTime.Now.AddDays(-10), BookId = 5 } // With DeliveryDate
+            new Booking { Id = 1, User = "User1", BookingDate = DateTime.Now.AddDays(-5), BookId = 1 }, // No ReturnDate
+            new Booking { Id = 2, User = "User1", BookingDate = DateTime.Now.AddDays(-10), BookId = 2 }, // No ReturnDate
+            new Booking { Id = 3, User = "User1", BookingDate = DateTime.Now.AddDays(-15), BookId = 3 }, // No ReturnDate
+            new Booking { Id = 4, User = "User2", BookingDate = DateTime.Now.AddDays(-7), BookId = 4 }, // No ReturnDate
+            new Booking { Id = 5, User = "User3", BookingDate = DateTime.Now.AddDays(-20), ReturnDate = DateTime.Now.AddDays(-10), BookId = 5 } // With ReturnDate
         );
 
+        // Defines relationship between the entities
         modelBuilder
             .Entity<Book>()
             .HasOne(b => b.Author)

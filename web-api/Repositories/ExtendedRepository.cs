@@ -1,37 +1,55 @@
 using System.Linq.Expressions;
 using System.Runtime.ExceptionServices;
-using Context;
 using Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Models.Metadatas;
 
 namespace Repository;
 
-public class ExtendedRepository<T> : GenericRepository<T>, IExtendedRepository<T> where T : class
+/// <summary>
+/// An instance of <see cref="ExtendedRepository{T, TContext}"/> that provides the methods to search item in the current context. 
+/// <para>
+/// This class extends <see cref="GenericRepository{T, TContext}"/>.
+/// <para>
+/// This class implements <see cref="IExtendedRepository{T}"/>.
+/// </para>
+/// </para>
+/// </summary>
+/// <typeparam name="T">The type of the entity.</typeparam>
+/// <typeparam name="TContext">The type of the current context.</typeparam>
+public class ExtendedRepository<T, TContext> : GenericRepository<T, TContext>, IExtendedRepository<T> where T : class where TContext : DbContext
 {
-    public ExtendedRepository(LibraryContext context) : base(context) { }
+    /// <summary>
+    /// Initializes a new instance of <see cref="ExtendedRepository{T}"/> using the specified <paramref name="context"/> of type <typeparamref name="TContext"/>.
+    /// </summary>
+    /// <param name="context">The type of the context.</param>
+    public ExtendedRepository(TContext context) : base(context) { }
 
     /// <summary>
-    /// Get a list of entities of type <typeparamref name="T"/> by passing a criteia <paramref name="expression"/>
-    /// and pagination metadata 
+    /// Gets a list of entities of type <typeparamref name="T"/> and <see cref="PaginationMetadata"/> metadata by passing a <see cref="Expression{TDelegate}"/> <paramref name="expression"/>
+    /// and additional <see cref="IQueryable{T}"/> LINQ operations.
     /// </summary>
     /// 
-    /// <typeparam name="T">The type of the entities being required</typeparam>
-    /// <param name="pageNumber">the current of page number, starting from 1</param>
-    /// <param name="pageSize">the number of the item including in each page</param>
-    /// <param name="expression">A lambda expression rappresenting the filter criteria to apply <see cref="Func{T, TResult}"/></param>
-    /// <param name="queryLinq">A function <see cref="IQueryable{T}"/> that takes a LINQ operation (sorting must be provided)</param>
+    /// <typeparam name="T">The type of the entity being required</typeparam>
+    /// <param name="pageNumber">The current page number, starting from 1.</param>
+    /// <param name="pageSize">The number of the item including in each page.</param>
+    /// <param name="expression">A <see cref="Expression{TDelegate}"/> taht takes a lambda expression representing the filter criteria to apply.</param>
+    /// <param name="queryLinq">
+    /// A <see cref="IQueryable{T}"/> function that takes a LINQ operation.
+    /// <para>
+    /// Sorting must be provided.
+    /// </para>
+    /// </param>
     /// 
     /// <returns>
-    /// An asynchronous task operation returning a tuple:
     /// <list type="bullet">
     /// 
     /// <item>
-    /// <description>a <see cref="IEnumerable{T}"/> rappresenting the entities that match the criteria</description>
+    /// <description><see cref="IEnumerable{T}"/> representing the entities that match the criteria.</description>
     /// </item>
     /// 
     /// <item>
-    /// <description>a <see cref="PaginationMetadata"/> rappresenting an object that includes pagination details</description>
+    /// <description><see cref="PaginationMetadata"/> representing an object that includes pagination details.</description>
     /// </item>
     /// 
     /// </list>

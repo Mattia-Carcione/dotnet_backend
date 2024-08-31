@@ -12,41 +12,41 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    [Migration("20240816165653_RenameColumn")]
-    partial class RenameColumn
+    [Migration("20240829101810_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("BookCategory", b =>
                 {
-                    b.Property<int>("BooksID")
+                    b.Property<int>("BooksId")
                         .HasColumnType("int");
 
                     b.Property<int>("CategoriesId")
                         .HasColumnType("int");
 
-                    b.HasKey("BooksID", "CategoriesId");
+                    b.HasKey("BooksId", "CategoriesId");
 
                     b.HasIndex("CategoriesId");
 
                     b.ToTable("BookCategory");
                 });
 
-            modelBuilder.Entity("Model.Entities.Author", b =>
+            modelBuilder.Entity("Models.Entities.Author", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
@@ -59,18 +59,18 @@ namespace WebApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Authors");
                 });
 
-            modelBuilder.Entity("Model.Entities.Book", b =>
+            modelBuilder.Entity("Models.Entities.Book", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
@@ -89,12 +89,13 @@ namespace WebApi.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("TotalCopies")
                         .HasColumnType("int");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
 
@@ -103,7 +104,7 @@ namespace WebApi.Migrations
                     b.ToTable("Books");
                 });
 
-            modelBuilder.Entity("Model.Entities.Booking", b =>
+            modelBuilder.Entity("Models.Entities.Booking", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -117,11 +118,13 @@ namespace WebApi.Migrations
                     b.Property<DateTime>("BookingDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeliveryDate")
+                    b.Property<DateTime>("ReturnDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("User")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
@@ -130,7 +133,7 @@ namespace WebApi.Migrations
                     b.ToTable("Bookings");
                 });
 
-            modelBuilder.Entity("Model.Entities.Category", b =>
+            modelBuilder.Entity("Models.Entities.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -139,17 +142,21 @@ namespace WebApi.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
 
                     b.Property<string>("Genre")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("Model.Entities.Editor", b =>
+            modelBuilder.Entity("Models.Entities.Editor", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -158,7 +165,9 @@ namespace WebApi.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
@@ -167,28 +176,28 @@ namespace WebApi.Migrations
 
             modelBuilder.Entity("BookCategory", b =>
                 {
-                    b.HasOne("Model.Entities.Book", null)
+                    b.HasOne("Models.Entities.Book", null)
                         .WithMany()
-                        .HasForeignKey("BooksID")
+                        .HasForeignKey("BooksId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Model.Entities.Category", null)
+                    b.HasOne("Models.Entities.Category", null)
                         .WithMany()
                         .HasForeignKey("CategoriesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Model.Entities.Book", b =>
+            modelBuilder.Entity("Models.Entities.Book", b =>
                 {
-                    b.HasOne("Model.Entities.Author", "Author")
+                    b.HasOne("Models.Entities.Author", "Author")
                         .WithMany("Books")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Model.Entities.Editor", "Editor")
+                    b.HasOne("Models.Entities.Editor", "Editor")
                         .WithMany("Books")
                         .HasForeignKey("EditorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -199,9 +208,9 @@ namespace WebApi.Migrations
                     b.Navigation("Editor");
                 });
 
-            modelBuilder.Entity("Model.Entities.Booking", b =>
+            modelBuilder.Entity("Models.Entities.Booking", b =>
                 {
-                    b.HasOne("Model.Entities.Book", "Book")
+                    b.HasOne("Models.Entities.Book", "Book")
                         .WithMany("Bookings")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -210,17 +219,17 @@ namespace WebApi.Migrations
                     b.Navigation("Book");
                 });
 
-            modelBuilder.Entity("Model.Entities.Author", b =>
+            modelBuilder.Entity("Models.Entities.Author", b =>
                 {
                     b.Navigation("Books");
                 });
 
-            modelBuilder.Entity("Model.Entities.Book", b =>
+            modelBuilder.Entity("Models.Entities.Book", b =>
                 {
                     b.Navigation("Bookings");
                 });
 
-            modelBuilder.Entity("Model.Entities.Editor", b =>
+            modelBuilder.Entity("Models.Entities.Editor", b =>
                 {
                     b.Navigation("Books");
                 });

@@ -64,7 +64,7 @@ namespace WebApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Model.Entities.Author", b =>
+            modelBuilder.Entity("Models.Entities.Author", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -125,7 +125,7 @@ namespace WebApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Model.Entities.Book", b =>
+            modelBuilder.Entity("Models.Entities.Book", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -222,7 +222,7 @@ namespace WebApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Model.Entities.Booking", b =>
+            modelBuilder.Entity("Models.Entities.Booking", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -236,7 +236,7 @@ namespace WebApi.Migrations
                     b.Property<DateTime>("BookingDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeliveryDate")
+                    b.Property<DateTime>("ReturnDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("User")
@@ -255,45 +255,45 @@ namespace WebApi.Migrations
                         {
                             Id = 1,
                             BookId = 1,
-                            BookingDate = new DateTime(2024, 8, 19, 12, 46, 58, 286, DateTimeKind.Local).AddTicks(2663),
-                            DeliveryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            BookingDate = new DateTime(2024, 8, 24, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5664),
+                            ReturnDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             User = "User1"
                         },
                         new
                         {
                             Id = 2,
                             BookId = 2,
-                            BookingDate = new DateTime(2024, 8, 14, 12, 46, 58, 286, DateTimeKind.Local).AddTicks(2727),
-                            DeliveryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            BookingDate = new DateTime(2024, 8, 19, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5728),
+                            ReturnDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             User = "User1"
                         },
                         new
                         {
                             Id = 3,
                             BookId = 3,
-                            BookingDate = new DateTime(2024, 8, 9, 12, 46, 58, 286, DateTimeKind.Local).AddTicks(2730),
-                            DeliveryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            BookingDate = new DateTime(2024, 8, 14, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5731),
+                            ReturnDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             User = "User1"
                         },
                         new
                         {
                             Id = 4,
                             BookId = 4,
-                            BookingDate = new DateTime(2024, 8, 17, 12, 46, 58, 286, DateTimeKind.Local).AddTicks(2732),
-                            DeliveryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            BookingDate = new DateTime(2024, 8, 22, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5733),
+                            ReturnDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             User = "User2"
                         },
                         new
                         {
                             Id = 5,
                             BookId = 5,
-                            BookingDate = new DateTime(2024, 8, 4, 12, 46, 58, 286, DateTimeKind.Local).AddTicks(2734),
-                            DeliveryDate = new DateTime(2024, 8, 14, 12, 46, 58, 286, DateTimeKind.Local).AddTicks(2736),
+                            BookingDate = new DateTime(2024, 8, 9, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5735),
+                            ReturnDate = new DateTime(2024, 8, 19, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5736),
                             User = "User3"
                         });
                 });
 
-            modelBuilder.Entity("Model.Entities.Category", b =>
+            modelBuilder.Entity("Models.Entities.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -348,7 +348,7 @@ namespace WebApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Model.Entities.Editor", b =>
+            modelBuilder.Entity("Models.Entities.Editor", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -395,28 +395,28 @@ namespace WebApi.Migrations
 
             modelBuilder.Entity("BookCategory", b =>
                 {
-                    b.HasOne("Model.Entities.Book", null)
+                    b.HasOne("Models.Entities.Book", null)
                         .WithMany()
                         .HasForeignKey("BooksId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Model.Entities.Category", null)
+                    b.HasOne("Models.Entities.Category", null)
                         .WithMany()
                         .HasForeignKey("CategoriesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Model.Entities.Book", b =>
+            modelBuilder.Entity("Models.Entities.Book", b =>
                 {
-                    b.HasOne("Model.Entities.Author", "Author")
+                    b.HasOne("Models.Entities.Author", "Author")
                         .WithMany("Books")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Model.Entities.Editor", "Editor")
+                    b.HasOne("Models.Entities.Editor", "Editor")
                         .WithMany("Books")
                         .HasForeignKey("EditorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -427,9 +427,9 @@ namespace WebApi.Migrations
                     b.Navigation("Editor");
                 });
 
-            modelBuilder.Entity("Model.Entities.Booking", b =>
+            modelBuilder.Entity("Models.Entities.Booking", b =>
                 {
-                    b.HasOne("Model.Entities.Book", "Book")
+                    b.HasOne("Models.Entities.Book", "Book")
                         .WithMany("Bookings")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -438,17 +438,17 @@ namespace WebApi.Migrations
                     b.Navigation("Book");
                 });
 
-            modelBuilder.Entity("Model.Entities.Author", b =>
+            modelBuilder.Entity("Models.Entities.Author", b =>
                 {
                     b.Navigation("Books");
                 });
 
-            modelBuilder.Entity("Model.Entities.Book", b =>
+            modelBuilder.Entity("Models.Entities.Book", b =>
                 {
                     b.Navigation("Bookings");
                 });
 
-            modelBuilder.Entity("Model.Entities.Editor", b =>
+            modelBuilder.Entity("Models.Entities.Editor", b =>
                 {
                     b.Navigation("Books");
                 });

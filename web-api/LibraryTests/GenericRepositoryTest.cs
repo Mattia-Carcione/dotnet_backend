@@ -7,7 +7,7 @@
 *correttamente.
 **/
 
-using Microsoft.EntityFrameworkCore;
+using Context;
 using Models.Entities;
 using Repository;
 
@@ -15,7 +15,7 @@ namespace LibraryTests;
 
 public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
 {
-    public GenericRepository<Book> _repository { get; private set; }
+    public GenericRepository<Book, LibraryContext> _repository { get; private set; }
     public TestDatabaseFixture Fixture { get; }
 
     public GenericRepositoryTest(TestDatabaseFixture fixture)
@@ -31,16 +31,19 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
     public async Task AddBook_Book_BookIsAdded()
     {
         //Assign
-        var (initialList, metadata) = await _repository.GetAllAsync(10, 1, c => c.OrderBy(b => b.Id));
+        var (initialList, metadata) = await _repository.GetAllAsync(1, 10, c => c.OrderBy(b => b.Id));
+        var initialCount = initialList.Count();
         Book book = EntityFactoryHelper.CreateBook("test", 1, 1);
 
         //Act
         await _repository.AddAsync(book);
         await _repository.SaveChangesAsync();
-        var (finalList, metadata2) = await _repository.GetAllAsync(10, 1, c => c.OrderBy(b => b.Id));
+        var (finalList, metadata2) = await _repository.GetAllAsync(1, 10, c => c.OrderBy(b => b.Id));
+        var FinalCount = finalList.Count();
+
 
         //Assert
-        Assert.Equal(initialList.Count() + 1, finalList.Count());
+        Assert.Equal(initialCount + 1, FinalCount);
     }
 
     [Fact]
@@ -64,14 +67,14 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
     public async Task DeleteBook_Book_BookIsRemoved()
     {
         //Assign
-        var (initialList, metadata) = await _repository.GetAllAsync(10, 1, c => c.OrderBy(b => b.Id));
+        var (initialList, metadata) = await _repository.GetAllAsync(1, 10, c => c.OrderBy(b => b.Id));
         var count = initialList.Count();
         Book book = await _repository.GetAsync(1) ?? throw new ArgumentNullException();
 
         //Act
         _repository.Delete(book);
         await _repository.SaveChangesAsync();
-        var (finalList, metadata2) = await _repository.GetAllAsync(10, 1, c => c.OrderBy(b => b.Id));
+        var (finalList, metadata2) = await _repository.GetAllAsync(1, 10, c => c.OrderBy(b => b.Id));
 
         //Assert
         Assert.Equal(count - 1, finalList.Count());
@@ -81,7 +84,7 @@ public class GenericRepositoryTest : IClassFixture<TestDatabaseFixture>
     public async Task GetAllBook_Book_GetListOFBook()
     {
         //Assign
-        var (initialList, metadata) = await _repository.GetAllAsync(10, 1, c => c.OrderBy(b => b.Id));
+        var (initialList, metadata) = await _repository.GetAllAsync(1, 10, c => c.OrderBy(b => b.Id));
 
         //Act
         var count = initialList.Count();

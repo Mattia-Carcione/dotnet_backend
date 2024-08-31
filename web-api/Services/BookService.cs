@@ -24,17 +24,43 @@ using Repository;
 
 namespace Services;
 
-public class BookService : ExtendedRepository<Book>, IBookService
+/// <summary>
+/// An instance of <see cref="BookService"/> providing the booking-related operation, including booking and updating booking.
+/// <para>
+/// This class extends <see cref="ExtendedRepository{T}"/>.
+/// </para>
+/// <para>
+/// This class implements <see cref="IBookService"/>.
+/// </para>
+/// </summary>
+public class BookService : ExtendedRepository<Book, LibraryContext>, IBookService
 {
+
+    /// <summary>
+    /// Initializes a new instance of <see cref="BookService"/> using the specified <paramref name="context"/> of type <see cref="LibraryContext"/>.
+    /// </summary>
+    /// <param name="context">The database context of type <see cref="LibraryContext"/> used to access the library data.</param>
     public BookService(LibraryContext context)
         : base(context) { }
 
+    /// <summary>
+    /// Updates and saves the state of the <see cref="Book"/> in the current context.
+    /// </summary>
+    /// <param name="book">The <see cref="Book"/> to be updated in the context.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation to update and save the <see cref="Book"/> in the current context.
+    /// </returns>
     private async Task UpdateBookState(Book book)
     {
         Update(book);
         await SaveChangesAsync();
     }
 
+    /// <summary>
+    /// Validates booking rules for a specified user and book.
+    /// </summary>
+    /// <param name="userBookings">A <see cref="List{T}"/> of <see cref="Booking"/> objects associated with the user who is making the booking.</param>
+    /// <param name="bookId">The id of the <see cref="Book"/> related to the booking.</param>
     private static void ValidateBookingRules(List<Booking> userBookings, int bookId)
     {
         ValidatorHelper.CheckIsValid(
@@ -50,6 +76,16 @@ public class BookService : ExtendedRepository<Book>, IBookService
         );
     }
 
+    /// <summary>
+    /// Books a specified book for a user.
+    /// </summary>
+    /// <param name="user">The name of the user who is making the book.</param>
+    /// <param name="bookId">The id of the book to be booked.</param>
+    /// <returns>
+    /// A <see cref="Booking"/> representing the entity that was added in the context.
+    /// </returns>
+    /// <exception cref="BookingException">Thrown when booking-specific rules are violated.</exception>
+    /// <exception cref="Exception">Thrown when an unexpected error occurs during the booking process.</exception>
     public async Task<Booking> BookingAsync(string user, int bookId)
     {
         {
@@ -72,7 +108,7 @@ public class BookService : ExtendedRepository<Book>, IBookService
                 );
 
                 var userBookings = await _context
-                    .Bookings.Where(b => b.User == user && b.DeliveryDate == default)
+                    .Bookings.Where(b => b.User == user && b.ReturnDate == default)
                     .ToListAsync();
 
                 ValidateBookingRules(userBookings, bookId);
@@ -99,7 +135,19 @@ public class BookService : ExtendedRepository<Book>, IBookService
         }
     }
 
-    public async Task DeliveryAsync(string user, int bookingId, int bookId)
+    /// <summary>
+    /// Updates the return date of the specified <see cref="Booking"/>.
+    /// </summary>
+    /// <param name="user">The name of the user who is returning the book.</param>
+    /// <param name="bookingId">The id of the booking to be updated.</param>
+    /// <param name="bookId">The id of the book to be returned.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation to update and save the <see cref="Booking"/> in the current context.
+    /// </returns>
+    /// <exception cref="BookingException">Thrown when booking-specific rules are violated.</exception>
+    /// <exception cref="ArgumentNullException">Thrown if the booking's associated book is null.</exception>
+    /// <exception cref="Exception">Thrown when an unexpected error occurs during the booking process.</exception>
+    public async Task UpdateBookingAsync(string user, int bookingId, int bookId)
     {
         {
             try
@@ -113,11 +161,14 @@ public class BookService : ExtendedRepository<Book>, IBookService
                 var booking =
                     await _context
                         .Bookings.Include(b => b.Book)
-                        .FirstOrDefaultAsync(b => b.Id == bookingId && b.User == user)
-                    ?? throw new BookingException(BookingException.Exceptions.UserMismatch);
+                        .FirstOrDefaultAsync(b => b.Id == bookingId)
+                    ?? throw new BookingException(BookingException.Exceptions.BookingNotFound);
+
+                if(booking.User != user)
+                    throw new BookingException(BookingException.Exceptions.UserMismatch);
 
                 ValidatorHelper.CheckIsValid(
-                    booking.DeliveryDate,
+                    booking.ReturnDate,
                     d => d == default,
                     BookingException.Exceptions.BookAlreadyReturned
                 );
@@ -132,7 +183,7 @@ public class BookService : ExtendedRepository<Book>, IBookService
 
                 book.Copies++;
 
-                booking.DeliveryDate = DateTime.Today;
+                booking.ReturnDate = DateTime.Today;
 
                 _context.Bookings.Update(booking);
 

@@ -42,7 +42,7 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
     public async Task AddBooking_Booking_BookingIsAdded()
     {
         //Assign
-        var initialBook = await _service.GetAsync(1, include: query => query.Include(b => b.Bookings)) ?? throw new ArgumentNullException();
+        var initialBook = await _service.GetAsync(1, query => query.Include(b => b.Bookings)) ?? throw new ArgumentNullException();
         var initialBookingsCount = initialBook.Bookings.Count;
         var initialCopies = initialBook.Copies;
 
@@ -58,22 +58,22 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
     }
 
     [Fact]
-    public async Task DeliveryTest_Booking_BookingIsUpdated()
+    public async Task UpdateBookingTest_Booking_BookingIsUpdated()
     {
         //Assign
         var book = await _service.GetAsync(1) ?? throw new ArgumentNullException();
         await _service.BookingAsync("utenteTest", book.Id);
         var initialCopies = book.Copies;
         var booking = book.Bookings.First(b => b.User == "utenteTest");
-        var initialDeliveryDate = booking.DeliveryDate;
+        var initialReturnDate = booking.ReturnDate;
 
         // //Act
-        await _service.DeliveryAsync("utenteTest", booking.Id, book.Id);
+        await _service.UpdateBookingAsync("utenteTest", booking.Id, book.Id);
 
         //Assert
         Assert.Equal(book.Copies, initialCopies + 1);
-        Assert.NotEqual(booking.DeliveryDate, default);
-        Assert.Equal(initialDeliveryDate, default);
+        Assert.NotEqual(booking.ReturnDate, default);
+        Assert.Equal(initialReturnDate, default);
     }
 
     [Fact]
@@ -145,7 +145,7 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
     }
 
     [Fact]
-    public async Task DeliveryTest_Booking_BookHasntBooked()
+    public async Task UpdateBookingTest_Booking_BookHasntBooked()
     {
         //Assign
         var book = EntityFactoryHelper.CreateBook("test", 1, 1, copies: 10);
@@ -153,27 +153,27 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
         await _service.SaveChangesAsync();
 
         // //Act
-        var delivery = async () => await _service.DeliveryAsync("User1", 1, book.Id);
+        var UpdateBooking = async () => await _service.UpdateBookingAsync("User1", 1, book.Id);
 
         //Assert
-        await Assert.ThrowsAsync<BookingException>(async () => await delivery());
+        await Assert.ThrowsAsync<BookingException>(async () => await UpdateBooking());
     }
 
     [Fact]
-    public async Task DeliveryTest_Booking_BookHasReturned()
+    public async Task UpdateBookingTest_Booking_BookHasReturned()
     {
         //Assign
-        await _service.DeliveryAsync("User1", 1, 1);
+        await _service.UpdateBookingAsync("User1", 1, 1);
 
         // //Act
-        var delivery = async () => await _service.DeliveryAsync("User1", 1, 1);
+        var UpdateBooking = async () => await _service.UpdateBookingAsync("User1", 1, 1);
 
         //Assert
-        await Assert.ThrowsAsync<BookingException>(async () => await delivery());
+        await Assert.ThrowsAsync<BookingException>(async () => await UpdateBooking());
     }
 
     [Fact]
-    public async Task DeliveryTest_Booking_BookingAndUserMismatch()
+    public async Task UpdateBookingTest_Booking_BookingAndUserMismatch()
     {
         //Assign
         var book = EntityFactoryHelper.CreateBook("test", 1, 1, copies: 10);
@@ -183,9 +183,9 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
         var booking = book.Bookings.First(b => b.User == "testUser");
 
         // //Act
-        var delivery = async () => await _service.DeliveryAsync("test_user", booking.Id, book.Id);
+        var UpdateBooking = async () => await _service.UpdateBookingAsync("test_user", booking.Id, book.Id);
 
         //Assert
-        await Assert.ThrowsAsync<BookingException>(async () => await delivery());
+        await Assert.ThrowsAsync<BookingException>(async () => await UpdateBooking());
     }
 }

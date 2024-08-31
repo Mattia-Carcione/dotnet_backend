@@ -13,11 +13,17 @@ namespace Models.Entities;
 public class Editor
 {
     private int id {get; set;}
+
+    /// <summary>
+    /// 
+    /// </summary>
     [Key]
     public int Id {get {return id;} set {id = value;}}
 
     private string name {get; set;} = string.Empty;
+
     [Required]
+    [MinLength(3)]
     [MaxLength(50)]
     public string Name {get {return name;} set {name = value;}}
 

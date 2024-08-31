@@ -8,30 +8,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WebApi.Migrations
 {
     /// <inheritdoc />
-    public partial class Seeding : Migration
+    public partial class SeedingData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_BookCategory_Books_BooksID",
-                table: "BookCategory");
-
-            migrationBuilder.RenameColumn(
-                name: "ID",
-                table: "Books",
-                newName: "Id");
-
-            migrationBuilder.RenameColumn(
-                name: "BooksID",
-                table: "BookCategory",
-                newName: "BooksId");
-
-            migrationBuilder.RenameColumn(
-                name: "ID",
-                table: "Authors",
-                newName: "Id");
-
             migrationBuilder.InsertData(
                 table: "Authors",
                 columns: new[] { "Id", "BirthDate", "LastName", "Name" },
@@ -94,32 +75,20 @@ namespace WebApi.Migrations
 
             migrationBuilder.InsertData(
                 table: "Bookings",
-                columns: new[] { "Id", "BookId", "BookingDate", "DeliveryDate", "User" },
+                columns: new[] { "Id", "BookId", "BookingDate", "ReturnDate", "User" },
                 values: new object[,]
                 {
-                    { 1, 1, new DateTime(2024, 8, 12, 18, 19, 17, 763, DateTimeKind.Local).AddTicks(5432), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User1" },
-                    { 2, 2, new DateTime(2024, 8, 7, 18, 19, 17, 763, DateTimeKind.Local).AddTicks(5474), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User1" },
-                    { 3, 3, new DateTime(2024, 8, 2, 18, 19, 17, 763, DateTimeKind.Local).AddTicks(5476), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User1" },
-                    { 4, 4, new DateTime(2024, 8, 10, 18, 19, 17, 763, DateTimeKind.Local).AddTicks(5478), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User2" },
-                    { 5, 5, new DateTime(2024, 7, 28, 18, 19, 17, 763, DateTimeKind.Local).AddTicks(5479), new DateTime(2024, 8, 7, 18, 19, 17, 763, DateTimeKind.Local).AddTicks(5480), "User3" }
+                    { 1, 1, new DateTime(2024, 8, 24, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5664), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User1" },
+                    { 2, 2, new DateTime(2024, 8, 19, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5728), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User1" },
+                    { 3, 3, new DateTime(2024, 8, 14, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5731), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User1" },
+                    { 4, 4, new DateTime(2024, 8, 22, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5733), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User2" },
+                    { 5, 5, new DateTime(2024, 8, 9, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5735), new DateTime(2024, 8, 19, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5736), "User3" }
                 });
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_BookCategory_Books_BooksId",
-                table: "BookCategory",
-                column: "BooksId",
-                principalTable: "Books",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_BookCategory_Books_BooksId",
-                table: "BookCategory");
-
             migrationBuilder.DeleteData(
                 table: "BookCategory",
                 keyColumns: new[] { "BooksId", "CategoriesId" },
@@ -269,29 +238,6 @@ namespace WebApi.Migrations
                 table: "Editors",
                 keyColumn: "Id",
                 keyValue: 5);
-
-            migrationBuilder.RenameColumn(
-                name: "Id",
-                table: "Books",
-                newName: "ID");
-
-            migrationBuilder.RenameColumn(
-                name: "BooksId",
-                table: "BookCategory",
-                newName: "BooksID");
-
-            migrationBuilder.RenameColumn(
-                name: "Id",
-                table: "Authors",
-                newName: "ID");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_BookCategory_Books_BooksID",
-                table: "BookCategory",
-                column: "BooksID",
-                principalTable: "Books",
-                principalColumn: "ID",
-                onDelete: ReferentialAction.Cascade);
         }
     }
 }

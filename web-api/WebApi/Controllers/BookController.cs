@@ -21,6 +21,7 @@ using Models.Metadatas;
 
 namespace WebApi.Controllers;
 
+
 [ApiController]
 [Route("api/v{version:apiVersion}/books")]
 [ApiVersion(1)]
@@ -35,6 +36,7 @@ public class BookController : ControllerBase
         _repository = repository;
         _mapper = mapper;
     }
+
     private async Task<(IEnumerable<BookDTO>, PaginationMetadata)> GetAllAsync(int pageNumber, int pageSize)
     {
         var (books, paginationMetadata) = await _repository.GetAllAsync(pageNumber, pageSize, q => q.OrderBy(b=> b.Title));
@@ -44,7 +46,7 @@ public class BookController : ControllerBase
         return (mappedBooks, paginationMetadata);
     }
 
-    [HttpPost("create")]
+    [HttpPost()]
     public async Task<IActionResult> CreateBookAsync([FromBody] CreateBookDTO book)
     {
         var mappedBook = _mapper.Map<Book>(book);
@@ -55,28 +57,10 @@ public class BookController : ControllerBase
         return CreatedAtRoute("GetAsync", new { id = mappedBook.Id }, mappedBook);
     }
 
-    [HttpPut("update/{id}")]
-    public async Task<IActionResult> UpdateBookAsync([FromRoute] int id,
-        [FromBody] UpdateBookDTO book)
-    {
-        var existingBook = await _repository.GetAsync(id);
-
-        if (existingBook == null)
-            return NotFound();
-
-        _mapper.Map(book, existingBook);
-
-        _repository.Update(existingBook);
-        await _repository.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-
     [HttpGet("{id}", Name = "GetAsync")]
     public async Task<IActionResult> GetAsync([FromRoute] int id)
     {
-        var book = await _repository.GetAsync(id, include: query =>
+        var book = await _repository.GetAsync(id, query =>
                 query.Include(b => b.Author)
                     .Include(b => b.Editor)
                     .Include(b => b.Categories)
@@ -92,9 +76,9 @@ public class BookController : ControllerBase
 
     [HttpGet()]
     public async Task<ActionResult> GetAllAsync([FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 10,
-        [FromQuery(Name = "author")] string? author = null,
-        [FromQuery(Name = "title")] string? title = null)
+     [FromQuery] int pageSize = 10,
+     [FromQuery(Name = "author")] string? author = null,
+     [FromQuery(Name = "title")] string? title = null)
     {
         pageSize = pageSize > MaxPageSize ? MaxPageSize : pageSize;
         pageNumber = pageNumber <= 0 ? 1 : pageNumber;
@@ -110,7 +94,7 @@ public class BookController : ControllerBase
         author = author?.Trim();
 
         var (books, pagination_metadata) = await _repository.SearchByCriteriaAsync(pageNumber, pageSize, b =>
-            (string.IsNullOrEmpty(title) || b.Title.Contains(title)) && 
+            (string.IsNullOrEmpty(title) || b.Title.Contains(title)) &&
             (string.IsNullOrEmpty(author) || (b.Author != null && b.Author.LastName.Contains(author))),
             b => b.OrderBy(b => b.Title)
         );
@@ -119,5 +103,22 @@ public class BookController : ControllerBase
         Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(pagination_metadata));
 
         return Ok(mappedBooks);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateBookAsync([FromRoute] int id,
+        [FromBody] UpdateBookDTO book)
+    {
+        var existingBook = await _repository.GetAsync(id);
+
+        if (existingBook == null)
+            return NotFound();
+
+        _mapper.Map(book, existingBook);
+
+        _repository.Update(existingBook);
+        await _repository.SaveChangesAsync();
+
+        return NoContent();
     }
 }

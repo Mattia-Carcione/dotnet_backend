@@ -18,11 +18,15 @@ public class Category
     public int Id {get {return id;} set {id = value;}}
 
     private string genre {get; set;} = string.Empty;
+
     [Required]
+    [MinLength(3)]
     [MaxLength(50)]
     public string Genre {get {return genre;} set {genre = value;}}
 
     private string description {get; set;} = string.Empty;
+
+    [MinLength(3)]
     [MaxLength(400)]
     public string Description {get {return description;} set {description = value;}}
     
