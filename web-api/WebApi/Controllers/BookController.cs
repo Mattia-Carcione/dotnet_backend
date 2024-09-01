@@ -9,7 +9,6 @@
 - Aggiorna Libro
 */
 
-using System.Text.Json;
 using Asp.Versioning;
 using AutoMapper;
 using DTOs.BookDTOs;
@@ -17,35 +16,39 @@ using Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;
-using Models.Metadatas;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WebApi.Controllers;
 
-
+/// <summary>
+/// Controller provides book-related operation.
+/// </summary>
 [ApiController]
 [Route("api/v{version:apiVersion}/books")]
 [ApiVersion(1)]
-public class BookController : ControllerBase
+public class BookController : ControllerHelper<Book, BookDTO, BookDetailDTO>
 {
-    private readonly IExtendedRepository<Book> _repository;
-    private readonly IMapper _mapper;
-    private const int MaxPageSize = 25;
+    /// <summary>
+    /// Initializes a new instance of <see cref="BookController"/>.
+    /// </summary>
+    /// 
+    /// <param name="repository">The repository interface that provides the CRUD operation methods.</param>
+    /// 
+    /// <param name="mapper">A mapper object that maps entities to each other.</param>
+    public BookController(IExtendedRepository<Book> repository, IMapper mapper) : base(mapper, repository)
+    { }
 
-    public BookController(IExtendedRepository<Book> repository, IMapper mapper)
-    {
-        _repository = repository;
-        _mapper = mapper;
-    }
-
-    private async Task<(IEnumerable<BookDTO>, PaginationMetadata)> GetAllAsync(int pageNumber, int pageSize)
-    {
-        var (books, paginationMetadata) = await _repository.GetAllAsync(pageNumber, pageSize, q => q.OrderBy(b=> b.Title));
-
-        var mappedBooks = _mapper.Map<IEnumerable<BookDTO>>(books);
-
-        return (mappedBooks, paginationMetadata);
-    }
-
+    /// <summary>
+    /// Creates a new instance of <see cref="Book"/>.
+    /// </summary>
+    /// 
+    /// <param name="book">The object DTO for creating book.</param>
+    /// 
+    /// <returns>A task representing the asynchronous operation for creating a new book.</returns>
+    /// 
+    /// <response code="201">If the book was created correctly.</response>
+    /// 
+    /// <response code="400">If the data provided for the creation of the book is invalid.</response>
     [HttpPost()]
     public async Task<IActionResult> CreateBookAsync([FromBody] CreateBookDTO book)
     {
@@ -54,13 +57,24 @@ public class BookController : ControllerBase
         await _repository.AddAsync(mappedBook);
         await _repository.SaveChangesAsync();
 
-        return CreatedAtRoute("GetAsync", new { id = mappedBook.Id }, mappedBook);
+        return CreatedAtRoute("GetBookAsync", new { id = mappedBook.Id }, mappedBook);
     }
 
-    [HttpGet("{id}", Name = "GetAsync")]
-    public async Task<IActionResult> GetAsync([FromRoute] int id)
+    /// <summary>
+    /// Gets the item with the specified id.
+    /// </summary>
+    /// 
+    /// <param name="id">The id of the entity.</param>
+    /// 
+    /// <returns>A task representing asynchronous operation that returns the <see cref="OkResult"/> with the object created; else, <see cref="NotFoundResult"/>.</returns>
+    /// 
+    /// <response code="200">If the book was successfully found.</response>
+    /// 
+    /// <response code="404">If the book doesn't exist in the current context.</response>
+    [HttpGet("{id}", Name = "GetBookAsync")]
+    public async Task<IActionResult> GetBookAsync([FromRoute] int id)
     {
-        var book = await _repository.GetAsync(id, query =>
+        var book = await GetAsync(id, query =>
                 query.Include(b => b.Author)
                     .Include(b => b.Editor)
                     .Include(b => b.Categories)
@@ -69,42 +83,65 @@ public class BookController : ControllerBase
         if (book == null)
             return NotFound();
 
-        var mappedBook = _mapper.Map<BookDetailDTO>(book);
-
-        return Ok(mappedBook);
+        return Ok(book);
     }
 
+    /// <summary>
+    /// Gets a paginated list of book, wheter or not using a author/title filter.
+    /// </summary>
+    /// 
+    /// <param name="pageNumber">The number of the current page.
+    /// <para>
+    /// Defaults 1.
+    /// </para>
+    /// </param>
+    /// 
+    /// <param name="pageSize">
+    /// The number of the item per page.
+    /// <para>
+    /// Defaults 10.
+    /// </para>
+    /// </param>
+    /// 
+    /// <param name="author">The name of the author to filter. Nullable</param>
+    /// 
+    /// <param name="title">The name of the book title to filter. Nullable</param>
+    /// 
+    /// <returns>
+    /// A task representing asynchronous operation that the <see cref="OkResult"/> with the object found.
+    /// </returns>
+    /// 
+    /// <response code="200">If the list of book was successfully found.</response>
     [HttpGet()]
-    public async Task<ActionResult> GetAllAsync([FromQuery] int pageNumber = 1,
+    public async Task<IActionResult> GetAllAsync([FromQuery] int pageNumber = 1,
      [FromQuery] int pageSize = 10,
      [FromQuery(Name = "author")] string? author = null,
      [FromQuery(Name = "title")] string? title = null)
     {
-        pageSize = pageSize > MaxPageSize ? MaxPageSize : pageSize;
-        pageNumber = pageNumber <= 0 ? 1 : pageNumber;
-
-        if (string.IsNullOrEmpty(title) && string.IsNullOrEmpty(author))
-        {
-            var (collection, paginationMetadata) = await GetAllAsync(pageNumber, pageSize);
-            Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
-            return Ok(collection);
-        }
-
-        title = title?.Trim();
-        author = author?.Trim();
-
-        var (books, pagination_metadata) = await _repository.SearchByCriteriaAsync(pageNumber, pageSize, b =>
+        var collection = await GetDataAsync(q => q.OrderBy(b => b.Title), b =>
             (string.IsNullOrEmpty(title) || b.Title.Contains(title)) &&
-            (string.IsNullOrEmpty(author) || (b.Author != null && b.Author.LastName.Contains(author))),
-            b => b.OrderBy(b => b.Title)
-        );
+            (string.IsNullOrEmpty(author) || (b.Author != null && b.Author.LastName.Contains(author))), pageNumber, pageSize, author, title);
 
-        var mappedBooks = _mapper.Map<IEnumerable<BookDTO>>(books);
-        Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(pagination_metadata));
-
-        return Ok(mappedBooks);
+        return Ok(collection);
     }
 
+    /// <summary>
+    /// Updates an existing book in the current context.
+    /// </summary>
+    /// 
+    /// <param name="id">The id of the entity.</param>
+    /// 
+    /// <param name="book">The DTO for updating book.</param>
+    /// 
+    /// <returns>
+    /// A task representing asynchronous operation with the result of the updating.
+    /// </returns>
+    /// 
+    /// <response code="204">If the book was successfully updated.</response>
+    /// 
+    /// <response code="404">If the book with the specified id was not found.</response>
+    /// 
+    /// <response code="400">If the data provided for updating book is invalid.</response>
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateBookAsync([FromRoute] int id,
         [FromBody] UpdateBookDTO book)

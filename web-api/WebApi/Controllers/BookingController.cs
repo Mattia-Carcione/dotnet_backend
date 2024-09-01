@@ -8,7 +8,6 @@
 - cerca prenotazioni per libro
 */
 
-using System.Text.Json;
 using Asp.Versioning;
 using AutoMapper;
 using DTOs.BookingDTOs;
@@ -16,43 +15,49 @@ using Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;
-using Models.Metadatas;
 
 namespace WebApi.Controllers;
 
-//TODO:
-//Aggiungo il versioning delle api
-
+/// <summary>
+/// Controller provides booking-related operation.
+/// </summary>
 [ApiController]
 [Route("api/v{version:apiVersion}/bookings")]
 [ApiVersion(1)]
-
-public class BookingController : ControllerBase
+public class BookingController : ControllerHelper<Booking, BookingDetailDTO, BookingDetailDTO>
 {
+    /// <summary>
+    /// A interface of booking-related services.
+    /// </summary>
     private readonly IBookService _bookService;
-    private readonly IExtendedRepository<Booking> _repository;
-    private readonly IMapper _mapper;
-    private const int MaxPageSize = 25;
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="BookingController"/>.
+    /// </summary>
+    /// 
+    /// <param name="bookService">The booking-related services.</param>
+    /// 
+    /// <param name="repository">The repository interface that provides the CRUD operation methods.</param>
+    /// 
+    /// <param name="mapper">A mapper object that maps entities to each other.</param>
     public BookingController(IBookService bookService,
         IExtendedRepository<Booking> repository,
-        IMapper mapper)
+        IMapper mapper) : base(mapper, repository)
     {
         _bookService = bookService;
-        _repository = repository;
-        _mapper = mapper;
     }
 
-    private async Task<(IEnumerable<BookingDetailDTO>, PaginationMetadata)> GetAllBookingsAsync(int pageNumber, int pageSize)
-    {
-        var (bookings, paginationMetadata) = await _repository.GetAllAsync(pageNumber, pageSize, q =>
-            q.Include(b => b.Book).OrderByDescending(b => b.BookingDate));
-
-        var mappedBookings = _mapper.Map<IEnumerable<BookingDetailDTO>>(bookings);
-
-        return (mappedBookings, paginationMetadata);
-    }
-
+    /// <summary>
+    /// Creates a new instance of <see cref="Booking"/>.
+    /// </summary>
+    /// 
+    /// <param name="booking">The object DTO for creating booking.</param>
+    /// 
+    /// <returns>A task representing the asynchronous operation for creating a new booking.</returns>
+    /// 
+    /// <response code="201">If the booking was created correctly.</response>
+    /// 
+    /// <response code="400">If the data provided for the creation of the booking is invalid.</response>
     [HttpPost()]
     public async Task<IActionResult> BookingAsync([FromBody] CreateBookingDTO booking)
     {
@@ -62,49 +67,85 @@ public class BookingController : ControllerBase
         return CreatedAtRoute("GetBookingAsync", new { id = mappedBooking.Id }, mappedBooking);
     }
 
+    /// <summary>
+    /// Gets the item with the specified id.
+    /// </summary>
+    /// 
+    /// <param name="id">The id of the entity.</param>
+    /// 
+    /// <returns>A task representing asynchronous operation that returns the <see cref="OkResult"/> with the object created; else, <see cref="NotFoundResult"/>.</returns>
+    /// 
+    /// <response code="200">If the booking was successfully found.</response>
+    /// 
+    /// <response code="404">If the booking doesn't exist in the current context.</response>
     [HttpGet("{id}", Name = "GetBookingAsync")]
-    public async Task<IActionResult> GetAsync([FromRoute] int id)
+    public async Task<IActionResult> GetBookingAsync([FromRoute] int id)
     {
-        var booking = await _repository.GetAsync(id, q =>
+        var booking = await GetAsync(id, q =>
             q.Include(b => b.Book));
 
-        var mappedBooking = _mapper.Map<BookingDetailDTO>(booking);
+        if (booking == null)
+            return NotFound();
 
-        return Ok(mappedBooking);
+        return Ok(booking);
     }
 
+    /// <summary>
+    /// Gets a paginated list of booking, wheter or not using a user/title filter.
+    /// </summary>
+    /// 
+    /// <param name="pageNumber">The number of the current page.
+    /// <para>
+    /// Defaults 1.
+    /// </para>
+    /// </param>
+    /// 
+    /// <param name="pageSize">
+    /// The number of the item per page.
+    /// <para>
+    /// Defaults 10.
+    /// </para>
+    /// </param>
+    /// 
+    /// <param name="user">The name of the user to filter. Nullable</param>
+    /// 
+    /// <param name="title">The name of the book title to filter. Nullable</param>
+    /// 
+    /// <returns>
+    /// A task representing asynchronous operation that the <see cref="OkResult"/> with the object found.
+    /// </returns>
+    /// 
+    /// <response code="200">If the list of booking was successfully found.</response>
     [HttpGet()]
     public async Task<IActionResult> GetAllAsync([FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10,
         [FromQuery(Name = "user")] string? user = null,
         [FromQuery(Name = "title")] string? title = null)
     {
-        pageSize = pageSize > MaxPageSize ? MaxPageSize : pageSize;
-        pageNumber = pageNumber <= 0 ? 1 : pageNumber;
-
-        if (string.IsNullOrEmpty(title) && string.IsNullOrEmpty(user))
-        {
-            var (collection, paginationMetadata) = await GetAllBookingsAsync(pageNumber, pageSize);
-            Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
-            return Ok(collection);
-        }
-
-        title = title?.Trim();
-        user = user?.Trim();
-
-        var (bookings, pagination_metadata) = await _repository.SearchByCriteriaAsync(pageNumber, pageSize, b =>
+        var collection = await GetDataAsync(q => q.Include(b => b.Book).OrderByDescending(b => b.BookingDate), b =>
                 (string.IsNullOrEmpty(title) || (b.Book != null && b.Book.Title.Contains(title))) &&
-                (string.IsNullOrEmpty(user) || (b.User != null && b.User.Contains(user))),
-            q => q.Include(b => b.Book)
-                .OrderByDescending(b => b.BookingDate)
-        );
+                (string.IsNullOrEmpty(user) || (b.User != null && b.User.Contains(user))), pageNumber, pageSize, user, title);
 
-        var mappedBookings = _mapper.Map<IEnumerable<BookingDetailDTO>>(bookings);
-        Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(pagination_metadata));
-
-        return Ok(mappedBookings);
+        return Ok(collection);
     }
 
+    /// <summary>
+    /// Updates an existing booking in the current context.
+    /// </summary>
+    /// 
+    /// <param name="id">The id of the entity.</param>
+    /// 
+    /// <param name="book">The DTO for updating booking.</param>
+    /// 
+    /// <returns>
+    /// A task representing asynchronous operation with the result of the updating.
+    /// </returns>
+    /// 
+    /// <response code="204">If the booking was successfully updated.</response>
+    /// 
+    /// <response code="404">If the booking with the specified id was not found.</response>
+    /// 
+    /// <response code="400">If the data provided for updating booking is invalid.</response>
     [HttpPut("{bookingId}")]
     public async Task<IActionResult> UpdateBookingAsync([FromRoute] int bookingId, [FromBody] UpdateBookingDTO returnDTO)
     {
