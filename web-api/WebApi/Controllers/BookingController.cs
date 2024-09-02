@@ -23,7 +23,7 @@ namespace WebApi.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/v{version:apiVersion}/bookings")]
-[ApiVersion(1)]
+[ApiVersion(2)]
 public class BookingController : ControllerHelper<Booking, BookingDetailDTO, BookingDetailDTO>
 {
     /// <summary>
@@ -59,6 +59,8 @@ public class BookingController : ControllerHelper<Booking, BookingDetailDTO, Boo
     /// 
     /// <response code="400">If the data provided for the creation of the booking is invalid.</response>
     [HttpPost()]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> BookingAsync([FromBody] CreateBookingDTO booking)
     {
         var newBooking = await _bookService.BookingAsync(booking.User, booking.BookId);
@@ -79,6 +81,8 @@ public class BookingController : ControllerHelper<Booking, BookingDetailDTO, Boo
     /// 
     /// <response code="404">If the booking doesn't exist in the current context.</response>
     [HttpGet("{id}", Name = "GetBookingAsync")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetBookingAsync([FromRoute] int id)
     {
         var booking = await GetAsync(id, q =>
@@ -117,6 +121,7 @@ public class BookingController : ControllerHelper<Booking, BookingDetailDTO, Boo
     /// 
     /// <response code="200">If the list of booking was successfully found.</response>
     [HttpGet()]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllAsync([FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10,
         [FromQuery(Name = "user")] string? user = null,
@@ -147,6 +152,9 @@ public class BookingController : ControllerHelper<Booking, BookingDetailDTO, Boo
     /// 
     /// <response code="400">If the data provided for updating booking is invalid.</response>
     [HttpPut("{bookingId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateBookingAsync([FromRoute] int bookingId, [FromBody] UpdateBookingDTO returnDTO)
     {
         if (await _repository.GetAsync(bookingId) == null)

@@ -49,6 +49,8 @@ public class BookController : ControllerHelper<Book, BookDTO, BookDetailDTO>
     /// 
     /// <response code="400">If the data provided for the creation of the book is invalid.</response>
     [HttpPost()]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateBookAsync([FromBody] CreateBookDTO book)
     {
         var mappedBook = _mapper.Map<Book>(book);
@@ -71,6 +73,8 @@ public class BookController : ControllerHelper<Book, BookDTO, BookDetailDTO>
     /// 
     /// <response code="404">If the book doesn't exist in the current context.</response>
     [HttpGet("{id}", Name = "GetBookAsync")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetBookAsync([FromRoute] int id)
     {
         var book = await GetAsync(id, query =>
@@ -112,6 +116,7 @@ public class BookController : ControllerHelper<Book, BookDTO, BookDetailDTO>
     /// 
     /// <response code="200">If the list of book was successfully found.</response>
     [HttpGet()]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllAsync([FromQuery] int pageNumber = 1,
      [FromQuery] int pageSize = 10,
      [FromQuery(Name = "author")] string? author = null,
@@ -142,6 +147,9 @@ public class BookController : ControllerHelper<Book, BookDTO, BookDetailDTO>
     /// 
     /// <response code="400">If the data provided for updating book is invalid.</response>
     [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateBookAsync([FromRoute] int id,
         [FromBody] UpdateBookDTO book)
     {

@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using Context;
 using Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -39,28 +40,6 @@ builder.Services.AddControllers(options =>
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
         );
 
-builder.Services.AddEndpointsApiExplorer();
-
-/// <summary>
-/// Adds SwaggerGen using documentation.
-/// </summary>
-builder.Services.AddSwaggerGen( setupAction =>
-{
-    var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
-
-    var dtoAssembly = Assembly.Load("DTOs");
-    if(dtoAssembly != null)
-    {
-        var dtoCommentsFile = $"{dtoAssembly.GetName().Name}.xml";
-        var dtoXmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, dtoCommentsFile);
-
-        setupAction.IncludeXmlComments(dtoXmlCommentsFullPath);
-    }
-
-    setupAction.IncludeXmlComments(xmlCommentsFullPath);
-});
-
 builder.Services.AddProblemDetails(); //Logging exceptions
 
 /// <summary>
@@ -90,12 +69,54 @@ builder.Services.AddAutoMapper(typeof(MapperProfile));
 /// Adds the ApiVersioning to the services.
 /// </summary>
 builder.Services.AddApiVersioning(setupAction =>
+{
+    setupAction.ReportApiVersions = true;
+    setupAction.AssumeDefaultVersionWhenUnspecified = true;
+    setupAction.DefaultApiVersion = new ApiVersion(1, 0);
+}
+).AddMvc()
+.AddApiExplorer(setupAction =>
+{
+    setupAction.SubstituteApiVersionInUrl = true;
+});
+
+builder.Services.AddEndpointsApiExplorer();
+
+/// <summary>
+/// Adds SwaggerGen using documentation.
+/// </summary>
+var apiVersionDescriptionProvider = builder.Services.BuildServiceProvider()
+  .GetRequiredService<IApiVersionDescriptionProvider>();
+
+builder.Services.AddSwaggerGen( setupAction =>
+{
+    foreach (var description in
+        apiVersionDescriptionProvider.ApiVersionDescriptions)
     {
-        setupAction.ReportApiVersions = true;
-        setupAction.AssumeDefaultVersionWhenUnspecified = true;
-        setupAction.DefaultApiVersion = new ApiVersion(1, 0);
+        setupAction.SwaggerDoc(
+            $"{description.GroupName}",
+            new()
+            {
+                Title = "Booking Web API",
+                Version = description.ApiVersion.ToString(),
+                Description = "Through this API you can access book and booking one of it."
+            });
     }
-).AddMvc();
+
+    var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
+
+    var dtoAssembly = Assembly.Load("DTOs");
+    if(dtoAssembly != null)
+    {
+        var dtoCommentsFile = $"{dtoAssembly.GetName().Name}.xml";
+        var dtoXmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, dtoCommentsFile);
+
+        setupAction.IncludeXmlComments(dtoXmlCommentsFullPath);
+    }
+
+    setupAction.IncludeXmlComments(xmlCommentsFullPath);
+});
 
 var app = builder.Build();
 
@@ -108,7 +129,16 @@ if (!app.Environment.IsDevelopment())
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(setupAction =>
+    {
+        var descriptions = app.DescribeApiVersions();
+        foreach (var description in descriptions)
+        {
+            setupAction.SwaggerEndpoint(
+                $"/swagger/{description.GroupName}/swagger.json",
+                description.GroupName.ToUpperInvariant());
+        }
+    });
 }
 
 app.UseHttpsRedirection();
