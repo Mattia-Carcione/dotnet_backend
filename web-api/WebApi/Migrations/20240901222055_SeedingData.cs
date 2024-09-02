@@ -13,6 +13,24 @@ namespace WebApi.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterColumn<string>(
+                name: "Name",
+                table: "Authors",
+                type: "nvarchar(50)",
+                maxLength: 50,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "LastName",
+                table: "Authors",
+                type: "nvarchar(50)",
+                maxLength: 50,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)");
+
             migrationBuilder.InsertData(
                 table: "Authors",
                 columns: new[] { "Id", "BirthDate", "LastName", "Name" },
@@ -58,7 +76,8 @@ namespace WebApi.Migrations
                     { 2, 2, 7, 2, 366, new DateTime(1884, 12, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), "Adventures of Huckleberry Finn", 15 },
                     { 3, 3, 8, 3, 544, new DateTime(1861, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Great Expectations", 12 },
                     { 4, 4, 3, 4, 280, new DateTime(1818, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Frankenstein", 8 },
-                    { 5, 5, 10, 5, 328, new DateTime(1949, 6, 8, 0, 0, 0, 0, DateTimeKind.Unspecified), "1984", 20 }
+                    { 5, 5, 10, 5, 328, new DateTime(1949, 6, 8, 0, 0, 0, 0, DateTimeKind.Unspecified), "1984", 20 },
+                    { 6, 1, 0, 1, 328, new DateTime(1815, 6, 8, 0, 0, 0, 0, DateTimeKind.Unspecified), "Emma", 20 }
                 });
 
             migrationBuilder.InsertData(
@@ -78,11 +97,11 @@ namespace WebApi.Migrations
                 columns: new[] { "Id", "BookId", "BookingDate", "ReturnDate", "User" },
                 values: new object[,]
                 {
-                    { 1, 1, new DateTime(2024, 8, 24, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5664), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User1" },
-                    { 2, 2, new DateTime(2024, 8, 19, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5728), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User1" },
-                    { 3, 3, new DateTime(2024, 8, 14, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5731), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User1" },
-                    { 4, 4, new DateTime(2024, 8, 22, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5733), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User2" },
-                    { 5, 5, new DateTime(2024, 8, 9, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5735), new DateTime(2024, 8, 19, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5736), "User3" }
+                    { 1, 1, new DateTime(2024, 8, 28, 0, 20, 55, 665, DateTimeKind.Local).AddTicks(2957), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User1" },
+                    { 2, 2, new DateTime(2024, 8, 23, 0, 20, 55, 665, DateTimeKind.Local).AddTicks(3030), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User1" },
+                    { 3, 3, new DateTime(2024, 8, 18, 0, 20, 55, 665, DateTimeKind.Local).AddTicks(3033), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User1" },
+                    { 4, 4, new DateTime(2024, 8, 26, 0, 20, 55, 665, DateTimeKind.Local).AddTicks(3037), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User2" },
+                    { 5, 5, new DateTime(2024, 8, 13, 0, 20, 55, 665, DateTimeKind.Local).AddTicks(3040), new DateTime(2024, 8, 23, 0, 20, 55, 665, DateTimeKind.Local).AddTicks(3042), "User3" }
                 });
         }
 
@@ -142,6 +161,11 @@ namespace WebApi.Migrations
             migrationBuilder.DeleteData(
                 table: "Books",
                 keyColumn: "Id",
+                keyValue: 6);
+
+            migrationBuilder.DeleteData(
+                table: "Books",
+                keyColumn: "Id",
                 keyValue: 1);
 
             migrationBuilder.DeleteData(
@@ -238,6 +262,24 @@ namespace WebApi.Migrations
                 table: "Editors",
                 keyColumn: "Id",
                 keyValue: 5);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Name",
+                table: "Authors",
+                type: "nvarchar(max)",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(50)",
+                oldMaxLength: 50);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "LastName",
+                table: "Authors",
+                type: "nvarchar(max)",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(50)",
+                oldMaxLength: 50);
         }
     }
 }

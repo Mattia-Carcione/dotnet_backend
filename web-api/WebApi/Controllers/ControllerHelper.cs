@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Models.Metadatas;
+using Models.Metadata;
 using System.Linq.Expressions;
 using System.Text.Json;
 

@@ -2,7 +2,7 @@
 //Creo un model Metadata da passare nell'header della risposta
 //In riferimento alle paginazioni
 
-namespace Models.Metadatas;
+namespace Models.Metadata;
 
 /// <summary>
 /// Represents metadata information for pagination.

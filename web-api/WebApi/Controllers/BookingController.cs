@@ -133,9 +133,9 @@ public class BookingController : ControllerHelper<Booking, BookingDetailDTO, Boo
     /// Updates an existing booking in the current context.
     /// </summary>
     /// 
-    /// <param name="id">The id of the entity.</param>
+    /// <param name="bookingId">The id of the entity.</param>
     /// 
-    /// <param name="book">The DTO for updating booking.</param>
+    /// <param name="returnDTO">The DTO for updating booking.</param>
     /// 
     /// <returns>
     /// A task representing asynchronous operation with the result of the updating.

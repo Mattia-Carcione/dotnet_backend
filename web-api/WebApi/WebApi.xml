@@ -1,0 +1,293 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WebApi</name>
+    </assembly>
+    <members>
+        <member name="T:WebApi.Controllers.BookController">
+            <summary>
+            Controller provides book-related operation.
+            </summary>
+        </member>
+        <member name="M:WebApi.Controllers.BookController.#ctor(Interfaces.IExtendedRepository{Models.Entities.Book},AutoMapper.IMapper)">
+            <summary>
+            Initializes a new instance of <see cref="T:WebApi.Controllers.BookController"/>.
+            </summary>
+            
+            <param name="repository">The repository interface that provides the CRUD operation methods.</param>
+            
+            <param name="mapper">A mapper object that maps entities to each other.</param>
+        </member>
+        <member name="M:WebApi.Controllers.BookController.CreateBookAsync(DTOs.BookDTOs.CreateBookDTO)">
+            <summary>
+            Creates a new instance of <see cref="T:Models.Entities.Book"/>.
+            </summary>
+            
+            <param name="book">The object DTO for creating book.</param>
+            
+            <returns>A task representing the asynchronous operation for creating a new book.</returns>
+            
+            <response code="201">If the book was created correctly.</response>
+            
+            <response code="400">If the data provided for the creation of the book is invalid.</response>
+        </member>
+        <member name="M:WebApi.Controllers.BookController.GetBookAsync(System.Int32)">
+            <summary>
+            Gets the item with the specified id.
+            </summary>
+            
+            <param name="id">The id of the entity.</param>
+            
+            <returns>A task representing asynchronous operation that returns the <see cref="T:Microsoft.AspNetCore.Mvc.OkResult"/> with the object created; else, <see cref="T:Microsoft.AspNetCore.Mvc.NotFoundResult"/>.</returns>
+            
+            <response code="200">If the book was successfully found.</response>
+            
+            <response code="404">If the book doesn't exist in the current context.</response>
+        </member>
+        <member name="M:WebApi.Controllers.BookController.GetAllAsync(System.Int32,System.Int32,System.String,System.String)">
+            <summary>
+            Gets a paginated list of book, wheter or not using a author/title filter.
+            </summary>
+            
+            <param name="pageNumber">The number of the current page.
+            <para>
+            Defaults 1.
+            </para>
+            </param>
+            
+            <param name="pageSize">
+            The number of the item per page.
+            <para>
+            Defaults 10.
+            </para>
+            </param>
+            
+            <param name="author">The name of the author to filter. Nullable</param>
+            
+            <param name="title">The name of the book title to filter. Nullable</param>
+            
+            <returns>
+            A task representing asynchronous operation that the <see cref="T:Microsoft.AspNetCore.Mvc.OkResult"/> with the object found.
+            </returns>
+            
+            <response code="200">If the list of book was successfully found.</response>
+        </member>
+        <member name="M:WebApi.Controllers.BookController.UpdateBookAsync(System.Int32,DTOs.BookDTOs.UpdateBookDTO)">
+            <summary>
+            Updates an existing book in the current context.
+            </summary>
+            
+            <param name="id">The id of the entity.</param>
+            
+            <param name="book">The DTO for updating book.</param>
+            
+            <returns>
+            A task representing asynchronous operation with the result of the updating.
+            </returns>
+            
+            <response code="204">If the book was successfully updated.</response>
+            
+            <response code="404">If the book with the specified id was not found.</response>
+            
+            <response code="400">If the data provided for updating book is invalid.</response>
+        </member>
+        <member name="T:WebApi.Controllers.BookingController">
+            <summary>
+            Controller provides booking-related operation.
+            </summary>
+        </member>
+        <member name="F:WebApi.Controllers.BookingController._bookService">
+            <summary>
+            A interface of booking-related services.
+            </summary>
+        </member>
+        <member name="M:WebApi.Controllers.BookingController.#ctor(Interfaces.IBookService,Interfaces.IExtendedRepository{Models.Entities.Booking},AutoMapper.IMapper)">
+            <summary>
+            Initializes a new instance of <see cref="T:WebApi.Controllers.BookingController"/>.
+            </summary>
+            
+            <param name="bookService">The booking-related services.</param>
+            
+            <param name="repository">The repository interface that provides the CRUD operation methods.</param>
+            
+            <param name="mapper">A mapper object that maps entities to each other.</param>
+        </member>
+        <member name="M:WebApi.Controllers.BookingController.BookingAsync(DTOs.BookingDTOs.CreateBookingDTO)">
+            <summary>
+            Creates a new instance of <see cref="T:Models.Entities.Booking"/>.
+            </summary>
+            
+            <param name="booking">The object DTO for creating booking.</param>
+            
+            <returns>A task representing the asynchronous operation for creating a new booking.</returns>
+            
+            <response code="201">If the booking was created correctly.</response>
+            
+            <response code="400">If the data provided for the creation of the booking is invalid.</response>
+        </member>
+        <member name="M:WebApi.Controllers.BookingController.GetBookingAsync(System.Int32)">
+            <summary>
+            Gets the item with the specified id.
+            </summary>
+            
+            <param name="id">The id of the entity.</param>
+            
+            <returns>A task representing asynchronous operation that returns the <see cref="T:Microsoft.AspNetCore.Mvc.OkResult"/> with the object created; else, <see cref="T:Microsoft.AspNetCore.Mvc.NotFoundResult"/>.</returns>
+            
+            <response code="200">If the booking was successfully found.</response>
+            
+            <response code="404">If the booking doesn't exist in the current context.</response>
+        </member>
+        <member name="M:WebApi.Controllers.BookingController.GetAllAsync(System.Int32,System.Int32,System.String,System.String)">
+            <summary>
+            Gets a paginated list of booking, wheter or not using a user/title filter.
+            </summary>
+            
+            <param name="pageNumber">The number of the current page.
+            <para>
+            Defaults 1.
+            </para>
+            </param>
+            
+            <param name="pageSize">
+            The number of the item per page.
+            <para>
+            Defaults 10.
+            </para>
+            </param>
+            
+            <param name="user">The name of the user to filter. Nullable</param>
+            
+            <param name="title">The name of the book title to filter. Nullable</param>
+            
+            <returns>
+            A task representing asynchronous operation that the <see cref="T:Microsoft.AspNetCore.Mvc.OkResult"/> with the object found.
+            </returns>
+            
+            <response code="200">If the list of booking was successfully found.</response>
+        </member>
+        <member name="M:WebApi.Controllers.BookingController.UpdateBookingAsync(System.Int32,DTOs.BookingDTOs.UpdateBookingDTO)">
+            <summary>
+            Updates an existing booking in the current context.
+            </summary>
+            
+            <param name="bookingId">The id of the entity.</param>
+            
+            <param name="returnDTO">The DTO for updating booking.</param>
+            
+            <returns>
+            A task representing asynchronous operation with the result of the updating.
+            </returns>
+            
+            <response code="204">If the booking was successfully updated.</response>
+            
+            <response code="404">If the booking with the specified id was not found.</response>
+            
+            <response code="400">If the data provided for updating booking is invalid.</response>
+        </member>
+        <member name="T:WebApi.Controllers.ControllerHelper`3">
+            <summary>
+            An instance of <see cref="T:WebApi.Controllers.ControllerHelper`3"/> provides helper methods for searching item from the current context.
+            <para>
+            This class extends <see cref="T:Microsoft.AspNetCore.Mvc.ControllerBase"/>.
+            </para>
+            </summary>
+            <typeparam name="T">Represents the type of the <typeparamref name="T"/> entity.</typeparam>
+            <typeparam name="TDTO">Represents the DTO of the <typeparamref name="TDTO"/> entity.</typeparam>
+            <typeparam name="TDetailDTO">Represents the DTO of the <typeparamref name="T"/> entity showing the entity details.</typeparam>
+        </member>
+        <member name="F:WebApi.Controllers.ControllerHelper`3._mapper">
+            <summary>
+            A mapper object that maps entities to each other. 
+            </summary>
+        </member>
+        <member name="F:WebApi.Controllers.ControllerHelper`3.MaxPageSize">
+            <summary>
+            The maximum number of the item allowed per page.
+            </summary>
+        </member>
+        <member name="F:WebApi.Controllers.ControllerHelper`3._repository">
+            <summary>
+            The repository interface that provides the CRUD operation methods.
+            </summary>
+        </member>
+        <member name="M:WebApi.Controllers.ControllerHelper`3.#ctor(AutoMapper.IMapper,Interfaces.IExtendedRepository{`0})">
+            <summary>
+            Intializes a new instance of the <see cref="T:WebApi.Controllers.ControllerHelper`3"/> using the mapper object and the repository interface.
+            </summary>
+            <param name="mapper">A mapper object that maps entities to each other.</param>
+            <param name="repository">The repository interface that provides the CRUD operation methods.</param>
+        </member>
+        <member name="M:WebApi.Controllers.ControllerHelper`3.GetAsync(System.Int32,System.Func{System.Linq.IQueryable{`0},System.Linq.IQueryable{`0}})">
+            <summary>
+            Gets the item from the current context using the specified id.
+            </summary>
+            <param name="id">The id of the entity.</param>
+            <param name="query">
+            A <see cref="T:System.Func`2"/> that takes LINQ operations.
+            <para>
+            Sorting must be provided.
+            </para>
+            </param>
+            <returns>
+            A task representing asynchronous operation that returns <typeparamref name="TDTO"/>.
+            </returns>
+        </member>
+        <member name="M:WebApi.Controllers.ControllerHelper`3.GetDataAsync(System.Func{System.Linq.IQueryable{`0},System.Linq.IQueryable{`0}},System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Int32,System.Int32,System.String,System.String)">
+            <summary>
+            Gets collection of <typeparamref name="TDTO"/> and appends pagination-related data to the response header.
+            </summary>
+            <param name="query">
+            The <see cref="T:System.Func`2"/> that takes LINQ operations.
+            <para>
+            Sorting must be provided.
+            </para>
+            </param>
+            <param name="expression">A <see cref="T:System.Linq.Expressions.Expression`1"/> that takes a <see cref="T:System.Func`2"/> including <see cref="T:System.Linq.IQueryable`1"/> LINQ operations.</param>
+            <param name="pageNumber">The number of the current page.</param>
+            <param name="pageSize">The number of the item per page.</param>
+            <param name="firtsString">A <see cref="T:System.String"/> query param.</param>
+            <param name="secondString">A <see cref="T:System.String"/> query param.</param>
+            <returns>
+            A task representing asynchronous operation that returns <see cref="T:System.Collections.Generic.IEnumerable`1"/>.
+            </returns>
+        </member>
+        <member name="T:WebApi.Mappers.MapperProfile">
+            <summary>
+            An instance of <see cref="T:WebApi.Mappers.MapperProfile"/> extends <see cref="T:AutoMapper.Profile"/>.
+            <para>
+            This class creates the mapping operation between the entities.
+            </para>
+            </summary>
+        </member>
+        <member name="M:WebApi.Mappers.MapperProfile.#ctor">
+            <summary>
+            Initializes a new instance of <see cref="T:WebApi.Mappers.MapperProfile"/> creating the mapping operation between the entities.
+            </summary>
+        </member>
+        <member name="T:WebApi.Migrations.InitialCreate">
+            <inheritdoc />
+        </member>
+        <member name="M:WebApi.Migrations.InitialCreate.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebApi.Migrations.InitialCreate.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebApi.Migrations.InitialCreate.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:WebApi.Migrations.SeedingData">
+            <inheritdoc />
+        </member>
+        <member name="M:WebApi.Migrations.SeedingData.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebApi.Migrations.SeedingData.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebApi.Migrations.SeedingData.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

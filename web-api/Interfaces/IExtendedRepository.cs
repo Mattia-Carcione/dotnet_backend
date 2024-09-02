@@ -15,7 +15,7 @@
 */
 
 using System.Linq.Expressions;
-using Models.Metadatas;
+using Models.Metadata;
 
 namespace Interfaces;
 

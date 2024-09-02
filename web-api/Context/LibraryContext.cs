@@ -101,7 +101,8 @@ public class LibraryContext : DbContext
             new Book { Id = 2, Title = "Adventures of Huckleberry Finn", Pages = 366, TotalCopies = 15, Copies = 7, PublicationDate = new DateTime(1884, 12, 10), AuthorId = 2, EditorId = 2 },
             new Book { Id = 3, Title = "Great Expectations", Pages = 544, TotalCopies = 12, Copies = 8, PublicationDate = new DateTime(1861, 1, 1), AuthorId = 3, EditorId = 3 },
             new Book { Id = 4, Title = "Frankenstein", Pages = 280, TotalCopies = 8, Copies = 3, PublicationDate = new DateTime(1818, 1, 1), AuthorId = 4, EditorId = 4 },
-            new Book { Id = 5, Title = "1984", Pages = 328, TotalCopies = 20, Copies = 10, PublicationDate = new DateTime(1949, 6, 8), AuthorId = 5, EditorId = 5 }
+            new Book { Id = 5, Title = "1984", Pages = 328, TotalCopies = 20, Copies = 10, PublicationDate = new DateTime(1949, 6, 8), AuthorId = 5, EditorId = 5 },
+            new Book { Id = 6, Title = "Emma", Pages = 328, TotalCopies = 20, Copies = 0, PublicationDate = new DateTime(1815, 6, 8), AuthorId = 1, EditorId = 1 }
         );
 
         // Seeding Bookings

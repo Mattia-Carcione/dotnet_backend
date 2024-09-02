@@ -1,0 +1,697 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DTOs</name>
+    </assembly>
+    <members>
+        <member name="T:DTOs.AuthorDTOs.AuthorDTO">
+            <summary>
+            Represents the DTO of the Author.
+            </summary>
+        </member>
+        <member name="P:DTOs.AuthorDTOs.AuthorDTO.Id">
+            <summary>
+            Gets or sets the unique identifier of the author.
+            </summary>
+            <value>
+            The unique identifier of the author
+            </value>
+        </member>
+        <member name="P:DTOs.AuthorDTOs.AuthorDTO.Name">
+            <summary>
+            Gets or sets the name of the author.
+            </summary>
+            <value>
+            The name of the author.
+            </value>
+            <remarks>
+            The field is required. Min legth: 3, max length: 50.
+            </remarks>
+        </member>
+        <member name="P:DTOs.AuthorDTOs.AuthorDTO.LastName">
+            <summary>
+            Gets or sets the last name of the author.
+            </summary>
+            <value>
+            The last name of the author.
+            </value>
+            <remarks>
+            The field is required. Min legth: 3, max length: 50.
+            </remarks>
+        </member>
+        <member name="P:DTOs.AuthorDTOs.AuthorDTO.BirthDate">
+            <summary>
+            Gets or sets the birth date of author.
+            </summary>
+            <value>
+            The birth date of the author.
+            </value>
+        </member>
+        <member name="P:DTOs.AuthorDTOs.AuthorDTO.Books">
+            <summary>
+            Gets or sets the collection of the books associated with the author.
+            </summary>
+            <value>
+            The collection of the books associated with the author.
+            </value>
+            <remarks>
+            This property represents the relationship between the author and the <see cref="T:DTOs.BookDTOs.BookDTO"/> entity.
+            </remarks>
+        </member>
+        <member name="T:DTOs.AuthorDTOs.CreateAuthorDTO">
+            <summary>
+            Represents DTO for creating new Author.
+            </summary>
+        </member>
+        <member name="P:DTOs.AuthorDTOs.CreateAuthorDTO.Name">
+            <summary>
+            Gets or sets the name of the author.
+            </summary>
+            <value>
+            the name of the author.
+            </value>
+            <remarks>
+            The field is required. Min legth: 3, max length: 50.
+            </remarks>
+        </member>
+        <member name="P:DTOs.AuthorDTOs.CreateAuthorDTO.LastName">
+            <summary>
+            Gets or sets the last name of the author.
+            </summary>
+            <value>
+            the last name of the author.
+            </value>
+            <remarks>
+            The field is required. Min legth: 3, max length: 50.
+            </remarks>
+        </member>
+        <member name="P:DTOs.AuthorDTOs.CreateAuthorDTO.BirthDate">
+            <summary>
+            Gets or sets the birth date of author.
+            </summary>
+            <value>
+            The birth date of the author.
+            </value>
+        </member>
+        <member name="T:DTOs.BookDTOs.BookDetailDTO">
+            <summary>
+            Represents DTO for the detail of the book.
+            </summary>
+        </member>
+        <member name="P:DTOs.BookDTOs.BookDetailDTO.Id">
+            <summary>
+            Gets or sets the unique identifier of the book.
+            </summary>
+            <value>
+            The unique identifier of the book
+            </value>
+        </member>
+        <member name="P:DTOs.BookDTOs.BookDetailDTO.Title">
+            <summary>
+            Gets or sets the title of the book.
+            </summary>
+            <value>
+            The title of the book.
+            </value>
+            <remarks>
+            The field is required. Min legth: 3, max length: 50.
+            </remarks>
+        </member>
+        <member name="P:DTOs.BookDTOs.BookDetailDTO.Pages">
+            <summary>
+            Gets or sets the number of the pages in the book.
+            </summary>
+            <value>
+            The number of the pages in the book.
+            </value>
+        </member>
+        <member name="P:DTOs.BookDTOs.BookDetailDTO.TotalCopies">
+            <summary>
+            Gets or sets the total number of copies available.
+            </summary>
+            <value>
+            The total number of copies available.
+            </value>
+        </member>
+        <member name="P:DTOs.BookDTOs.BookDetailDTO.Copies">
+            <summary>
+            Gets or sets the number of copies currently avalaible.
+            </summary>
+            <value>
+            The number of copies currently avalaible.
+            </value>
+        </member>
+        <member name="P:DTOs.BookDTOs.BookDetailDTO.PublicationDate">
+            <summary>
+            Gets or sets the publication date of the book.
+            </summary>
+            <value>
+            The publication date of the book.
+            </value>
+        </member>
+        <member name="P:DTOs.BookDTOs.BookDetailDTO.Author">
+            <summary>
+            Gets or sets the name and last name of the author associated with the book.
+            </summary>
+            <value>
+            The name and last name of the book associated with the book.
+            </value>
+            <remarks>
+            This property represents the relationship between the book and the <see cref="P:DTOs.BookDTOs.BookDetailDTO.Author"/> entity.
+            </remarks>
+        </member>
+        <member name="P:DTOs.BookDTOs.BookDetailDTO.Editor">
+            <summary>
+            Gets or sets the editor associated with the book.
+            </summary>
+            <value>
+            The name of the editor associated with the book.
+            </value>
+            <remarks>
+            This property represents the relationship between the book and the <see cref="P:DTOs.BookDTOs.BookDetailDTO.Editor"/> entity.
+            </remarks>
+        </member>
+        <member name="P:DTOs.BookDTOs.BookDetailDTO.Categories">
+            <summary>
+            Gets or sets the collection of the categories associated with the book.
+            </summary>
+            <value>
+            The collection of the categories associated with the book.
+            </value>
+            <remarks>
+            This property represents the relationship between the book and the <see cref="T:DTOs.CategoryDTOs.CategoryDTO"/> entity.
+            </remarks>
+        </member>
+        <member name="T:DTOs.BookDTOs.BookDTO">
+            <summary>
+            Represents DTO of the book.
+            </summary>
+        </member>
+        <member name="P:DTOs.BookDTOs.BookDTO.Id">
+            <summary>
+            Gets or sets the unique identifier of the book.
+            </summary>
+            <value>
+            The unique identifier of the book
+            </value>
+        </member>
+        <member name="P:DTOs.BookDTOs.BookDTO.Title">
+            <summary>
+            Gets or sets the title of the book.
+            </summary>
+            <value>
+            The title of the book.
+            </value>
+            <remarks>
+            The field is required. Min legth: 3, max length: 50.
+            </remarks>
+        </member>
+        <member name="P:DTOs.BookDTOs.BookDTO.Pages">
+            <summary>
+            Gets or sets the number of the pages in the book.
+            </summary>
+            <value>
+            The number of the pages in the book.
+            </value>
+        </member>
+        <member name="P:DTOs.BookDTOs.BookDTO.TotalCopies">
+            <summary>
+            Gets or sets the total number of copies available.
+            </summary>
+            <value>
+            The total number of copies available.
+            </value>
+        </member>
+        <member name="P:DTOs.BookDTOs.BookDTO.Copies">
+            <summary>
+            Gets or sets the number of copies currently avalaible.
+            </summary>
+            <value>
+            The number of copies currently avalaible.
+            </value>
+        </member>
+        <member name="P:DTOs.BookDTOs.BookDTO.PublicationDate">
+            <summary>
+            Gets or sets the publication date of the book.
+            </summary>
+            <value>
+            The publication date of the book.
+            </value>
+        </member>
+        <member name="T:DTOs.BookDTOs.CreateBookDTO">
+            <summary>
+            Represents DTO for creating new book.
+            </summary>
+        </member>
+        <member name="P:DTOs.BookDTOs.CreateBookDTO.Title">
+            <summary>
+            Gets or sets the title of the book.
+            </summary>
+            <value>
+            The title of the book.
+            </value>
+            <remarks>
+            The field is required. Min legth: 3, max length: 50.
+            </remarks>
+        </member>
+        <member name="P:DTOs.BookDTOs.CreateBookDTO.Pages">
+            <summary>
+            Gets or sets the number of the pages in the book.
+            </summary>
+            <value>
+            The number of the pages in the book.
+            </value>
+        </member>
+        <member name="P:DTOs.BookDTOs.CreateBookDTO.TotalCopies">
+            <summary>
+            Gets or sets the total number of copies available.
+            </summary>
+            <value>
+            The total number of copies available.
+            </value>
+        </member>
+        <member name="P:DTOs.BookDTOs.CreateBookDTO.Copies">
+            <summary>
+            Gets or sets the number of copies currently avalaible.
+            </summary>
+            <value>
+            The number of copies currently avalaible.
+            </value>
+        </member>
+        <member name="P:DTOs.BookDTOs.CreateBookDTO.PublicationDate">
+            <summary>
+            Gets or sets the publication date of the book.
+            </summary>
+            <value>
+            The publication date of the book.
+            </value>
+        </member>
+        <member name="P:DTOs.BookDTOs.CreateBookDTO.AuthorId">
+            <summary>
+            Gets or sets the id of the author associated of the book.
+            </summary>
+            <value>
+            The author id of the book.
+            </value>
+            <remarks>
+            <para>
+            This property represents the relationship between the book and the author.
+            </para>
+            <para>
+            The field is required.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:DTOs.BookDTOs.CreateBookDTO.EditorId">
+            <summary>
+            Gets or sets the id of the editor associated of the book.
+            </summary>
+            <value>
+            The editor id of the book.
+            </value>
+            <remarks>
+            <para>
+            This property represents the relationship between the book and the editor.
+            </para>
+            <para>
+            The field is required.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:DTOs.BookDTOs.UpdateBookDTO">
+            <summary>
+            Represents DTO for updating book.
+            </summary>
+        </member>
+        <member name="P:DTOs.BookDTOs.UpdateBookDTO.Title">
+            <summary>
+            Gets or sets the title of the book.
+            </summary>
+            <value>
+            The title of the book.
+            </value>
+            <remarks>
+            The field is required. Min legth: 3, max length: 50.
+            </remarks>
+        </member>
+        <member name="P:DTOs.BookDTOs.UpdateBookDTO.Pages">
+            <summary>
+            Gets or sets the number of the pages in the book.
+            </summary>
+            <value>
+            The number of the pages in the book.
+            </value>
+        </member>
+        <member name="P:DTOs.BookDTOs.UpdateBookDTO.TotalCopies">
+            <summary>
+            Gets or sets the total number of copies available.
+            </summary>
+            <value>
+            The total number of copies available.
+            </value>
+        </member>
+        <member name="P:DTOs.BookDTOs.UpdateBookDTO.Copies">
+            <summary>
+            Gets or sets the number of copies currently avalaible.
+            </summary>
+            <value>
+            The number of copies currently avalaible.
+            </value>
+        </member>
+        <member name="P:DTOs.BookDTOs.UpdateBookDTO.PublicationDate">
+            <summary>
+            Gets or sets the publication date of the book.
+            </summary>
+            <value>
+            The publication date of the book.
+            </value>
+        </member>
+        <member name="T:DTOs.BookingDTOs.BookingDetailDTO">
+            <summary>
+            Represents DTO for the booking's detail.
+            </summary>
+        </member>
+        <member name="P:DTOs.BookingDTOs.BookingDetailDTO.Id">
+            <summary>
+            Gets or sets the unique identifier of the booking.
+            </summary>
+            <value>
+            The unique identifier of the booking
+            </value>
+        </member>
+        <member name="P:DTOs.BookingDTOs.BookingDetailDTO.User">
+            <summary>
+            Gets or sets the user making the booking.
+            </summary>
+            <value>
+            The user making the booking.
+            </value>
+            <remarks>
+            The field is required. Min legth: 3, max length: 50.
+            </remarks>
+        </member>
+        <member name="P:DTOs.BookingDTOs.BookingDetailDTO.BookingDate">
+            <summary>
+            Gets or sets the date when creating new booking.
+            </summary>
+            <remarks>
+            This date is typically set to the current date when creating a new booking.
+            </remarks>
+            <value>
+            The date the booking was made.
+            <para>
+            Defaults to <see cref="P:System.DateTime.Today"/>.
+            </para>
+            </value>
+        </member>
+        <member name="P:DTOs.BookingDTOs.BookingDetailDTO.ReturnDate">
+            <summary>
+            Gets or sets the date when the booked item is expected to be returned.
+            </summary>
+            <value>
+            The expected return date of the booked item.
+            <para>
+            Defaults to <see langword="default"/>.
+            </para>
+            </value>
+        </member>
+        <member name="P:DTOs.BookingDTOs.BookingDetailDTO.Book">
+            <summary>
+            Gets or sets the book associated with the booking.
+            </summary>
+            <value>
+            The book that is booked.
+            </value>
+            <remarks>
+            This property represents the relationship between the booking and the <see cref="T:DTOs.BookDTOs.BookDTO"/> entity.
+            </remarks>
+        </member>
+        <member name="T:DTOs.BookingDTOs.BookingDTO">
+            <summary>
+            Represents the DTO of the booking.
+            </summary>
+        </member>
+        <member name="P:DTOs.BookingDTOs.BookingDTO.Id">
+            <summary>
+            Gets or sets the unique identifier of the booking.
+            </summary>
+            <value>
+            The unique identifier of the booking
+            </value>
+        </member>
+        <member name="P:DTOs.BookingDTOs.BookingDTO.User">
+            <summary>
+            Gets or sets the user making the booking.
+            </summary>
+            <value>
+            The user making the booking.
+            </value>
+            <remarks>
+            The field is required. Min legth: 3, max length: 50.
+            </remarks>
+        </member>
+        <member name="P:DTOs.BookingDTOs.BookingDTO.BookingDate">
+            <summary>
+            Gets or sets the date when creating new booking.
+            </summary>
+            <remarks>
+            This date is typically set to the current date when creating a new booking.
+            </remarks>
+            <value>
+            The date the booking was made.
+            <para>
+            Defaults to <see cref="P:System.DateTime.Today"/>.
+            </para>
+            </value>
+        </member>
+        <member name="P:DTOs.BookingDTOs.BookingDTO.ReturnDate">
+            <summary>
+            Gets or sets the date when the booked item is expected to be returned.
+            </summary>
+            <value>
+            The expected return date of the booked item.
+            <para>
+            Defaults to <see langword="default"/>.
+            </para>
+            </value>
+        </member>
+        <member name="T:DTOs.BookingDTOs.CreateBookingDTO">
+            <summary>
+            Represents the DTO for creating new booking.
+            </summary>
+        </member>
+        <member name="P:DTOs.BookingDTOs.CreateBookingDTO.User">
+            <summary>
+            Gets or sets the user making the booking.
+            </summary>
+            <value>
+            The user making the booking.
+            </value>
+            <remarks>
+            The field is required. Min legth: 3, max length: 50.
+            </remarks>
+        </member>
+        <member name="P:DTOs.BookingDTOs.CreateBookingDTO.BookId">
+            <summary>
+            Gets or sets the id of the book that is being booked.
+            </summary>
+            <value>
+            The ID of the associated book.
+            </value>
+            <remarks>
+            This field is required and is a foreign key to the <see cref="!:Book"/> entity.
+            </remarks>
+        </member>
+        <member name="T:DTOs.BookingDTOs.UpdateBookingDTO">
+            <summary>
+            Represents the DTO for updating a return date of the booking.
+            </summary>
+        </member>
+        <member name="P:DTOs.BookingDTOs.UpdateBookingDTO.User">
+            <summary>
+            Gets or sets the user making the booking.
+            </summary>
+            <value>
+            The user making the booking.
+            </value>
+            <remarks>
+            The field is required. Min legth: 3, max length: 50.
+            </remarks>
+        </member>
+        <member name="P:DTOs.BookingDTOs.UpdateBookingDTO.BookingId">
+            <summary>
+            Gets or sets the id of the booking was made.
+            </summary>
+            <value>
+            The ID of the booking.
+            </value>
+            <remarks>
+            This property represents the id of the booking was made.
+            </remarks>
+        </member>
+        <member name="P:DTOs.BookingDTOs.UpdateBookingDTO.BookId">
+            <summary>
+            Gets or sets the id of the book was booked related to the <see cref="!:Booking"/>.
+            </summary>
+            <value>
+            The ID of the book was booked.
+            </value>
+            <remarks>
+            This property represents the id of the book was booked.
+            </remarks>
+        </member>
+        <member name="T:DTOs.CategoryDTOs.CategoryDetailDTO">
+            <summary>
+            Represents DTO for the category's detail.
+            </summary>
+        </member>
+        <member name="P:DTOs.CategoryDTOs.CategoryDetailDTO.Id">
+            <summary>
+            Gets or sets the unique identifier of the category.
+            </summary>
+            <value>
+            The unique identifier of the category
+            </value>
+        </member>
+        <member name="P:DTOs.CategoryDTOs.CategoryDetailDTO.Genre">
+            <summary>
+            Gets or sets the genre of the category.
+            </summary>
+            <value>
+            The genre of the category.
+            </value>
+            <remarks>
+            The field is required. Min legth: 3, max length: 50.
+            </remarks>
+        </member>
+        <member name="P:DTOs.CategoryDTOs.CategoryDetailDTO.Description">
+            <summary>
+            Gets or sets the description of the category.
+            </summary>
+            <value>
+            The description of the category.
+            </value>
+            <remarks>
+            Min legth: 3, max length: 400.
+            </remarks>
+        </member>
+        <member name="P:DTOs.CategoryDTOs.CategoryDetailDTO.Books">
+            <summary>
+            Gets or sets the collection of the books associated with the category.
+            </summary>
+            <value>
+            The collection of the books associated with the category.
+            </value>
+            <remarks>
+            This property represents the relationship between the category and the <see cref="T:DTOs.BookDTOs.BookDTO"/> entity.
+            </remarks>
+        </member>
+        <member name="T:DTOs.CategoryDTOs.CategoryDTO">
+            <summary>
+            Represents DTO for the category.
+            </summary>
+        </member>
+        <member name="P:DTOs.CategoryDTOs.CategoryDTO.Id">
+            <summary>
+            Gets or sets the unique identifier of the category.
+            </summary>
+            <value>
+            The unique identifier of the category
+            </value>
+        </member>
+        <member name="P:DTOs.CategoryDTOs.CategoryDTO.Genre">
+            <summary>
+            Gets or sets the genre of the category.
+            </summary>
+            <value>
+            The genre of the category.
+            </value>
+            <remarks>
+            The field is required. Min legth: 3, max length: 50.
+            </remarks>
+        </member>
+        <member name="P:DTOs.CategoryDTOs.CategoryDTO.Description">
+            <summary>
+            Gets or sets the description of the category.
+            </summary>
+            <value>
+            The description of the category.
+            </value>
+            <remarks>
+            Min legth: 3, max length: 400.
+            </remarks>
+        </member>
+        <member name="T:DTOs.CategoryDTOs.CreateCategoryDTO">
+            <summary>
+            Represents DTO for creating a new category.
+            </summary>
+        </member>
+        <member name="P:DTOs.CategoryDTOs.CreateCategoryDTO.Genre">
+            <summary>
+            Gets or sets the genre of the category.
+            </summary>
+            <value>
+            The genre of the category.
+            </value>
+            <remarks>
+            The field is required. Min legth: 3, max length: 50.
+            </remarks>
+        </member>
+        <member name="P:DTOs.CategoryDTOs.CreateCategoryDTO.Description">
+            <summary>
+            Gets or sets the description of the category.
+            </summary>
+            <value>
+            The description of the category.
+            </value>
+            <remarks>
+            Min legth: 3, max length: 400.
+            </remarks>
+        </member>
+        <member name="T:DTOs.EditorDTOs.CreateEditorDTO">
+            <summary>
+            Represents DTO for creating a new editor.
+            </summary>
+        </member>
+        <member name="P:DTOs.EditorDTOs.CreateEditorDTO.Name">
+            <summary>
+            Gets or sets the name of the editor.
+            </summary>
+            <value>
+            The name of the editor.
+            </value>
+            <remarks>
+            The field is required. Min legth: 3, max length: 50.
+            </remarks>
+        </member>
+        <member name="T:DTOs.EditorDTOs.EditorDTO">
+            <summary>
+            Represents the DTO of the editor.
+            </summary>
+        </member>
+        <member name="P:DTOs.EditorDTOs.EditorDTO.Id">
+            <summary>
+            Gets or sets the unique identifier of the editor.
+            </summary>
+            <value>
+            The unique identifier of the editor
+            </value>
+        </member>
+        <member name="P:DTOs.EditorDTOs.EditorDTO.Name">
+            <summary>
+            Gets or sets the name of the editor.
+            </summary>
+            <value>
+            The name of the editor.
+            </value>
+            <remarks>
+            The field is required. Min legth: 3, max length: 50.
+            </remarks>
+        </member>
+        <member name="P:DTOs.EditorDTOs.EditorDTO.Books">
+            <summary>
+            A editor's collection of the <see cref="T:DTOs.BookDTOs.BookDTO"/>
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -77,11 +77,13 @@ namespace WebApi.Migrations
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
@@ -219,6 +221,17 @@ namespace WebApi.Migrations
                             PublicationDate = new DateTime(1949, 6, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "1984",
                             TotalCopies = 20
+                        },
+                        new
+                        {
+                            Id = 6,
+                            AuthorId = 1,
+                            Copies = 0,
+                            EditorId = 1,
+                            Pages = 328,
+                            PublicationDate = new DateTime(1815, 6, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Title = "Emma",
+                            TotalCopies = 20
                         });
                 });
 
@@ -255,7 +268,7 @@ namespace WebApi.Migrations
                         {
                             Id = 1,
                             BookId = 1,
-                            BookingDate = new DateTime(2024, 8, 24, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5664),
+                            BookingDate = new DateTime(2024, 8, 28, 0, 20, 55, 665, DateTimeKind.Local).AddTicks(2957),
                             ReturnDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             User = "User1"
                         },
@@ -263,7 +276,7 @@ namespace WebApi.Migrations
                         {
                             Id = 2,
                             BookId = 2,
-                            BookingDate = new DateTime(2024, 8, 19, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5728),
+                            BookingDate = new DateTime(2024, 8, 23, 0, 20, 55, 665, DateTimeKind.Local).AddTicks(3030),
                             ReturnDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             User = "User1"
                         },
@@ -271,7 +284,7 @@ namespace WebApi.Migrations
                         {
                             Id = 3,
                             BookId = 3,
-                            BookingDate = new DateTime(2024, 8, 14, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5731),
+                            BookingDate = new DateTime(2024, 8, 18, 0, 20, 55, 665, DateTimeKind.Local).AddTicks(3033),
                             ReturnDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             User = "User1"
                         },
@@ -279,7 +292,7 @@ namespace WebApi.Migrations
                         {
                             Id = 4,
                             BookId = 4,
-                            BookingDate = new DateTime(2024, 8, 22, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5733),
+                            BookingDate = new DateTime(2024, 8, 26, 0, 20, 55, 665, DateTimeKind.Local).AddTicks(3037),
                             ReturnDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             User = "User2"
                         },
@@ -287,8 +300,8 @@ namespace WebApi.Migrations
                         {
                             Id = 5,
                             BookId = 5,
-                            BookingDate = new DateTime(2024, 8, 9, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5735),
-                            ReturnDate = new DateTime(2024, 8, 19, 12, 19, 21, 281, DateTimeKind.Local).AddTicks(5736),
+                            BookingDate = new DateTime(2024, 8, 13, 0, 20, 55, 665, DateTimeKind.Local).AddTicks(3040),
+                            ReturnDate = new DateTime(2024, 8, 23, 0, 20, 55, 665, DateTimeKind.Local).AddTicks(3042),
                             User = "User3"
                         });
                 });

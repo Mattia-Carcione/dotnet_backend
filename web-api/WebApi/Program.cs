@@ -6,7 +6,8 @@ using Models.Entities;
 using Repository;
 using Serilog;
 using Services;
-using WebApi.Mappers; 
+using System.Reflection;
+using WebApi.Mappers;
 
 /// <summary>
 /// Configures the logger configuration.
@@ -39,7 +40,26 @@ builder.Services.AddControllers(options =>
         );
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+/// <summary>
+/// Adds SwaggerGen using documentation.
+/// </summary>
+builder.Services.AddSwaggerGen( setupAction =>
+{
+    var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
+
+    var dtoAssembly = Assembly.Load("DTOs");
+    if(dtoAssembly != null)
+    {
+        var dtoCommentsFile = $"{dtoAssembly.GetName().Name}.xml";
+        var dtoXmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, dtoCommentsFile);
+
+        setupAction.IncludeXmlComments(dtoXmlCommentsFullPath);
+    }
+
+    setupAction.IncludeXmlComments(xmlCommentsFullPath);
+});
 
 builder.Services.AddProblemDetails(); //Logging exceptions
 
