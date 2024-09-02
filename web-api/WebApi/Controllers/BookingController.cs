@@ -23,7 +23,7 @@ namespace WebApi.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/v{version:apiVersion}/bookings")]
-[ApiVersion(2)]
+[ApiVersion(1)]
 public class BookingController : ControllerHelper<Booking, BookingDetailDTO, BookingDetailDTO>
 {
     /// <summary>
