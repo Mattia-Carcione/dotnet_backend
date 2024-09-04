@@ -186,7 +186,7 @@ public class BookingController : ControllerHelper<Booking, BookingDetailDTO, Boo
     {
         Order order;
 
-        if (_bookService is IPremiumServiceBook _premiumService)
+        if (_bookService is IPremiumBookService _premiumService)
         {
             order = await _premiumService.BuyBookAsync(orderToCreate.Email, orderToCreate.BookId);
 

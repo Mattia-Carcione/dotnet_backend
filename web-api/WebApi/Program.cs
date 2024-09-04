@@ -77,7 +77,7 @@ try
     builder.Services.AddTransient<IExtendedRepository<User>, ExtendedRepository<User, LibraryContext>>();
 
     builder.Services.AddTransient<IBookService, BookService>();
-    builder.Services.AddTransient<IPremiumServiceBook, PremiumBookService>();
+    builder.Services.AddTransient<IPremiumBookService, PremiumBookService>();
     builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
     builder.Services.AddTransient<IFactoryService<IBookService>, BookFactoryService>();
 

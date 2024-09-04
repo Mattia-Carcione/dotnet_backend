@@ -15,10 +15,10 @@ namespace Services
     /// This class extends <see cref="BookService"/>.
     /// </para>
     /// <para>
-    /// This class implements <see cref="IPremiumServiceBook"/>.
+    /// This class implements <see cref="IPremiumBookService"/>.
     /// </para>
     /// </summary>
-    public class PremiumBookService : BookService, IPremiumServiceBook
+    public class PremiumBookService : BookService, IPremiumBookService
     {
         /// <summary>
         /// Initializes a new instance of <see cref="PremiumBookService"/> using the specified <paramref name="context"/> of type <see cref="LibraryContext"/>.

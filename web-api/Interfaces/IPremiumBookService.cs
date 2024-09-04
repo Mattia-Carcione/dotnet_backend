@@ -8,7 +8,7 @@ namespace Interfaces
     /// <remarks>
     /// This class extends <see cref="IBookService"/>.
     /// </remarks>
-    public interface IPremiumServiceBook : IBookService
+    public interface IPremiumBookService : IBookService
     {
         /// <summary>
         /// Buys a specified book for a user.

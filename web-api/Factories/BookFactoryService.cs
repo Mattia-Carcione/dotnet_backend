@@ -45,13 +45,14 @@ namespace Factories
         /// A task operation representing asynchronous operation that returns:
         /// <list type="bullet">
         /// <item>
-        /// <see cref="IPremiumServiceBook"/> if the authenticated user is a premium member,
+        /// <see cref="IPremiumBookService"/> if the authenticated user is a premium member,
         /// </item>
         /// <item>
         /// <see cref="IBookService"/> if the authenticated user is a standard member.
         /// </item>
         /// </list>
         /// </returns>
+        /// <exception cref="InvalidOperationException">The exception that is thrown when a method call is invalid for the object's current state.</exception>
         public async Task<IBookService> CreateService()
         {
             var email = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Email)?.Value;
@@ -61,7 +62,7 @@ namespace Factories
                 var user = await _repository.SearchEntityByCriteriaAsync(u => u.Where(e => e.Email == email));
 
                 if (user != null && user.IsPremium)
-                    return _serviceProvider.GetService(typeof(IPremiumServiceBook)) as IPremiumServiceBook ?? throw new InvalidOperationException();
+                    return _serviceProvider.GetService(typeof(IPremiumBookService)) as IPremiumBookService ?? throw new InvalidOperationException();
             }
 
             return _serviceProvider.GetService(typeof(IBookService)) as IBookService ?? throw new InvalidOperationException();
