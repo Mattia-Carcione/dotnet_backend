@@ -8,17 +8,17 @@ namespace DTOs.BookingDTOs;
 public class CreateBookingDTO
 {
     /// <summary>
-    /// Gets or sets the user making the booking.
+    /// Gets or sets the user email address making the booking.
     /// </summary>
     /// <value>
-    /// The user making the booking.
+    /// The user email address making the booking.
     /// </value>
     /// <remarks>
-    /// The field is required. Min legth: 3, max length: 50.
+    /// The field is required.
     /// </remarks>
     [Required]
-    [MaxLength(50), MinLength(5)]
-    public string User {get; set;} = string.Empty;
+    [EmailAddress]
+    public string Email {get; set;} = string.Empty;
 
     /// <summary>
     /// Gets or sets the id of the book that is being booked.

@@ -11,6 +11,7 @@
 using Asp.Versioning;
 using AutoMapper;
 using DTOs.BookingDTOs;
+using DTOs.OrderDTOs;
 using Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,16 +36,16 @@ public class BookingController : ControllerHelper<Booking, BookingDetailDTO, Boo
     /// Initializes a new instance of <see cref="BookingController"/>.
     /// </summary>
     /// 
-    /// <param name="bookService">The booking-related services.</param>
+    /// <param name="bookService">An object of <see cref="IBookService"/>.</param>
     /// 
     /// <param name="repository">The repository interface that provides the CRUD operation methods.</param>
     /// 
     /// <param name="mapper">A mapper object that maps entities to each other.</param>
-    public BookingController(IBookService bookService,
+    public BookingController(IFactoryService<IBookService> bookService,
         IExtendedRepository<Booking> repository,
         IMapper mapper) : base(mapper, repository)
     {
-        _bookService = bookService;
+        _bookService = bookService.CreateService().Result;
     }
 
     /// <summary>
@@ -63,7 +64,7 @@ public class BookingController : ControllerHelper<Booking, BookingDetailDTO, Boo
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> BookingAsync([FromBody] CreateBookingDTO booking)
     {
-        var newBooking = await _bookService.BookingAsync(booking.User, booking.BookId);
+        var newBooking = await _bookService.BookingAsync(booking.Email, booking.BookId);
         var mappedBooking = _mapper.Map<BookingDetailDTO>(newBooking);
 
         return CreatedAtRoute("GetBookingAsync", new { id = mappedBooking.Id }, mappedBooking);
@@ -129,7 +130,7 @@ public class BookingController : ControllerHelper<Booking, BookingDetailDTO, Boo
     {
         var collection = await GetDataAsync(q => q.Include(b => b.Book).OrderByDescending(b => b.BookingDate), b =>
                 (string.IsNullOrEmpty(title) || (b.Book != null && b.Book.Title.Contains(title))) &&
-                (string.IsNullOrEmpty(user) || (b.User != null && b.User.Contains(user))), pageNumber, pageSize, user, title);
+                (string.IsNullOrEmpty(user) || (b.User != null && b.User.Email.Contains(user))), pageNumber, pageSize, user, title);
 
         return Ok(collection);
     }
@@ -160,8 +161,40 @@ public class BookingController : ControllerHelper<Booking, BookingDetailDTO, Boo
         if (await _repository.GetAsync(bookingId) == null)
             return NotFound("Booking not found");
 
-        await _bookService.UpdateBookingAsync(returnDTO.User, bookingId, returnDTO.BookId);
+        await _bookService.UpdateBookingAsync(returnDTO.Email, bookingId, returnDTO.BookId);
 
         return NoContent();
+    }
+
+    /// <summary>
+    /// Buys a book by a premium member.
+    /// </summary>
+    /// <param name="orderToCreate">The DTO for creating a new order.</param>
+    /// <returns>
+    /// A task representing asynchronous operationt that returns a result of <see cref="IActionResult"/>.
+    /// <list type="bullet">
+    /// <item>
+    /// <see cref="OkObjectResult"/> that produces an <see cref="StatusCodes.Status200OK"/> if the order was created,
+    /// </item>
+    /// <item>
+    /// <see cref="UnauthorizedResult"/> that produces an <see cref="StatusCodes.Status401Unauthorized"/> if the user is a standard premium.
+    /// </item>
+    /// </list>
+    /// </returns>
+    [HttpPost("buy-book")]
+    public async Task<IActionResult> BuyBookAsync([FromBody] CreateOrderDTO orderToCreate)
+    {
+        Order order;
+
+        if (_bookService is IPremiumServiceBook _premiumService)
+        {
+            order = await _premiumService.BuyBookAsync(orderToCreate.Email, orderToCreate.BookId);
+
+            var mappedOrder = _mapper.Map<OrderDTO>(order);
+
+            return Ok(mappedOrder);
+        }
+
+        return Unauthorized();
     }
 }

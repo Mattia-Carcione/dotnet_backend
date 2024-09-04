@@ -20,6 +20,7 @@
 
 using Exceptions;
 using Microsoft.EntityFrameworkCore;
+using Models.Entities;
 using Services;
 
 namespace LibraryTests;
@@ -47,7 +48,7 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
         var initialCopies = initialBook.Copies;
 
         // //Act
-        await _service.BookingAsync("utenteTest", initialBook.Id);
+        await _service.BookingAsync("utenteTest@mail", initialBook.Id);
         var finalBook = await _service.GetAsync(1) ?? throw new ArgumentNullException();
         var finalBookingsCount = finalBook.Bookings.Count;
         var finalCopies = finalBook.Copies;
@@ -62,13 +63,13 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
     {
         //Assign
         var book = await _service.GetAsync(1) ?? throw new ArgumentNullException();
-        await _service.BookingAsync("utenteTest", book.Id);
+        await _service.BookingAsync("utenteTest@mail", book.Id);
         var initialCopies = book.Copies;
-        var booking = book.Bookings.First(b => b.User == "utenteTest");
+        var booking = book.Bookings.First(b => b.User != null && b.User.Email == "utenteTest@mail");
         var initialReturnDate = booking.ReturnDate;
 
         // //Act
-        await _service.UpdateBookingAsync("utenteTest", booking.Id, book.Id);
+        await _service.UpdateBookingAsync("utenteTest@mail", booking.Id, book.Id);
 
         //Assert
         Assert.Equal(book.Copies, initialCopies + 1);
@@ -83,7 +84,7 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
         var fakeBook = EntityFactoryHelper.CreateBook("test", 1, 1);
 
         // //Act
-        var booking = async () => await _service.BookingAsync("utenteTest", fakeBook.Id);
+        var booking = async () => await _service.BookingAsync("utenteTest@mail", fakeBook.Id);
 
         //Assert
         await Assert.ThrowsAsync<BookingException>(async () => await booking());
@@ -98,7 +99,7 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
         await _service.SaveChangesAsync();
 
         // //Act
-        var booking = async () => await _service.BookingAsync("utenteTest", bookNotAvailable.Id);
+        var booking = async () => await _service.BookingAsync("utenteTest@mail", bookNotAvailable.Id);
 
         //Assert
         await Assert.ThrowsAsync<BookingException>(async () => await booking());
@@ -111,10 +112,10 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
         var book = EntityFactoryHelper.CreateBook("test", 1, 1, copies: 10);
         await _service.AddAsync(book);
         await _service.SaveChangesAsync();
-        await _service.BookingAsync("utenteTest", book.Id);
+        await _service.BookingAsync("utenteTest@mail", book.Id);
 
         // //Act
-        var booking = async () => await _service.BookingAsync("utenteTest", book.Id);
+        var booking = async () => await _service.BookingAsync("utenteTest@mail", book.Id);
 
         //Assert
         await Assert.ThrowsAsync<BookingException>(async () => await booking());
@@ -133,12 +134,12 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
         await _service.AddAsync(book3);
         await _service.AddAsync(book4);
         await _service.SaveChangesAsync();
-        await _service.BookingAsync("utenteTest", book1.Id);
-        await _service.BookingAsync("utenteTest", book2.Id);
-        await _service.BookingAsync("utenteTest", book3.Id);
+        await _service.BookingAsync("utenteTest@mail", book1.Id);
+        await _service.BookingAsync("utenteTest@mail", book2.Id);
+        await _service.BookingAsync("utenteTest@mail", book3.Id);
 
         // //Act
-        var booking = async () => await _service.BookingAsync("utenteTest", book4.Id);
+        var booking = async () => await _service.BookingAsync("utenteTest@mail", book4.Id);
 
         //Assert
         await Assert.ThrowsAsync<BookingException>(async () => await booking());
@@ -163,10 +164,11 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
     public async Task UpdateBookingTest_Booking_BookHasReturned()
     {
         //Assign
-        await _service.UpdateBookingAsync("User1", 1, 1);
+        var booking = await _service.BookingAsync("utenteTest@mail", 1);
+        await _service.UpdateBookingAsync("utenteTest@mail", booking.Id, 1);
 
         // //Act
-        var UpdateBooking = async () => await _service.UpdateBookingAsync("User1", 1, 1);
+        var UpdateBooking = async () => await _service.UpdateBookingAsync("utenteTest@mail", 1, 1);
 
         //Assert
         await Assert.ThrowsAsync<BookingException>(async () => await UpdateBooking());
@@ -179,8 +181,8 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
         var book = EntityFactoryHelper.CreateBook("test", 1, 1, copies: 10);
         await _service.AddAsync(book);
         await _service.SaveChangesAsync();
-        await _service.BookingAsync("testUser", book.Id);
-        var booking = book.Bookings.First(b => b.User == "testUser");
+        await _service.BookingAsync("testUser@mail", book.Id);
+        var booking = book.Bookings.First(b => b.User != null && b.User.Email == "testUser@mail");
 
         // //Act
         var UpdateBooking = async () => await _service.UpdateBookingAsync("test_user", booking.Id, book.Id);

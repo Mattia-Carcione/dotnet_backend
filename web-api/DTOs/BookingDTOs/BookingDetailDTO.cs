@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using DTOs.BookDTOs;
+using DTOs.UserDTOs;
 
 namespace DTOs.BookingDTOs;
 
@@ -24,11 +25,10 @@ public class BookingDetailDTO
     /// The user making the booking.
     /// </value>
     /// <remarks>
-    /// The field is required. Min legth: 3, max length: 50.
+    /// This property represents the relationship between the booking and the <see cref="UserDTO"/> entity.
     /// </remarks>
     [Required]
-    [MaxLength(50), MinLength(5)]
-    public string User { get; set; } = string.Empty;
+    public UserDTO? User { get; set; }
 
     /// <summary>
     /// Gets or sets the date when creating new booking.
@@ -39,7 +39,7 @@ public class BookingDetailDTO
     /// <value>
     /// The date the booking was made.
     /// <para>
-    /// Defaults to <see cref="DateTime.Today"/>.
+    /// Defaults to <see cref="DateTime.Now"/>.
     /// </para>
     /// </value>
     public DateTime BookingDate { get; set; }

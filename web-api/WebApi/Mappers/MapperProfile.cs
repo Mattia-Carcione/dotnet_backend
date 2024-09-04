@@ -5,6 +5,8 @@ using AutoMapper;
 using DTOs.BookDTOs;
 using DTOs.BookingDTOs;
 using DTOs.CategoryDTOs;
+using DTOs.OrderDTOs;
+using DTOs.UserDTOs;
 using Models.Entities;
 
 namespace WebApi.Mappers;
@@ -38,5 +40,8 @@ public class MapperProfile : Profile
         CreateMap<BookingDetailDTO, Booking>().ReverseMap();
 
         CreateMap<CategoryDTO, Category>().ReverseMap();
+
+        CreateMap<OrderDTO, Order>().ReverseMap();
+        CreateMap<UserDTO, User>().ReverseMap();
     }
 }

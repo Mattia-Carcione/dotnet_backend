@@ -387,7 +387,7 @@
             The user making the booking.
             </value>
             <remarks>
-            The field is required. Min legth: 3, max length: 50.
+            This property represents the relationship between the booking and the <see cref="T:DTOs.UserDTOs.UserDTO"/> entity.
             </remarks>
         </member>
         <member name="P:DTOs.BookingDTOs.BookingDetailDTO.BookingDate">
@@ -400,7 +400,7 @@
             <value>
             The date the booking was made.
             <para>
-            Defaults to <see cref="P:System.DateTime.Today"/>.
+            Defaults to <see cref="P:System.DateTime.Now"/>.
             </para>
             </value>
         </member>
@@ -439,15 +439,15 @@
             The unique identifier of the booking
             </value>
         </member>
-        <member name="P:DTOs.BookingDTOs.BookingDTO.User">
+        <member name="P:DTOs.BookingDTOs.BookingDTO.Email">
             <summary>
-            Gets or sets the user making the booking.
+            Gets or sets the user email address making the booking.
             </summary>
             <value>
-            The user making the booking.
+            The user email address making the booking.
             </value>
             <remarks>
-            The field is required. Min legth: 3, max length: 50.
+            The field is required.
             </remarks>
         </member>
         <member name="P:DTOs.BookingDTOs.BookingDTO.BookingDate">
@@ -460,7 +460,7 @@
             <value>
             The date the booking was made.
             <para>
-            Defaults to <see cref="P:System.DateTime.Today"/>.
+            Defaults to <see cref="P:System.DateTime.Now"/>.
             </para>
             </value>
         </member>
@@ -480,15 +480,15 @@
             Represents the DTO for creating new booking.
             </summary>
         </member>
-        <member name="P:DTOs.BookingDTOs.CreateBookingDTO.User">
+        <member name="P:DTOs.BookingDTOs.CreateBookingDTO.Email">
             <summary>
-            Gets or sets the user making the booking.
+            Gets or sets the user email address making the booking.
             </summary>
             <value>
-            The user making the booking.
+            The user email address making the booking.
             </value>
             <remarks>
-            The field is required. Min legth: 3, max length: 50.
+            The field is required.
             </remarks>
         </member>
         <member name="P:DTOs.BookingDTOs.CreateBookingDTO.BookId">
@@ -507,15 +507,15 @@
             Represents the DTO for updating a return date of the booking.
             </summary>
         </member>
-        <member name="P:DTOs.BookingDTOs.UpdateBookingDTO.User">
+        <member name="P:DTOs.BookingDTOs.UpdateBookingDTO.Email">
             <summary>
-            Gets or sets the user making the booking.
+            Gets or sets the user email address making the booking.
             </summary>
             <value>
-            The user making the booking.
+            The user email address making the booking.
             </value>
             <remarks>
-            The field is required. Min legth: 3, max length: 50.
+            The field is required.
             </remarks>
         </member>
         <member name="P:DTOs.BookingDTOs.UpdateBookingDTO.BookingId">
@@ -692,6 +692,243 @@
             <summary>
             A editor's collection of the <see cref="T:DTOs.BookDTOs.BookDTO"/>
             </summary>
+        </member>
+        <member name="T:DTOs.OrderDTOs.CreateOrderDTO">
+            <summary>
+            The DTO for creating new order.
+            </summary>
+        </member>
+        <member name="P:DTOs.OrderDTOs.CreateOrderDTO.Email">
+            <summary>
+            Gets or sets the email address of the user.
+            </summary>
+            <value>
+            The email address of the user.
+            </value>
+            <remarks>
+            The field is required.
+            </remarks>
+        </member>
+        <member name="P:DTOs.OrderDTOs.CreateOrderDTO.BookId">
+            <summary>
+            Gets or sets the unique identifier of the specified book.
+            </summary>
+            <value>
+            The unique identifier of the specified book.
+            </value>
+            <remarks>
+            The field is required.
+            </remarks>
+        </member>
+        <member name="T:DTOs.OrderDTOs.OrderDetailDTO">
+            <summary>
+            The DTO for showing the detail of order
+            </summary>
+        </member>
+        <member name="P:DTOs.OrderDTOs.OrderDetailDTO.Id">
+            <summary>
+            Gets or sets the unique identifier of the order.
+            </summary>
+            <value>
+            The unique identifier of the order.
+            </value>
+        </member>
+        <member name="P:DTOs.OrderDTOs.OrderDetailDTO.CreatedDate">
+            <summary>
+            Gets or sets the creation date of the order.
+            </summary>
+            <value>
+            The creation date of the order.
+            </value>
+            <remarks>
+            Usually set to <see cref="P:System.DateTime.Now"/> when the order was created.
+            </remarks>
+        </member>
+        <member name="P:DTOs.OrderDTOs.OrderDetailDTO.UserId">
+            <summary>
+            Gets or sets the unique identifier of the user making the order.
+            </summary>
+            <value>
+            The unique identifier of the user making the order.
+            </value>
+            <remarks>
+            Represents the relationshipt between the <see cref="T:DTOs.OrderDTOs.OrderDetailDTO"/> and <see cref="T:DTOs.UserDTOs.UserDTO"/>. The field is required.
+            </remarks>
+        </member>
+        <member name="P:DTOs.OrderDTOs.OrderDetailDTO.User">
+            <summary>
+            Gets or sets the user making the order.
+            </summary>
+            <value>
+            The user making the order.
+            </value>
+        </member>
+        <member name="P:DTOs.OrderDTOs.OrderDetailDTO.BookId">
+            <summary>
+            Gets or sets the unique identifier of the specified book.
+            </summary>
+            <value>
+            The unique identifier of the specified book.
+            </value>
+            <remarks>
+            Represents the relationshipt between the <see cref="T:DTOs.OrderDTOs.OrderDetailDTO"/> and <see cref="T:DTOs.BookDTOs.BookDTO"/>. The field is required.
+            </remarks>
+        </member>
+        <member name="P:DTOs.OrderDTOs.OrderDetailDTO.Book">
+            <summary>
+            Gets or sets the specified book.
+            </summary>
+            <value>
+            The specified book.
+            </value>
+        </member>
+        <member name="T:DTOs.OrderDTOs.OrderDTO">
+            <summary>
+            Represents the DTO of the oreder.
+            </summary>
+        </member>
+        <member name="P:DTOs.OrderDTOs.OrderDTO.Id">
+            <summary>
+            Gets or sets the unique identifier of the order.
+            </summary>
+            <value>
+            The unique identifier of the order.
+            </value>
+        </member>
+        <member name="P:DTOs.OrderDTOs.OrderDTO.CreatedDate">
+            <summary>
+            Gets or sets the creation date of the order.
+            </summary>
+            <value>
+            The creation date of the order.
+            </value>
+            <remarks>
+            Usually set to <see cref="P:System.DateTime.Now"/> when the order was created.
+            </remarks>
+        </member>
+        <member name="P:DTOs.OrderDTOs.OrderDTO.User">
+            <summary>
+            Gets or sets the user making the order.
+            </summary>
+            <value>
+            The user making the order.
+            </value>
+        </member>
+        <member name="P:DTOs.OrderDTOs.OrderDTO.Book">
+            <summary>
+            Gets or sets the specified book.
+            </summary>
+            <value>
+            The specified book.
+            </value>
+        </member>
+        <member name="T:DTOs.UserDTOs.UserDetailDTO">
+            <summary>
+            DTO for showing the detail of user.
+            </summary>
+        </member>
+        <member name="P:DTOs.UserDTOs.UserDetailDTO.Id">
+            <summary>
+            Gets or sets the unique identifier of the user.
+            </summary>
+            <value>
+            The unique identifier of the user.
+            </value>
+        </member>
+        <member name="P:DTOs.UserDTOs.UserDetailDTO.Username">
+            <summary>
+            Gets or sets the username of the user.
+            </summary>
+            <value>
+            The username of the user.
+            </value>
+            <remarks>
+            The field is required. Min length: 3, max length: 50
+            </remarks>
+        </member>
+        <member name="P:DTOs.UserDTOs.UserDetailDTO.Email">
+            <summary>
+            Gets or sets the email address of the user.
+            </summary>
+            <value>
+            The email address of the user.
+            </value>
+            <remarks>
+            The field is required.
+            </remarks>
+        </member>
+        <member name="P:DTOs.UserDTOs.UserDetailDTO.IsPremium">
+            <summary>
+            Gets or sets the role of the user(premium or not).
+            </summary>
+            <value>
+            The role of the user(premium or not).
+            </value>
+            <remarks>
+            Defaults to <see langword="false"/>.
+            </remarks>
+        </member>
+        <member name="P:DTOs.UserDTOs.UserDetailDTO.Bookings">
+            <summary>
+            Represents the relationship between <see cref="T:DTOs.UserDTOs.UserDetailDTO"/> and <see cref="T:DTOs.BookingDTOs.BookingDTO"/>.
+            </summary>
+            <value>
+            The booking collection of the user.
+            </value>
+        </member>
+        <member name="P:DTOs.UserDTOs.UserDetailDTO.Orders">
+            <summary>
+            Represents the relationship between <see cref="!:User"/> and <see cref="T:DTOs.OrderDTOs.OrderDTO"/>.
+            </summary>
+            <value>
+            The order collection of the user.
+            </value>
+        </member>
+        <member name="T:DTOs.UserDTOs.UserDTO">
+            <summary>
+            Represents the DTO of te user.
+            </summary>
+        </member>
+        <member name="P:DTOs.UserDTOs.UserDTO.Id">
+            <summary>
+            Gets or sets the unique identifier of the user.
+            </summary>
+            <value>
+            The unique identifier of the user.
+            </value>
+        </member>
+        <member name="P:DTOs.UserDTOs.UserDTO.Username">
+            <summary>
+            Gets or sets the username of the user.
+            </summary>
+            <value>
+            The username of the user.
+            </value>
+            <remarks>
+            The field is required. Min length: 3, max length: 50
+            </remarks>
+        </member>
+        <member name="P:DTOs.UserDTOs.UserDTO.Email">
+            <summary>
+            Gets or sets the email address of the user.
+            </summary>
+            <value>
+            The email address of the user.
+            </value>
+            <remarks>
+            The field is required.
+            </remarks>
+        </member>
+        <member name="P:DTOs.UserDTOs.UserDTO.IsPremium">
+            <summary>
+            Gets or sets the role of the user(premium or not).
+            </summary>
+            <value>
+            The role of the user(premium or not).
+            </value>
+            <remarks>
+            Defaults to <see langword="false"/>.
+            </remarks>
         </member>
     </members>
 </doc>

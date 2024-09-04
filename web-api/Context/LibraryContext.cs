@@ -43,6 +43,16 @@ public class LibraryContext : DbContext
     public DbSet<Editor> Editors { get; set; }
 
     /// <summary>
+    /// Gets or sets of the <see cref="DbSet{TEntity}"/> of the <see cref="User"/> entity.
+    /// </summary>
+    public DbSet<User> Users { get; set; }
+
+    /// <summary>
+    /// Gets or sets of the <see cref="DbSet{TEntity}"/> of the <see cref="Order"/> entity.
+    /// </summary>
+    public DbSet<Order> Orders { get; set; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="LibraryContext"/> using the specified <paramref name="options"/> of <see cref="DbContextOptions{TContext}"/>.
     /// </summary>
     /// <param name="options">The options to be used by a db context.</param>
@@ -105,13 +115,25 @@ public class LibraryContext : DbContext
             new Book { Id = 6, Title = "Emma", Pages = 328, TotalCopies = 20, Copies = 0, PublicationDate = new DateTime(1815, 6, 8), AuthorId = 1, EditorId = 1 }
         );
 
+        // Seeding Users
+        modelBuilder.Entity<User>().HasData(
+            new User { Id = 1, Email = "AliceSmith@email.com", Username = "alice", IsPremium = true },
+            new User { Id = 2, Email = "BobSmith@email.com", Username = "bob", IsPremium = false }
+            );
+
+        // Seeding Orders
+        modelBuilder.Entity<Order>().HasData(
+            new Order { Id = 1, UserId = 1, BookId = 1 },
+            new Order { Id = 2, UserId = 1, BookId = 2 }
+            );
+
         // Seeding Bookings
         modelBuilder.Entity<Booking>().HasData(
-            new Booking { Id = 1, User = "User1", BookingDate = DateTime.Now.AddDays(-5), BookId = 1 }, // No ReturnDate
-            new Booking { Id = 2, User = "User1", BookingDate = DateTime.Now.AddDays(-10), BookId = 2 }, // No ReturnDate
-            new Booking { Id = 3, User = "User1", BookingDate = DateTime.Now.AddDays(-15), BookId = 3 }, // No ReturnDate
-            new Booking { Id = 4, User = "User2", BookingDate = DateTime.Now.AddDays(-7), BookId = 4 }, // No ReturnDate
-            new Booking { Id = 5, User = "User3", BookingDate = DateTime.Now.AddDays(-20), ReturnDate = DateTime.Now.AddDays(-10), BookId = 5 } // With ReturnDate
+            new Booking { Id = 1, BookingDate = DateTime.Now.AddDays(-5), BookId = 1, UserId = 2 }, // No ReturnDate
+            new Booking { Id = 2, BookingDate = DateTime.Now.AddDays(-10), BookId = 2, UserId = 2 }, // No ReturnDate
+            new Booking { Id = 3, BookingDate = DateTime.Now.AddDays(-15), BookId = 3, UserId = 2 }, // No ReturnDate
+            new Booking { Id = 4, BookingDate = DateTime.Now.AddDays(-7), BookId = 4, UserId = 1 }, // No ReturnDate
+            new Booking { Id = 5, BookingDate = DateTime.Now.AddDays(-20), ReturnDate = DateTime.Now.AddDays(-10), BookId = 5, UserId = 1 } // With ReturnDate
         );
 
         // Defines relationship between the entities
@@ -144,5 +166,20 @@ public class LibraryContext : DbContext
                 new { BooksId = 4, CategoriesId = 4 },
                 new { BooksId = 5, CategoriesId = 5 }
             ));
+
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.Bookings)
+            .WithOne(b => b.User)
+            .HasForeignKey(b => b.UserId);
+
+        modelBuilder.Entity<Order>()
+            .HasOne(o => o.User)
+            .WithMany(u => u.Orders)
+            .HasForeignKey(o => o.UserId);
+
+        modelBuilder.Entity<Order>()
+            .HasOne(o => o.Book)
+            .WithMany(b => b.Orders)
+            .HasForeignKey(o => o.BookId);
     }
 }

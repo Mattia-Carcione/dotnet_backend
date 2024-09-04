@@ -55,9 +55,14 @@ public class BookingException : Exception
         BookNotFound,
 
         /// <summary>
-        /// Indicates that the requested booking is not found.
+        /// Indicates that the specified booking is not found.
         /// </summary>
-        BookingNotFound
+        BookingNotFound,
+
+        /// <summary>
+        /// Indicates that the specified user is not found.
+        /// </summary>
+        UserNotFound
     }
 
     /// <summary>

@@ -17,17 +17,17 @@ public class BookingDTO
     public int Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the user making the booking.
+    /// Gets or sets the user email address making the booking.
     /// </summary>
     /// <value>
-    /// The user making the booking.
+    /// The user email address making the booking.
     /// </value>
     /// <remarks>
-    /// The field is required. Min legth: 3, max length: 50.
+    /// The field is required.
     /// </remarks>
     [Required]
-    [MaxLength(50), MinLength(5)]
-    public string User { get; set; } = string.Empty;
+    [EmailAddress]
+    public string Email { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the date when creating new booking.
@@ -38,7 +38,7 @@ public class BookingDTO
     /// <value>
     /// The date the booking was made.
     /// <para>
-    /// Defaults to <see cref="DateTime.Today"/>.
+    /// Defaults to <see cref="DateTime.Now"/>.
     /// </para>
     /// </value>
     public DateTime BookingDate { get; set; }

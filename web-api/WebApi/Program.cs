@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Context;
+using Factories;
 using Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;
@@ -8,39 +9,45 @@ using Repository;
 using Serilog;
 using Services;
 using System.Reflection;
+using System.Security.Claims;
 using WebApi.Mappers;
 
-var config = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json")
-    .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
-    .Build();
-
-/// <summary>
-/// Configures the logger configuration.
-/// </summary>
+// <summary>
+// Configures the logger configuration.
+// </summary>
 Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(config)
+    .WriteTo.Console()
     .CreateBootstrapLogger();
 
-/// <summary>
-/// Starts the logger
-/// </summary>
+// <summary>
+// Starts the logger
+// </summary>
 Log.Information("Starting up!");
 
 try
 {
     var builder = WebApplication.CreateBuilder(args);
-    
-    /// <summary>
-    /// Adds serilog to the services
-    /// </summary>
-    builder.Host.UseSerilog();
 
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
-    /// <summary>
-    /// Adds controllers and NewtonsoftJson to the container.
-    /// </summary>
+    builder.Services.AddAuthentication()
+    .AddJwtBearer(options =>
+    {
+        options.Authority = "https://localhost:5001";
+        options.TokenValidationParameters.ValidateAudience = false;
+    });
+    builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy("ApiScope", policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim("scope", "libraryApi");
+        });
+    });
+
+    // <summary>
+    // Adds controllers and NewtonsoftJson to the container.
+    // </summary>
     builder.Services.AddControllers(options =>
         {
             options.ReturnHttpNotAcceptable = true; //Accetto solo il formato json
@@ -51,9 +58,9 @@ try
 
     builder.Services.AddProblemDetails(); //Logging exceptions
 
-    /// <summary>
-    /// Adds DBContext to the services.
-    /// </summary>
+    // <summary>
+    // Adds DBContext to the services.
+    // </summary>
     var _connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     builder.Services.AddDbContext<LibraryContext>(options =>
         options.UseSqlServer(
@@ -62,21 +69,26 @@ try
         )
     );
 
-    /// <summary>
-    /// Adds the repositories and booking services to the services.
-    /// </summary>
+    // <summary>
+    // Adds the repositories and booking services to the services.
+    // </summary>
     builder.Services.AddScoped<IExtendedRepository<Book>, ExtendedRepository<Book, LibraryContext>>();
     builder.Services.AddScoped<IExtendedRepository<Booking>, ExtendedRepository<Booking, LibraryContext>>();
-    builder.Services.AddScoped<IBookService, BookService>();
+    builder.Services.AddTransient<IExtendedRepository<User>, ExtendedRepository<User, LibraryContext>>();
 
-    /// <summary>
-    /// Adds the AutoMapper to the services.
-    /// </summary>
+    builder.Services.AddTransient<IBookService, BookService>();
+    builder.Services.AddTransient<IPremiumServiceBook, PremiumBookService>();
+    builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+    builder.Services.AddTransient<IFactoryService<IBookService>, BookFactoryService>();
+
+    // <summary>
+    // Adds the AutoMapper to the services.
+    // </summary>
     builder.Services.AddAutoMapper(typeof(MapperProfile));
 
-    /// <summary>
-    /// Adds the ApiVersioning to the services.
-    /// </summary>
+    // <summary>
+    // Adds the ApiVersioning to the services.
+    // </summary>
     builder.Services.AddApiVersioning(setupAction =>
     {
         setupAction.ReportApiVersions = true;
@@ -91,9 +103,9 @@ try
 
     builder.Services.AddEndpointsApiExplorer();
 
-    /// <summary>
-    /// Adds SwaggerGen using documentation.
-    /// </summary>
+    // <summary>
+    // Adds SwaggerGen using documentation.
+    // </summary>
     var apiVersionDescriptionProvider = builder.Services.BuildServiceProvider()
       .GetRequiredService<IApiVersionDescriptionProvider>();
 
@@ -127,6 +139,13 @@ try
         setupAction.IncludeXmlComments(xmlCommentsFullPath);
     });
 
+    // <summary>
+    // Hosting serilog.
+    // </summary>
+    builder.Host.UseSerilog((ctx, lc) => lc
+        .Enrich.FromLogContext()
+        .ReadFrom.Configuration(ctx.Configuration));
+
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
@@ -152,9 +171,10 @@ try
 
     app.UseHttpsRedirection();
 
+    app.UseAuthentication();
     app.UseAuthorization();
 
-    app.MapControllers();
+    app.MapControllers().RequireAuthorization();
 
     app.Run();
 }

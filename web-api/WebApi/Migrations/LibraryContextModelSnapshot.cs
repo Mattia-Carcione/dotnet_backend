@@ -252,14 +252,14 @@ namespace WebApi.Migrations
                     b.Property<DateTime>("ReturnDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("User")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BookId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Bookings");
 
@@ -268,41 +268,41 @@ namespace WebApi.Migrations
                         {
                             Id = 1,
                             BookId = 1,
-                            BookingDate = new DateTime(2024, 8, 28, 0, 20, 55, 665, DateTimeKind.Local).AddTicks(2957),
+                            BookingDate = new DateTime(2024, 8, 29, 18, 45, 47, 540, DateTimeKind.Local).AddTicks(9917),
                             ReturnDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            User = "User1"
+                            UserId = 2
                         },
                         new
                         {
                             Id = 2,
                             BookId = 2,
-                            BookingDate = new DateTime(2024, 8, 23, 0, 20, 55, 665, DateTimeKind.Local).AddTicks(3030),
+                            BookingDate = new DateTime(2024, 8, 24, 18, 45, 47, 540, DateTimeKind.Local).AddTicks(9924),
                             ReturnDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            User = "User1"
+                            UserId = 2
                         },
                         new
                         {
                             Id = 3,
                             BookId = 3,
-                            BookingDate = new DateTime(2024, 8, 18, 0, 20, 55, 665, DateTimeKind.Local).AddTicks(3033),
+                            BookingDate = new DateTime(2024, 8, 19, 18, 45, 47, 540, DateTimeKind.Local).AddTicks(9928),
                             ReturnDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            User = "User1"
+                            UserId = 2
                         },
                         new
                         {
                             Id = 4,
                             BookId = 4,
-                            BookingDate = new DateTime(2024, 8, 26, 0, 20, 55, 665, DateTimeKind.Local).AddTicks(3037),
+                            BookingDate = new DateTime(2024, 8, 27, 18, 45, 47, 540, DateTimeKind.Local).AddTicks(9930),
                             ReturnDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            User = "User2"
+                            UserId = 1
                         },
                         new
                         {
                             Id = 5,
                             BookId = 5,
-                            BookingDate = new DateTime(2024, 8, 13, 0, 20, 55, 665, DateTimeKind.Local).AddTicks(3040),
-                            ReturnDate = new DateTime(2024, 8, 23, 0, 20, 55, 665, DateTimeKind.Local).AddTicks(3042),
-                            User = "User3"
+                            BookingDate = new DateTime(2024, 8, 14, 18, 45, 47, 540, DateTimeKind.Local).AddTicks(9934),
+                            ReturnDate = new DateTime(2024, 8, 24, 18, 45, 47, 540, DateTimeKind.Local).AddTicks(9935),
+                            UserId = 1
                         });
                 });
 
@@ -406,6 +406,89 @@ namespace WebApi.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Models.Entities.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            BookId = 1,
+                            CreatedDate = new DateTime(2024, 9, 3, 0, 0, 0, 0, DateTimeKind.Local),
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            BookId = 2,
+                            CreatedDate = new DateTime(2024, 9, 3, 0, 0, 0, 0, DateTimeKind.Local),
+                            UserId = 1
+                        });
+                });
+
+            modelBuilder.Entity("Models.Entities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsPremium")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "AliceSmith@email.com",
+                            IsPremium = true,
+                            Username = "alice"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Email = "BobSmith@email.com",
+                            IsPremium = false,
+                            Username = "bob"
+                        });
+                });
+
             modelBuilder.Entity("BookCategory", b =>
                 {
                     b.HasOne("Models.Entities.Book", null)
@@ -448,7 +531,34 @@ namespace WebApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Models.Entities.User", "User")
+                        .WithMany("Bookings")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Book");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Models.Entities.Order", b =>
+                {
+                    b.HasOne("Models.Entities.Book", "Book")
+                        .WithMany("Orders")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Models.Entities.User", "User")
+                        .WithMany("Orders")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Models.Entities.Author", b =>
@@ -459,11 +569,20 @@ namespace WebApi.Migrations
             modelBuilder.Entity("Models.Entities.Book", b =>
                 {
                     b.Navigation("Bookings");
+
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("Models.Entities.Editor", b =>
                 {
                     b.Navigation("Books");
+                });
+
+            modelBuilder.Entity("Models.Entities.User", b =>
+                {
+                    b.Navigation("Bookings");
+
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

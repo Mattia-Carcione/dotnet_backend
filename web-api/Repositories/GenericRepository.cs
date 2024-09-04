@@ -22,7 +22,7 @@ public class GenericRepository<T, TContext> : IRepository<T>
     protected readonly TContext _context;
 
     /// <summary>
-    /// Initializes a new instance of <see cref="GenericRepository{T}"/> using the specified <paramref name="context"/> of type <typeparamref name="TContext"/>.
+    /// Initializes a new instance of <see cref="GenericRepository{T, TContext}"/> using the specified <paramref name="context"/> of type <typeparamref name="TContext"/>.
     /// </summary>
     /// <param name="context">The current context.</param>
     public GenericRepository(TContext context) => _context = context;

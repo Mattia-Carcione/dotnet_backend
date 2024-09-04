@@ -9,17 +9,14 @@ public static class Config
         new IdentityResource[]
         { 
             new IdentityResources.OpenId(),
-            new IdentityResource(
-                    name: "profile",
-                    userClaims: new[] { "name", "email", "website"},
-                    displayName: "Your profile data"
-                )
+            new IdentityResources.Profile(),
+            new IdentityResources.Email(),
         };
 
     public static IEnumerable<ApiScope> ApiScopes =>
         new ApiScope[]
             { 
-                new ApiScope(name: "customer.client", displayName: "Library API")
+                new ApiScope(name: "libraryApi", displayName: "Access to library api", userClaims: new[] { "name", "email" })
             };
 
 
@@ -27,23 +24,27 @@ public static class Config
         new Client[] 
             {
                 new Client
-                {
-                    ClientId = "service.client",
-                    ClientSecrets = { new Secret("secret".Sha256()) },
+                {   
+                    ClientId = "web.client",
 
+                    RequirePkce = false,
+                    ClientSecrets = { new Secret("secret".Sha256()) },
                     AllowedGrantTypes = GrantTypes.Code,
+
+                    RedirectUris = { "https://localhost:5001/signin-oidc" },
+                    PostLogoutRedirectUris = { "https://localhost:5001/signout-callback-oidc" },
+
+                    AlwaysIncludeUserClaimsInIdToken = true,
 
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "libraryApi"
                     },
 
-                    // where to redirect to after login
-                    RedirectUris = { "https://localhost:5002/signin-oidc" },
-
-                    // where to redirect to after logout
-                    PostLogoutRedirectUris = { "https://localhost:5002/signout-callback-oidc" },
+                    AllowOfflineAccess = true
                 },
             };
 }

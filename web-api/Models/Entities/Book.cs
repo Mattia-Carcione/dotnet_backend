@@ -168,4 +168,12 @@ public class Book
     /// This property represents the relationship between the book and the <see cref="Editor"/> entity.
     /// </remarks>
     public Editor? Editor {get; set;}
+
+    /// <summary>
+    /// Represents the relationship between <see cref="Book"/> and <see cref="Order"/>.
+    /// </summary>
+    /// <value>
+    /// The order collection of the book.
+    /// </value>
+    public ICollection<Order> Orders { get; set; } = new List<Order>();
 }

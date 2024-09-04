@@ -50,7 +50,7 @@ public class BookService : ExtendedRepository<Book, LibraryContext>, IBookServic
     /// <returns>
     /// A task representing the asynchronous operation to update and save the <see cref="Book"/> in the current context.
     /// </returns>
-    private async Task UpdateBookState(Book book)
+    protected async Task UpdateBookState(Book book)
     {
         Update(book);
         await SaveChangesAsync();
@@ -86,19 +86,31 @@ public class BookService : ExtendedRepository<Book, LibraryContext>, IBookServic
     /// </returns>
     /// <exception cref="BookingException">Thrown when booking-specific rules are violated.</exception>
     /// <exception cref="Exception">Thrown when an unexpected error occurs during the booking process.</exception>
-    public async Task<Booking> BookingAsync(string user, int bookId)
+    public async Task<Booking> BookingAsync(string email, int bookId)
     {
         {
             try
             {
                 ValidatorHelper.CheckIsValid(
-                    user,
+                    email,
                     u => !string.IsNullOrEmpty(u),
                     BookingException.Exceptions.UserFieldIsRequired
                 );
 
-                var book =
-                    await GetAsync(bookId)
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+                if ( user == null )
+                {
+                    var index = email.IndexOf( "@" );
+
+                    var username = email.Substring(0, index);
+
+                    user = EntityFactoryHelper.CreateUser(username, email, false);
+
+                    await _context.AddAsync(user);
+                }
+
+                var book = await GetAsync(bookId)
                     ?? throw new BookingException(BookingException.Exceptions.BookNotFound);
 
                 ValidatorHelper.CheckIsValid(
@@ -138,7 +150,7 @@ public class BookService : ExtendedRepository<Book, LibraryContext>, IBookServic
     /// <summary>
     /// Updates the return date of the specified <see cref="Booking"/>.
     /// </summary>
-    /// <param name="user">The name of the user who is returning the book.</param>
+    /// <param name="email">The email of the user who is returning the book.</param>
     /// <param name="bookingId">The id of the booking to be updated.</param>
     /// <param name="bookId">The id of the book to be returned.</param>
     /// <returns>
@@ -147,16 +159,18 @@ public class BookService : ExtendedRepository<Book, LibraryContext>, IBookServic
     /// <exception cref="BookingException">Thrown when booking-specific rules are violated.</exception>
     /// <exception cref="ArgumentNullException">Thrown if the booking's associated book is null.</exception>
     /// <exception cref="Exception">Thrown when an unexpected error occurs during the booking process.</exception>
-    public async Task UpdateBookingAsync(string user, int bookingId, int bookId)
+    public async Task UpdateBookingAsync(string email, int bookingId, int bookId)
     {
         {
             try
             {
                 ValidatorHelper.CheckIsValid(
-                    user,
+                    email,
                     u => !string.IsNullOrEmpty(u),
                     BookingException.Exceptions.UserFieldIsRequired
                 );
+
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email) ?? throw new BookingException(BookingException.Exceptions.UserNotFound);
 
                 var booking =
                     await _context
@@ -183,13 +197,17 @@ public class BookService : ExtendedRepository<Book, LibraryContext>, IBookServic
 
                 book.Copies++;
 
-                booking.ReturnDate = DateTime.Today;
+                booking.ReturnDate = DateTime.Now;
 
                 _context.Bookings.Update(booking);
 
                 await UpdateBookState(book);
             }
             catch (BookingException)
+            {
+                throw;
+            }
+            catch (ArgumentNullException)
             {
                 throw;
             }

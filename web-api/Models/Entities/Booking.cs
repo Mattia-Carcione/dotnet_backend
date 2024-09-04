@@ -27,21 +27,6 @@ public class Booking
     private int id;
 
     /// <summary>
-    /// Gets or sets the user making the booking.
-    /// </summary>
-    /// <value>
-    /// The user making the booking.
-    /// </value>
-    /// <remarks>
-    /// The field is required. Min legth: 3, max length: 50.
-    /// </remarks>
-    [Required]
-    [MaxLength(50), MinLength(3)]
-    public string User {get {return user;} set {user = value;}}
-    private string user = string.Empty;
-
-
-    /// <summary>
     /// Gets or sets the date when creating new booking.
     /// </summary>
     /// <remarks>
@@ -85,4 +70,28 @@ public class Booking
     /// This property represents the relationship between the booking and the <see cref="Book"/> entity.
     /// </remarks>
     public Book? Book {get; set;}
+
+    /// <summary>
+    /// Gets or sets the id of the user making the booking.
+    /// </summary>
+    /// <value>
+    /// The ID of the associated book.
+    /// </value>
+    /// <remarks>
+    /// This field is required and is a foreign key to the <see cref="User"/> entity.
+    /// </remarks>
+    [ForeignKey("User")]
+    [Required]
+    public int UserId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the user associated with the booking.
+    /// </summary>
+    /// <value>
+    /// The user making booking.
+    /// </value>
+    /// <remarks>
+    /// This property represents the relationship between the booking and the <see cref="User"/> entity.
+    /// </remarks>
+    public User? User { get; set; }
 }

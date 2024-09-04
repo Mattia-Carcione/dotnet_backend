@@ -101,12 +101,12 @@
             A interface of booking-related services.
             </summary>
         </member>
-        <member name="M:WebApi.Controllers.BookingController.#ctor(Interfaces.IBookService,Interfaces.IExtendedRepository{Models.Entities.Booking},AutoMapper.IMapper)">
+        <member name="M:WebApi.Controllers.BookingController.#ctor(Interfaces.IFactoryService{Interfaces.IBookService},Interfaces.IExtendedRepository{Models.Entities.Booking},AutoMapper.IMapper)">
             <summary>
             Initializes a new instance of <see cref="T:WebApi.Controllers.BookingController"/>.
             </summary>
             
-            <param name="bookService">The booking-related services.</param>
+            <param name="bookService">An object of <see cref="T:Interfaces.IBookService"/>.</param>
             
             <param name="repository">The repository interface that provides the CRUD operation methods.</param>
             
@@ -184,6 +184,23 @@
             <response code="404">If the booking with the specified id was not found.</response>
             
             <response code="400">If the data provided for updating booking is invalid.</response>
+        </member>
+        <member name="M:WebApi.Controllers.BookingController.BuyBookAsync(DTOs.OrderDTOs.CreateOrderDTO)">
+            <summary>
+            Buys a book by a premium member.
+            </summary>
+            <param name="orderToCreate">The DTO for creating a new order.</param>
+            <returns>
+            A task representing asynchronous operationt that returns a result of <see cref="T:Microsoft.AspNetCore.Mvc.IActionResult"/>.
+            <list type="bullet">
+            <item>
+            <see cref="T:Microsoft.AspNetCore.Mvc.OkObjectResult"/> that produces an <see cref="F:Microsoft.AspNetCore.Http.StatusCodes.Status200OK"/> if the order was created,
+            </item>
+            <item>
+            <see cref="T:Microsoft.AspNetCore.Mvc.UnauthorizedResult"/> that produces an <see cref="F:Microsoft.AspNetCore.Http.StatusCodes.Status401Unauthorized"/> if the user is a standard premium.
+            </item>
+            </list>
+            </returns>
         </member>
         <member name="T:WebApi.Controllers.ControllerHelper`3">
             <summary>
@@ -287,6 +304,30 @@
             <inheritdoc />
         </member>
         <member name="M:WebApi.Migrations.SeedingData.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:WebApi.Migrations.AddUsers">
+            <inheritdoc />
+        </member>
+        <member name="M:WebApi.Migrations.AddUsers.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebApi.Migrations.AddUsers.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebApi.Migrations.AddUsers.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:WebApi.Migrations.OrderTable">
+            <inheritdoc />
+        </member>
+        <member name="M:WebApi.Migrations.OrderTable.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebApi.Migrations.OrderTable.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:WebApi.Migrations.OrderTable.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
     </members>

@@ -53,4 +53,13 @@ public interface IExtendedRepository<T> : IRepository<T> where T : class
     /// </list>
     /// </returns>
     Task<(IEnumerable<T>, PaginationMetadata)> SearchByCriteriaAsync(int pageNumber, int pageSize, Expression<Func<T, bool>> expression, Func<IQueryable<T>, IQueryable<T>> queryLinq);
+
+    /// <summary>
+    /// Searches for entity of type <typeparamref name="T"/> that matches the specified filter <paramref name="queryLinq"/>.
+    /// </summary>
+    /// <param name="queryLinq">A <see cref="Func{T, TResult}"/> that takes a LINQ operation.</param>
+    /// <returns>
+    /// A task representing asynchronous operation that returns the entity <typeparamref name="T"/>.
+    /// </returns>
+    Task<T?> SearchEntityByCriteriaAsync(Func<IQueryable<T>, IQueryable<T>> queryLinq);
 }

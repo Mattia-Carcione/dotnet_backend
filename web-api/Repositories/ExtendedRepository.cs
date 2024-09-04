@@ -81,4 +81,32 @@ public class ExtendedRepository<T, TContext> : GenericRepository<T, TContext>, I
             throw;
         }
     }
+
+    /// <summary>
+    /// Gets the entity by passing a specified <see cref="Func{T, TResult}"/> of <see cref="IQueryable{T}"/>.
+    /// </summary>
+    /// 
+    /// <param name="queryLinq">A <see cref="Func{T, TResult}"/> that takes LINQ operation.</param>
+    /// 
+    /// <returns>
+    /// A task representing asynchronous operation that returns the entity <typeparamref name="T"/>.
+    /// </returns>
+    /// 
+    /// <exception cref="Exception">If an error occurs during the execution of the task, the exception is captured and returned</exception>
+    public async Task<T?> SearchEntityByCriteriaAsync(Func<IQueryable<T>, IQueryable<T>> queryLinq)
+    {
+        try
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            query = queryLinq(query);
+
+            return await query.FirstOrDefaultAsync();
+        }
+        catch (Exception ex)
+        {
+            ExceptionDispatchInfo.Capture(ex).Throw();
+            throw;
+        }
+    }
 }

@@ -51,12 +51,29 @@ public static class EntityFactoryHelper
     /// <summary>
     /// Creates a new instance of <see cref="Booking"/>.
     /// </summary>
-    /// <param name="user">The name of the user making a booking.</param>
+    /// <param name="userId">The user id.</param>
     /// <param name="book">The <see cref="Book"/> being booked.</param>
     /// <param name="returnDate">The return date.</param>
     /// <returns>A new instance of <see cref="Booking"/>.</returns>
-    public static Booking CreateBooking(string user, Book book, DateTime? returnDate = null)
+    public static Booking CreateBooking(User user, Book book, DateTime? returnDate = null)
     {
-        return new Booking { User = user, Book = book, BookingDate = DateTime.Today, ReturnDate = returnDate ?? default };
+        return new Booking { User = user, Book = book, BookingDate = DateTime.Now, ReturnDate = returnDate ?? default };
+    }
+
+    /// <summary>
+    /// Creates a new instance of <see cref="User"/>.
+    /// </summary>
+    /// <param name="username">The name of the user.</param>
+    /// <param name="email">The email of the user.</param>
+    /// <param name="isPremium">The role of the user.</param>
+    /// <returns>A new instance of <see cref="User"/>.</returns>
+    public static User CreateUser(string username, string email, bool isPremium)
+    {
+        return new User { Username = username, Email = email, IsPremium = isPremium };
+    }
+
+    public static Order CreateOrder(int userId, int bookId)
+    {
+        return new Order { BookId = bookId, UserId = userId };
     }
 }
