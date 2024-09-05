@@ -30,9 +30,9 @@ public class BookingException : Exception
         ToManyBookings,
 
         /// <summary>
-        /// Indicates that the user field is missing.
+        /// Indicates that a valid email address is missing.
         /// </summary>
-        UserFieldIsRequired,
+        ValidEmailAddressIsRequired,
 
         /// <summary>
         /// Indicates that there is a mismatch between the user and the booking.
@@ -62,7 +62,12 @@ public class BookingException : Exception
         /// <summary>
         /// Indicates that the specified user is not found.
         /// </summary>
-        UserNotFound
+        UserNotFound,
+
+        /// <summary>
+        /// Indicates that the specified user is not a premium member
+        /// </summary>
+        UnauthorizedUser
     }
 
     /// <summary>

@@ -18,6 +18,6 @@ namespace Interfaces
         /// <returns>
         /// A task representing asynchronous operation that returns a new instance of <see cref="Order"/>.
         /// </returns>
-        Task<Order> BuyBookAsync(string email, int bookId);
+        Task<Order> CreateOrderAsync(string email, int bookId);
     }
 }

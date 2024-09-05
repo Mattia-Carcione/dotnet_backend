@@ -18,113 +18,189 @@
 *sia più attiva e che il numero di copie disponibili sia aumentato di uno. ++
 */
 
+using Context;
 using Exceptions;
 using Microsoft.EntityFrameworkCore;
-using Models.Entities;
 using Services;
 
 namespace LibraryTests;
 
+/// <summary>
+/// Tests methods of <see cref="BookService"/>.
+/// </summary>
 public class BookServiceTest : IClassFixture<TestDatabaseFixture>
 {
+    /// <summary>
+    /// Gets the BookService instance used in tests.
+    /// </summary>
     public BookService _service { get; private set; }
+
+    /// <summary>
+    /// Gets the TestDatabaseFixture instance used in tests.
+    /// </summary>
     public TestDatabaseFixture Fixture { get; }
 
+    /// <summary>
+    /// Gets the LibraryContext instance used in tests.
+    /// </summary>
+    public LibraryContext _context { get; private set; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BookServiceTest"/> class.
+    /// </summary>
+    /// <param name="fixture">The test database fixture.</param>
     public BookServiceTest(TestDatabaseFixture fixture)
     {
         Fixture = fixture;
 
-        var context = Fixture.CreateContext();
+        _context = Fixture.CreateContext();
 
-        _service = new(context);
+        _service = new(_context);
     }
 
+    /// <summary>
+    /// Tests if a booking is successfully added.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     [Fact]
     public async Task AddBooking_Booking_BookingIsAdded()
     {
-        //Assign
-        var initialBook = await _service.GetAsync(1, query => query.Include(b => b.Bookings)) ?? throw new ArgumentNullException();
-        var initialBookingsCount = initialBook.Bookings.Count;
-        var initialCopies = initialBook.Copies;
+        // Arrange
+        var initialCount = await _context.Bookings.CountAsync();
 
-        // //Act
-        await _service.BookingAsync("utenteTest@mail", initialBook.Id);
-        var finalBook = await _service.GetAsync(1) ?? throw new ArgumentNullException();
-        var finalBookingsCount = finalBook.Bookings.Count;
-        var finalCopies = finalBook.Copies;
+        // Act
+        await _service.BookingAsync("utenteTest@mail", 4);
+        var finalCount = await _context.Bookings.CountAsync();
 
-        //Assert
-        Assert.Equal(initialBookingsCount + 1, finalBookingsCount);
+        // Assert
+        Assert.Equal(initialCount + 1, finalCount);
+    }
+
+    /// <summary>
+    /// Tests if the number of copies is updated correctly after a booking is added.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Fact]
+    public async Task AddBooking_Booking_BookCopiesIsUpdated()
+    {
+        // Arrange
+        var book = await _service.GetAsync(1, query => query.Include(b => b.Bookings)) ?? throw new ArgumentNullException();
+        var initialCopies = book.Copies;
+
+        // Act
+        await _service.BookingAsync("utenteTest17@mail", book.Id);
+        var finalCopies = book.Copies;
+
+        // Assert
         Assert.Equal(initialCopies - 1, finalCopies);
     }
 
+
+    /// <summary>
+    /// Tests if a booking is successfully updated.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     [Fact]
     public async Task UpdateBookingTest_Booking_BookingIsUpdated()
     {
-        //Assign
+        // Arrange
         var book = await _service.GetAsync(1) ?? throw new ArgumentNullException();
         await _service.BookingAsync("utenteTest@mail", book.Id);
-        var initialCopies = book.Copies;
         var booking = book.Bookings.First(b => b.User != null && b.User.Email == "utenteTest@mail");
         var initialReturnDate = booking.ReturnDate;
 
-        // //Act
+        // Act
         await _service.UpdateBookingAsync("utenteTest@mail", booking.Id, book.Id);
 
-        //Assert
-        Assert.Equal(book.Copies, initialCopies + 1);
+        // Assert
         Assert.NotEqual(booking.ReturnDate, default);
         Assert.Equal(initialReturnDate, default);
     }
 
+    /// <summary>
+    /// Tests if the number of copies is updated correctly after a booking is updated.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Fact]
+    public async Task UpdateBookingTest_Booking_BookCopiesIsUpdated()
+    {
+        // Arrange
+        var book = await _service.GetAsync(1) ?? throw new ArgumentNullException();
+        var booking = await _service.BookingAsync("utenteTest@mail", book.Id);
+        var initialCopies = book.Copies;
+
+        // Act
+        await _service.UpdateBookingAsync("utenteTest@mail", booking.Id, book.Id);
+        var finalCopies = book.Copies;
+
+        // Assert
+        Assert.Equal(initialCopies + 1, finalCopies);
+    }
+
+    /// <summary>
+    /// Tests if booking a non-existent book throws a BookingException.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     [Fact]
     public async Task AddBooking_Booking_BookNotFound()
     {
-        //Assign
+        // Arrange
         var fakeBook = EntityFactoryHelper.CreateBook("test", 1, 1);
 
-        // //Act
+        // Act
         var booking = async () => await _service.BookingAsync("utenteTest@mail", fakeBook.Id);
 
-        //Assert
+        // Assert
         await Assert.ThrowsAsync<BookingException>(async () => await booking());
     }
 
+    /// <summary>
+    /// Tests if booking a book with zero copies throws a BookingException.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     [Fact]
     public async Task AddBooking_Booking_BookNotAvailable()
     {
-        //Assign
+        // Arrange
         var bookNotAvailable = EntityFactoryHelper.CreateBook("test", 1, 1, copies: 0);
         await _service.AddAsync(bookNotAvailable);
         await _service.SaveChangesAsync();
 
-        // //Act
+        // Act
         var booking = async () => await _service.BookingAsync("utenteTest@mail", bookNotAvailable.Id);
 
-        //Assert
+        // Assert
         await Assert.ThrowsAsync<BookingException>(async () => await booking());
     }
 
+    /// <summary>
+    /// Tests if booking a book that is already booked by the user throws a BookingException.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     [Fact]
     public async Task AddBooking_Booking_ExistingBooking()
     {
-        //Assign
+        // Arrange
         var book = EntityFactoryHelper.CreateBook("test", 1, 1, copies: 10);
         await _service.AddAsync(book);
         await _service.SaveChangesAsync();
         await _service.BookingAsync("utenteTest@mail", book.Id);
 
-        // //Act
+        // Act
         var booking = async () => await _service.BookingAsync("utenteTest@mail", book.Id);
 
-        //Assert
+        // Assert
         await Assert.ThrowsAsync<BookingException>(async () => await booking());
     }
 
+    /// <summary>
+    /// Tests if booking a fourth book when the user already has three active bookings throws a BookingException.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     [Fact]
-    public async Task AddBooking_Booking_ToManyBookings()
+    public async Task AddBooking_Booking_TooManyBookings()
     {
-        //Assign
+        // Arrange
         var book1 = EntityFactoryHelper.CreateBook("test", 1, 1, copies: 10);
         var book2 = EntityFactoryHelper.CreateBook("test", 1, 1, copies: 10);
         var book3 = EntityFactoryHelper.CreateBook("test", 1, 1, copies: 10);
@@ -134,60 +210,67 @@ public class BookServiceTest : IClassFixture<TestDatabaseFixture>
         await _service.AddAsync(book3);
         await _service.AddAsync(book4);
         await _service.SaveChangesAsync();
-        await _service.BookingAsync("utenteTest@mail", book1.Id);
-        await _service.BookingAsync("utenteTest@mail", book2.Id);
-        await _service.BookingAsync("utenteTest@mail", book3.Id);
+        await _service.BookingAsync("utenteTest9@mail", book1.Id);
+        await _service.BookingAsync("utenteTest9@mail", book2.Id);
+        await _service.BookingAsync("utenteTest9@mail", book3.Id);
 
-        // //Act
-        var booking = async () => await _service.BookingAsync("utenteTest@mail", book4.Id);
+        // Act
+        var booking = async () => await _service.BookingAsync("utenteTest9@mail", book4.Id);
 
-        //Assert
+        // Assert
         await Assert.ThrowsAsync<BookingException>(async () => await booking());
     }
 
+    /// <summary>
+    /// Tests if updating a booking for a book that hasn't been booked by the user throws a BookingException.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     [Fact]
     public async Task UpdateBookingTest_Booking_BookHasntBooked()
     {
-        //Assign
-        var book = EntityFactoryHelper.CreateBook("test", 1, 1, copies: 10);
-        await _service.AddAsync(book);
-        await _service.SaveChangesAsync();
+        // Arrange
+        var booking = await _service.BookingAsync("utenteTest5@mail", 1);
 
-        // //Act
-        var UpdateBooking = async () => await _service.UpdateBookingAsync("User1", 1, book.Id);
+        // Act
+        var updateBooking = async () => await _service.UpdateBookingAsync("utenteTest5@mail", booking.Id, 5);
 
-        //Assert
-        await Assert.ThrowsAsync<BookingException>(async () => await UpdateBooking());
+        // Assert
+        await Assert.ThrowsAsync<BookingException>(async () => await updateBooking());
     }
 
+    /// <summary>
+    /// Tests if updating a booking for a book that has already been returned throws a BookingException.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     [Fact]
     public async Task UpdateBookingTest_Booking_BookHasReturned()
     {
-        //Assign
-        var booking = await _service.BookingAsync("utenteTest@mail", 1);
-        await _service.UpdateBookingAsync("utenteTest@mail", booking.Id, 1);
+        // Arrange
+        var booking = await _service.BookingAsync("utenteTest20@mail", 1);
+        await _service.UpdateBookingAsync("utenteTest20@mail", booking.Id, 1);
 
-        // //Act
-        var UpdateBooking = async () => await _service.UpdateBookingAsync("utenteTest@mail", 1, 1);
+        // Act
+        var updateBooking = async () => await _service.UpdateBookingAsync("utenteTest20@mail", booking.Id, 1);
 
-        //Assert
-        await Assert.ThrowsAsync<BookingException>(async () => await UpdateBooking());
+        // Assert
+        await Assert.ThrowsAsync<BookingException>(async () => await updateBooking());
     }
 
+    /// <summary>
+    /// Tests if updating a booking with a mismatched booking ID and user throws a BookingException.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     [Fact]
     public async Task UpdateBookingTest_Booking_BookingAndUserMismatch()
     {
-        //Assign
-        var book = EntityFactoryHelper.CreateBook("test", 1, 1, copies: 10);
-        await _service.AddAsync(book);
-        await _service.SaveChangesAsync();
-        await _service.BookingAsync("testUser@mail", book.Id);
-        var booking = book.Bookings.First(b => b.User != null && b.User.Email == "testUser@mail");
+        // Arrange
+        var booking = await _service.BookingAsync("testUser3@mail", 3);
+        var booking1 = await _service.BookingAsync("test_user@mail", 1);
 
-        // //Act
-        var UpdateBooking = async () => await _service.UpdateBookingAsync("test_user", booking.Id, book.Id);
+        // Act
+        var updateBooking = async () => await _service.UpdateBookingAsync("test_user@mail", booking.Id, booking.Book.Id);
 
-        //Assert
-        await Assert.ThrowsAsync<BookingException>(async () => await UpdateBooking());
+        // Assert
+        await Assert.ThrowsAsync<BookingException>(async () => await updateBooking());
     }
 }

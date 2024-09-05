@@ -35,7 +35,7 @@ namespace Services;
 /// </summary>
 public class BookService : ExtendedRepository<Book, LibraryContext>, IBookService
 {
-
+    protected static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
     /// <summary>
     /// Initializes a new instance of <see cref="BookService"/> using the specified <paramref name="context"/> of type <see cref="LibraryContext"/>.
     /// </summary>
@@ -88,62 +88,67 @@ public class BookService : ExtendedRepository<Book, LibraryContext>, IBookServic
     /// <exception cref="Exception">Thrown when an unexpected error occurs during the booking process.</exception>
     public async Task<Booking> BookingAsync(string email, int bookId)
     {
+        await _semaphore.WaitAsync();
+
+        try
         {
-            try
+            ValidatorHelper.CheckIsValid(
+                email,
+                u => !string.IsNullOrEmpty(u) && u.Count(c => c == '@') == 1,
+                BookingException.Exceptions.ValidEmailAddressIsRequired
+            );
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user == null)
             {
-                ValidatorHelper.CheckIsValid(
-                    email,
-                    u => !string.IsNullOrEmpty(u),
-                    BookingException.Exceptions.UserFieldIsRequired
-                );
+                var index = email.IndexOf("@");
 
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                var username = email.Substring(0, index);
 
-                if ( user == null )
-                {
-                    var index = email.IndexOf( "@" );
+                user = EntityFactoryHelper.CreateUser(username, email, false);
 
-                    var username = email.Substring(0, index);
-
-                    user = EntityFactoryHelper.CreateUser(username, email, false);
-
-                    await _context.AddAsync(user);
-                }
-
-                var book = await GetAsync(bookId)
-                    ?? throw new BookingException(BookingException.Exceptions.BookNotFound);
-
-                ValidatorHelper.CheckIsValid(
-                    book.Copies,
-                    copies => copies > 0,
-                    BookingException.Exceptions.BookNotAvailable
-                );
-
-                var userBookings = await _context
-                    .Bookings.Where(b => b.User == user && b.ReturnDate == default)
-                    .ToListAsync();
-
-                ValidateBookingRules(userBookings, bookId);
-
-                var newBooking = EntityFactoryHelper.CreateBooking(user, book);
-
-                book.Copies--;
-
-                await _context.Bookings.AddAsync(newBooking);
-
-                await UpdateBookState(book);
-
-                return newBooking;
+                await _context.AddAsync(user);
             }
-            catch (BookingException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                ExceptionDispatchInfo.Capture(ex).Throw();
-                throw;
-            }
+
+            var book = await GetAsync(bookId)
+            ?? throw new BookingException(BookingException.Exceptions.BookNotFound);
+
+                
+            ValidatorHelper.CheckIsValid(
+                book.Copies,
+                copies => copies > 0,
+                BookingException.Exceptions.BookNotAvailable
+            );
+
+            var userBookings = await _context
+                .Bookings.Where(b => b.User == user && b.ReturnDate == default)
+                .ToListAsync();
+
+            ValidateBookingRules(userBookings, bookId);
+
+            var newBooking = EntityFactoryHelper.CreateBooking(user, book);
+
+            book.Copies--;
+
+            await _context.Bookings.AddAsync(newBooking);
+
+            await UpdateBookState(book);
+
+            return await _context.Bookings.Where(b => b.User == newBooking.User && b.Book == book && b.ReturnDate == default).FirstAsync() ?? throw new InvalidOperationException();
+        }
+        catch (BookingException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            ExceptionDispatchInfo.Capture(ex).Throw();
+            throw;
+        }
+        finally
+        {
+            _semaphore.Release();
         }
     }
 
@@ -161,60 +166,64 @@ public class BookService : ExtendedRepository<Book, LibraryContext>, IBookServic
     /// <exception cref="Exception">Thrown when an unexpected error occurs during the booking process.</exception>
     public async Task UpdateBookingAsync(string email, int bookingId, int bookId)
     {
+        await _semaphore.WaitAsync();
+
+        try
         {
-            try
-            {
-                ValidatorHelper.CheckIsValid(
-                    email,
-                    u => !string.IsNullOrEmpty(u),
-                    BookingException.Exceptions.UserFieldIsRequired
-                );
+            ValidatorHelper.CheckIsValid(
+                email,
+                u => !string.IsNullOrEmpty(u) && u.Count(c => c == '@') == 1,
+                BookingException.Exceptions.ValidEmailAddressIsRequired
+            );
 
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email) ?? throw new BookingException(BookingException.Exceptions.UserNotFound);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email) ?? throw new BookingException(BookingException.Exceptions.UserNotFound);
 
-                var booking =
-                    await _context
-                        .Bookings.Include(b => b.Book)
-                        .FirstOrDefaultAsync(b => b.Id == bookingId)
-                    ?? throw new BookingException(BookingException.Exceptions.BookingNotFound);
+            var booking =
+                await _context
+                    .Bookings.Include(b => b.Book)
+                    .FirstOrDefaultAsync(b => b.Id == bookingId)
+                ?? throw new BookingException(BookingException.Exceptions.BookingNotFound);
 
-                if(booking.User != user)
-                    throw new BookingException(BookingException.Exceptions.UserMismatch);
+            if(booking.User != user)
+                throw new BookingException(BookingException.Exceptions.UserMismatch);
 
-                ValidatorHelper.CheckIsValid(
-                    booking.ReturnDate,
-                    d => d == default,
-                    BookingException.Exceptions.BookAlreadyReturned
-                );
+            ValidatorHelper.CheckIsValid(
+                booking.ReturnDate,
+                d => d == default,
+                BookingException.Exceptions.BookAlreadyReturned
+            );
 
-                var book = booking.Book ?? throw new ArgumentNullException();
+            var book = booking.Book ?? throw new ArgumentNullException();
 
-                ValidatorHelper.CheckIsValid(
-                    book.Id,
-                    b => b == bookId,
-                    BookingException.Exceptions.BookMismatch
-                );
+            ValidatorHelper.CheckIsValid(
+                book.Id,
+                b => b == bookId,
+                BookingException.Exceptions.BookMismatch
+            );
 
-                book.Copies++;
+            book.Copies++;
 
-                booking.ReturnDate = DateTime.Now;
+            booking.ReturnDate = DateTime.Now;
 
-                _context.Bookings.Update(booking);
+            _context.Bookings.Update(booking);
 
-                await UpdateBookState(book);
-            }
-            catch (BookingException)
-            {
-                throw;
-            }
-            catch (ArgumentNullException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                ExceptionDispatchInfo.Capture(ex).Throw();
-            }
+            await UpdateBookState(book);
+        }
+        catch (BookingException)
+        {
+            throw;
+        }
+        catch (ArgumentNullException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            ExceptionDispatchInfo.Capture(ex).Throw();
+        }
+        finally
+        {
+            _semaphore.Release();
         }
     }
 }

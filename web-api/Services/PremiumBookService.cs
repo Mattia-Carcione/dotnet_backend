@@ -27,7 +27,7 @@ namespace Services
         public PremiumBookService(LibraryContext context) :base(context) { }
 
         /// <summary>
-        /// Buys a specified book for a premium user.
+        /// Creates a new instance of <see cref="Order"/> for a premium user.
         /// </summary>
         /// <param name="email">The email address of the user.</param>
         /// <param name="bookId">The id of the specified book to be bought.</param>
@@ -36,18 +36,24 @@ namespace Services
         /// </returns>
         /// <exception cref="BookingException">Thrown when booking-specific rules are violated.</exception>
         /// <exception cref="Exception">Thrown when an unexpected error occurs during the booking process.</exception>
-        public async Task<Order> BuyBookAsync(string email, int bookId)
+        public async Task<Order> CreateOrderAsync(string email, int bookId)
         {
+            await _semaphore.WaitAsync();
+
             try
             {
                 ValidatorHelper.CheckIsValid(
                     email,
-                    u => !string.IsNullOrEmpty(u),
-                    BookingException.Exceptions.UserFieldIsRequired
+                    u => !string.IsNullOrEmpty(u) && u.Count(c => c == '@') == 1,
+                    BookingException.Exceptions.ValidEmailAddressIsRequired
                 );
 
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email)
                     ?? throw new BookingException(BookingException.Exceptions.UserNotFound);
+
+                ValidatorHelper.CheckIsValid(user,
+                    u => u.IsPremium,
+                    BookingException.Exceptions.UnauthorizedUser);
 
                 var book = await GetAsync(bookId)
                     ?? throw new BookingException(BookingException.Exceptions.BookNotFound);
@@ -76,7 +82,7 @@ namespace Services
 
                 await UpdateBookState(book);
 
-                return newOrder;
+                return await _context.Orders.Where(o => o.User == user && o.Book == book && o.CreatedDate == newOrder.CreatedDate).FirstAsync();
             }
             catch (BookingException)
             {
@@ -86,6 +92,10 @@ namespace Services
             {
                 ExceptionDispatchInfo.Capture(ex).Throw();
                 throw;
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
     }

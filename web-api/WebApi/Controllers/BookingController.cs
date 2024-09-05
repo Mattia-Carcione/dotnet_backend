@@ -167,11 +167,11 @@ public class BookingController : ControllerHelper<Booking, BookingDetailDTO, Boo
     }
 
     /// <summary>
-    /// Buys a book by a premium member.
+    /// Creates a new instance of <see cref="Order"/> for a premium member.
     /// </summary>
     /// <param name="orderToCreate">The DTO for creating a new order.</param>
     /// <returns>
-    /// A task representing asynchronous operationt that returns a result of <see cref="IActionResult"/>.
+    /// A task representing asynchronous operation that returns a result of <see cref="IActionResult"/>.
     /// <list type="bullet">
     /// <item>
     /// <see cref="OkObjectResult"/> that produces an <see cref="StatusCodes.Status200OK"/> if the order was created,
@@ -182,13 +182,15 @@ public class BookingController : ControllerHelper<Booking, BookingDetailDTO, Boo
     /// </list>
     /// </returns>
     [HttpPost("buy-book")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> BuyBookAsync([FromBody] CreateOrderDTO orderToCreate)
     {
         Order order;
 
         if (_bookService is IPremiumBookService _premiumService)
         {
-            order = await _premiumService.BuyBookAsync(orderToCreate.Email, orderToCreate.BookId);
+            order = await _premiumService.CreateOrderAsync(orderToCreate.Email, orderToCreate.BookId);
 
             var mappedOrder = _mapper.Map<OrderDTO>(order);
 

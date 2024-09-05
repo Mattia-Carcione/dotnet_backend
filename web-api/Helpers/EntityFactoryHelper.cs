@@ -67,7 +67,7 @@ public static class EntityFactoryHelper
     /// <param name="email">The email of the user.</param>
     /// <param name="isPremium">The role of the user.</param>
     /// <returns>A new instance of <see cref="User"/>.</returns>
-    public static User CreateUser(string username, string email, bool isPremium)
+    public static User CreateUser(string username, string email, bool isPremium = false)
     {
         return new User { Username = username, Email = email, IsPremium = isPremium };
     }
