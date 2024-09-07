@@ -7,25 +7,31 @@ Follow these steps to set up and run the application:
     git clone <repository_url>
     ```
 
-2. **Start the Identity Server:**
+2. **Create the database:**
+    ```sh
+    cd web-api/WebApi
+    dotnet ef database update
+    ```
+
+3. **Start the Identity Server:**
     ```sh
     cd web-api/IdentityServer
     dotnet run
     ```
 
-3. **Start the Hosted Service project:**
+4. **Start the Hosted Service project:**
     ```sh
     cd web-api/HostedService
     dotnet run
     ```
 
-4. **Start the WebApi project:**
+5. **Start the WebApi project:**
     ```sh
     cd web-api/WebApi
     dotnet run --launch-profile https
     ```
 
-5. **Open Postman and make a POST request to get the token:**
+6. **Open Postman and make a POST request to get the token:**
     - URL: `https://localhost:5001/connect/token`
     - Set up the authorization with the following details:
         - **Callback URL:** `https://localhost:5001/signin-oidc`
@@ -43,7 +49,7 @@ Follow these steps to set up and run the application:
             - **Password:** `bob`
     - Copy the received token.
 
-6. **Use the token in API requests:**
+7. **Use the token in API requests:**
     - In Postman, insert the token as a Bearer token in the authorization header of your API requests.
 
 By following these steps, you should be able to successfully run and test the application.
