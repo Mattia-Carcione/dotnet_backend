@@ -2,14 +2,15 @@ using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Context;
 using Factories;
+using HostedServices;
 using Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;
+using NotificationHub;
 using Repository;
 using Serilog;
 using Services;
 using System.Reflection;
-using System.Security.Claims;
 using WebApi.Mappers;
 
 // <summary>
@@ -76,6 +77,11 @@ try
     builder.Services.AddScoped<IExtendedRepository<Booking>, ExtendedRepository<Booking, LibraryContext>>();
     builder.Services.AddTransient<IExtendedRepository<User>, ExtendedRepository<User, LibraryContext>>();
 
+    // <summary>
+    // Adds the signalR notification to the services.
+    // </summary>
+    builder.Services.AddSignalR();
+
     builder.Services.AddTransient<IBookService, BookService>();
     builder.Services.AddTransient<IPremiumBookService, PremiumBookService>();
     builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
@@ -109,7 +115,7 @@ try
     var apiVersionDescriptionProvider = builder.Services.BuildServiceProvider()
       .GetRequiredService<IApiVersionDescriptionProvider>();
 
-    builder.Services.AddSwaggerGen( setupAction =>
+    builder.Services.AddSwaggerGen(setupAction =>
     {
         foreach (var description in
             apiVersionDescriptionProvider.ApiVersionDescriptions)
@@ -128,7 +134,7 @@ try
         var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
 
         var dtoAssembly = Assembly.Load("DTOs");
-        if(dtoAssembly != null)
+        if (dtoAssembly != null)
         {
             var dtoCommentsFile = $"{dtoAssembly.GetName().Name}.xml";
             var dtoXmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, dtoCommentsFile);
@@ -175,6 +181,7 @@ try
     app.UseAuthorization();
 
     app.MapControllers().RequireAuthorization();
+    app.MapHub<ChatHub>("/chatHub");
 
     app.Run();
 }

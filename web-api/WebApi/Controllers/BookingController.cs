@@ -14,8 +14,10 @@ using DTOs.BookingDTOs;
 using DTOs.OrderDTOs;
 using Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;
+using NotificationHub;
 
 namespace WebApi.Controllers;
 
@@ -33,19 +35,29 @@ public class BookingController : ControllerHelper<Booking, BookingDetailDTO, Boo
     private readonly IBookService _bookService;
 
     /// <summary>
+    /// An instance of <see cref="IHubContext"/> context.
+    /// </summary>
+    private readonly IHubContext<ChatHub> _hubContext;
+
+    /// <summary>
     /// Initializes a new instance of <see cref="BookingController"/>.
     /// </summary>
     /// 
-    /// <param name="bookService">An object of <see cref="IBookService"/>.</param>
+    /// <param name="bookService">An instance of <see cref="IBookService"/>.</param>
+    /// 
+    /// <param name="hubContext">An instance of <see cref="IHubContext"/> context.</param>
     /// 
     /// <param name="repository">The repository interface that provides the CRUD operation methods.</param>
     /// 
     /// <param name="mapper">A mapper object that maps entities to each other.</param>
     public BookingController(IFactoryService<IBookService> bookService,
+        IHubContext<ChatHub> hubContext,
         IExtendedRepository<Booking> repository,
         IMapper mapper) : base(mapper, repository)
     {
         _bookService = bookService.CreateService().Result;
+
+        _hubContext = hubContext;
     }
 
     /// <summary>
@@ -167,7 +179,7 @@ public class BookingController : ControllerHelper<Booking, BookingDetailDTO, Boo
     }
 
     /// <summary>
-    /// Creates a new instance of <see cref="Order"/> for a premium member.
+    /// Creates a new instance of <see cref="Order"/> for a premium member and send notification to all clients connected to the server.
     /// </summary>
     /// <param name="orderToCreate">The DTO for creating a new order.</param>
     /// <returns>
@@ -193,6 +205,10 @@ public class BookingController : ControllerHelper<Booking, BookingDetailDTO, Boo
             order = await _premiumService.CreateOrderAsync(orderToCreate.Email, orderToCreate.BookId);
 
             var mappedOrder = _mapper.Map<OrderDTO>(order);
+
+            string message = $"User {orderToCreate.Email} has purchased book ID {orderToCreate.BookId}";
+
+            await _hubContext.Clients.All.SendAsync("ReceiveMessage", message);
 
             return Ok(mappedOrder);
         }

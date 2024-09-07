@@ -101,12 +101,19 @@
             A interface of booking-related services.
             </summary>
         </member>
-        <member name="M:WebApi.Controllers.BookingController.#ctor(Interfaces.IFactoryService{Interfaces.IBookService},Interfaces.IExtendedRepository{Models.Entities.Booking},AutoMapper.IMapper)">
+        <member name="F:WebApi.Controllers.BookingController._hubContext">
+            <summary>
+            An instance of <see cref="T:Microsoft.AspNetCore.SignalR.IHubContext"/> context.
+            </summary>
+        </member>
+        <member name="M:WebApi.Controllers.BookingController.#ctor(Interfaces.IFactoryService{Interfaces.IBookService},Microsoft.AspNetCore.SignalR.IHubContext{NotificationHub.ChatHub},Interfaces.IExtendedRepository{Models.Entities.Booking},AutoMapper.IMapper)">
             <summary>
             Initializes a new instance of <see cref="T:WebApi.Controllers.BookingController"/>.
             </summary>
             
-            <param name="bookService">An object of <see cref="T:Interfaces.IBookService"/>.</param>
+            <param name="bookService">An instance of <see cref="T:Interfaces.IBookService"/>.</param>
+            
+            <param name="hubContext">An instance of <see cref="T:Microsoft.AspNetCore.SignalR.IHubContext"/> context.</param>
             
             <param name="repository">The repository interface that provides the CRUD operation methods.</param>
             
@@ -187,11 +194,11 @@
         </member>
         <member name="M:WebApi.Controllers.BookingController.BuyBookAsync(DTOs.OrderDTOs.CreateOrderDTO)">
             <summary>
-            Buys a book by a premium member.
+            Creates a new instance of <see cref="T:Models.Entities.Order"/> for a premium member.
             </summary>
             <param name="orderToCreate">The DTO for creating a new order.</param>
             <returns>
-            A task representing asynchronous operationt that returns a result of <see cref="T:Microsoft.AspNetCore.Mvc.IActionResult"/>.
+            A task representing asynchronous operation that returns a result of <see cref="T:Microsoft.AspNetCore.Mvc.IActionResult"/>.
             <list type="bullet">
             <item>
             <see cref="T:Microsoft.AspNetCore.Mvc.OkObjectResult"/> that produces an <see cref="F:Microsoft.AspNetCore.Http.StatusCodes.Status200OK"/> if the order was created,
