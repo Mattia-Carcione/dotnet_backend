@@ -8,7 +8,7 @@ using System.Text.Json;
 namespace WebApi.Controllers
 {
     /// <summary>
-    /// An instance of <see cref="ControllerHelper{T, TDTO, TDetailDTO}"/> provides helper methods for searching item from the current context.
+    /// An abstract class of <see cref="ControllerHelper{T, TDTO, TDetailDTO}"/> provides helper methods for searching item from the current context.
     /// <para>
     /// This class extends <see cref="ControllerBase"/>.
     /// </para>
@@ -16,7 +16,7 @@ namespace WebApi.Controllers
     /// <typeparam name="T">Represents the type of the <typeparamref name="T"/> entity.</typeparam>
     /// <typeparam name="TDTO">Represents the DTO of the <typeparamref name="TDTO"/> entity.</typeparam>
     /// <typeparam name="TDetailDTO">Represents the DTO of the <typeparamref name="T"/> entity showing the entity details.</typeparam>
-    public class ControllerHelper<T, TDTO, TDetailDTO> : ControllerBase 
+    public abstract class ControllerHelper<T, TDTO, TDetailDTO> : ControllerBase 
         where T : class 
         where TDTO : class
         where TDetailDTO : class

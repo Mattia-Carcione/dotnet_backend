@@ -2,7 +2,6 @@ using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Context;
 using Factories;
-using HostedServices;
 using Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;

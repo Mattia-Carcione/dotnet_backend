@@ -194,7 +194,7 @@
         </member>
         <member name="M:WebApi.Controllers.BookingController.BuyBookAsync(DTOs.OrderDTOs.CreateOrderDTO)">
             <summary>
-            Creates a new instance of <see cref="T:Models.Entities.Order"/> for a premium member.
+            Creates a new instance of <see cref="T:Models.Entities.Order"/> for a premium member and send notification to all clients connected to the server.
             </summary>
             <param name="orderToCreate">The DTO for creating a new order.</param>
             <returns>
